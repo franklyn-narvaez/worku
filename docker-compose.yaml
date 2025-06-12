@@ -1,0 +1,47 @@
+services:
+  
+  db-dev:
+    image: postgres:16
+    container_name: db-dev
+    environment:
+      - POSTGRES_USER=user  
+      - POSTGRES_PASSWORD=user
+      - POSTGRES_DB=dbdev
+    volumes:
+      - db-dev:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - db-net
+    attach: false
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+  
+
+  pg-admin:
+    image: dpage/pgadmin4:8.5
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=password
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-dev:/var/lib/pgadmin
+    restart: unless-stopped
+    networks:
+      - db-net
+    attach: false
+    depends_on:
+      db-dev:
+        condition: service_healthy
+
+networks:
+  db-net:
+
+volumes:
+  pgadmin-dev:
+  db-dev:

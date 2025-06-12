@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // uses connection pooling
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id          String      @id @default(cuid())
+  name        String
+  lastName    String
+  email       String      @unique
+  password    String
+  createdDate DateTime    @default(now())
+  updatedDate DateTime    @updatedAt
+  collegeId   String
+  college     College?    @relation(fields: [collegeId], references: [id])
+  roleId      String
+  role        Role?       @relation(fields: [roleId], references: [id])
+  status      UserStatus? @default(ACTIVE)
+}
+
+model Role {
+  id   String @id @default(cuid())
+  name String
+  user User[]
+}
+
+model Faculty {
+  id      String    @id @default(cuid())
+  name    String?
+  college College[]
+}
+
+model College {
+  id        String  @id @default(cuid())
+  name      String?
+  user      User[]
+  facultyId String
+  faculty   Faculty @relation(fields: [facultyId], references: [id])
+}
