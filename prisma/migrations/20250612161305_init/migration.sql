@@ -1,0 +1,9 @@
+/*
+  Warnings:
+
+  - You are about to drop the column `confirmPassword` on the `User` table. All the data in the column will be lost.
+
+*/
+-- AlterTable
+ALTER TABLE "User" DROP COLUMN "confirmPassword",
+ALTER COLUMN "status" DROP NOT NULL;
