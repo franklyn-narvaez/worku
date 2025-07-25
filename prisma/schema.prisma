@@ -25,6 +25,7 @@ model User {
   roleId      String
   role        Role?       @relation(fields: [roleId], references: [id])
   status      UserStatus? @default(ACTIVE)
+  Sessions    Sessions[]
 }
 
 model Role {
@@ -46,4 +47,12 @@ model College {
   user      User[]
   facultyId String
   faculty   Faculty @relation(fields: [facultyId], references: [id])
+}
+
+model Sessions {
+  id           Int      @id @default(autoincrement())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  expiresAt    DateTime
+  refreshToken String
 }
