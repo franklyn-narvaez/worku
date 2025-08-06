@@ -4,6 +4,8 @@ import authRouter from './modules/auth/controller';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import userRouter from './modules/users/controller';
+import collegeRouter from './modules/colleges/controller';
+import roleRouter from './modules/roles/controller';
 
 export async function createApp() {
     const app = express();
@@ -24,6 +26,10 @@ export async function createApp() {
 
     app.use('/api/auth', authRouter)
     app.use('/api/user', userRouter)
+    app.use('/api/college', collegeRouter)
+    app.use('/api/role', roleRouter)
+
+
     
 
     const routes = Router();

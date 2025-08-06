@@ -1,11 +1,13 @@
-async function registerRequets(data: any) {
-    return await fetch('/api/auth/register', {
+import type { RegisterType } from "./schema";
+
+async function registerRequets(data: RegisterType) {
+    return await fetch('http://localhost:3000/api/user/register', {
         method: 'POST',
         body: JSON.stringify({
             name: data.name,
             lastName: data.lastName,
             email: data.email,
-            collegeId: data.college,
+            collegeId: data.collegeId,
             password: data.password
         }),
         headers: {

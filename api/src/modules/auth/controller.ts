@@ -139,7 +139,7 @@ router.post("/logout", async (req, res) => {
     const token = req.cookies.refreshToken;
 
     if (!token) {
-        return res.status(204).send(); // no cookie nothing to do
+        return res.status(200).json({ message: "No token to revoke" });
     }
 
     try {
@@ -156,8 +156,9 @@ router.post("/logout", async (req, res) => {
         sameSite: 'lax'
     });
 
-    return res.status(204).send();
+    return res.status(200).json({ message: "Logout successful" });
 });
+
 
 
 
