@@ -12,10 +12,17 @@ import {
 import type { User } from "@prisma/client";
 import { useEffect, useState } from "react";
 
+type ExtendedUser = User & {
+    college: {
+        id: string;
+        name: string;
+    } | null
+};
 
 const UserTable = () => {
 
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<ExtendedUser[]>([]);
+
 
     useEffect(() => {
         fetch("http://localhost:3000/api/user")
@@ -31,6 +38,7 @@ const UserTable = () => {
                     <TableHead>Nombre</TableHead>
                     <TableHead>Apellido</TableHead>
                     <TableHead>Correo</TableHead>
+                    <TableHead>Escuela</TableHead>
                     <TableHead>Fecha de creacion</TableHead>
                     <TableHead>Estado</TableHead>
                 </TableRow >
@@ -41,6 +49,7 @@ const UserTable = () => {
                         <TableCell className="p-4">{user.name}</TableCell>
                         <TableCell className="p-4">{user.lastName}</TableCell>
                         <TableCell className="p-4">{user.email}</TableCell>
+                        <TableCell className="p-4">{user.college?.name ?? "Sin escuela"}</TableCell>
                         <TableCell className="p-4">{new Date(user.createdDate).toLocaleDateString()}</TableCell>
                         <TableCell className="p-4">{user.status ? "Activo" : "Inactivo"}</TableCell>
                     </TableRow>
