@@ -13,18 +13,18 @@ enum UserStatus {
 }
 
 model User {
-  id          String      @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
   lastName    String
-  email       String      @unique
+  email       String     @unique
   password    String
-  createdDate DateTime    @default(now())
-  updatedDate DateTime    @updatedAt
+  createdDate DateTime   @default(now())
+  updatedDate DateTime   @updatedAt
   collegeId   String?
-  college     College?    @relation(fields: [collegeId], references: [id])
+  college     College?   @relation(fields: [collegeId], references: [id])
   roleId      String
-  role        Role?       @relation(fields: [roleId], references: [id])
-  status      UserStatus? @default(ACTIVE)
+  role        Role?      @relation(fields: [roleId], references: [id])
+  status      UserStatus @default(ACTIVE)
   Sessions    Sessions[]
 }
 
