@@ -1,0 +1,114 @@
+import { FormField } from '@/components/FormField'
+import { useEffect, useState } from 'react'
+import type { College, Faculty } from "@prisma/client";
+import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from 'react-router-dom';
+import { BASE_OFFER, CREATE_OFFER, GET_COLLEGE, GET_FACULTY } from '@/constants/path';
+import { CreateSchema, type CreateType } from '../schemas/Create';
+import { TextAreaField } from '@/components/TextAreaField';
+import { SelectField } from '@/components/SelectField';
+import { DatePickerField } from '@/components/DatePicker';
+
+export default function CreateForm() {
+
+    const methods = useForm<CreateType>({
+        resolver: zodResolver(CreateSchema),
+    });
+
+    const { handleSubmit, formState: { isSubmitting, isValid } } = methods;
+    const [colleges, setColleges] = useState<College[]>([]);
+    const [faculties, setFaculties] = useState<Faculty[]>([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        fetch(GET_COLLEGE)
+            .then((res) => res.json())
+            .then((data) => setColleges(data));
+    }, []);
+
+    useEffect(() => {
+        fetch(GET_FACULTY)
+            .then((res) => res.json())
+            .then((data) => setFaculties(data));
+    }, []);
+
+    const handleNavigate = () => {
+        navigate(BASE_OFFER);
+    }
+
+    const onSubmit: SubmitHandler<CreateType> = async (data) => {
+        const response = await fetch(CREATE_OFFER, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            navigate(BASE_OFFER);
+        } else {
+            const errorData = await response.json();
+            console.error("Error creating user:", errorData);
+        }
+    }
+
+    return (
+        <div className="h-full flex items-center justify-center">
+            <FormProvider {...methods}>
+                <form onSubmit={handleSubmit(onSubmit)} className="w-1/2">
+                    <h1 className="text-text-title font-bold text-4xl mb-4">Crear Oferta</h1>
+                    <FormField name="title" label="Titulo" type="text" placeholder="Ingrese el titulo" />
+                    <TextAreaField name="description" label="Descripción" placeholder="Ingrese la descripción" rows={3} />
+                    <TextAreaField name="requirements" label="Requisitos" placeholder="Ingrese los requisitos" rows={3} />
+
+                    <SelectField
+                        name="collegeId"
+                        label="Escuela"
+                        options={colleges.map((college) => ({
+                            value: college.id,
+                            label: college.name
+                        }))}
+                        placeholder="Selecciona una escuela"
+                    />
+
+                    <SelectField
+                        name="facultyId"
+                        label="Facultad"
+                        options={faculties.map((faculty) => ({
+                            value: faculty.id,
+                            label: faculty.name
+                        }))}
+                        placeholder="Selecciona una facultad"
+                    />
+
+                    <DatePickerField
+                        name="closeDate"
+                        label="Fecha de cierre"
+                        rules={{ required: "La fecha de cierre es obligatoria" }}
+                    />
+
+                    <div className="flex justify-between gap-x-2 mt-4">
+                        <button
+                            type="submit"
+                            className="w-1/2 button-create p-3 rounded-lg"
+                            disabled={isSubmitting && !isValid}
+                        >
+                            Crear oferta
+                        </button>
+                        <button
+                            type="button"
+                            className="w-1/2 bg-slate-300 text-black p-3 rounded-lg hover:bg-slate-400 transition"
+                            onClick={handleNavigate}
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+
+
+                </form>
+            </FormProvider>
+        </div>
+    )
+}

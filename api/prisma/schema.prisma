@@ -37,16 +37,33 @@ model Role {
 
 model Faculty {
   id      String    @id @default(cuid())
-  name    String?   @unique
+  name    String    @unique
   college College[]
+  Offer   Offer[]
 }
 
 model College {
   id        String  @id @default(cuid())
-  name      String? @unique
+  name      String  @unique
   user      User[]
   facultyId String
   faculty   Faculty @relation(fields: [facultyId], references: [id])
+  Offer     Offer[]
+}
+
+model Offer {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  requirements String?
+  closeDate    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  status       Boolean  @default(true)
+  collegeId    String?
+  college      College? @relation(fields: [collegeId], references: [id])
+  facultyId    String?
+  faculty      Faculty? @relation(fields: [facultyId], references: [id])
 }
 
 model Sessions {

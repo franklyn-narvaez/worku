@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import userRouter from './modules/users/controller';
 import collegeRouter from './modules/colleges/controller';
 import roleRouter from './modules/roles/controller';
+import offerRouter from './modules/offers/controller'; // Assuming you have an offerRouter defined
 
 export async function createApp() {
     const app = express();
@@ -28,9 +29,7 @@ export async function createApp() {
     app.use('/api/user', userRouter)
     app.use('/api/college', collegeRouter)
     app.use('/api/role', roleRouter)
-
-
-    
+    app.use('/api/offer', offerRouter)
 
     const routes = Router();
 
