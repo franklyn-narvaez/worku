@@ -9,7 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { USER_UPDATE } from "@/constants/path";
+import { OFFER_UPDATE } from "@/constants/path";
 import type { Offer } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +29,7 @@ const OfferTable = () => {
     const [offers, setOffers] = useState<ExtendedOffer[]>([]);
 
     const handleEdit = (id: string) => {
-        navigate(USER_UPDATE.replace(':id', id));
+        navigate(OFFER_UPDATE.replace(':id', id));
     }
 
     useEffect(() => {

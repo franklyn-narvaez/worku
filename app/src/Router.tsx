@@ -6,6 +6,7 @@ import ProtectedWrapper from '@components/ProtectedWrapper';
 import { lazy } from 'react';
 import UserRouter from './modules/users/Router';
 import OfferRouter from './modules/offers/Router';
+import { BASE_OFFER, BASE_USER } from './constants/path';
 
 const NavWrapper = lazy(() => import('./components/NavWrapper'));
 
@@ -16,8 +17,8 @@ function Router() {
                 <Route path="/" element={<ProtectedWrapper />}>
                     <Route path="" element={<NavWrapper />} >
                         <Route path="/admin/dashboard" element={<div>About Page</div>} />
-                        <Route path="/admin/users/*" element={<UserRouter />} />
-                        <Route path="/admin/offers/*" element={<OfferRouter />} />
+                        <Route path={BASE_USER + '/*'} element={<UserRouter />} />
+                        <Route path={BASE_OFFER + '/*'} element={<OfferRouter />} />
                     </Route>
                 </Route>
 
