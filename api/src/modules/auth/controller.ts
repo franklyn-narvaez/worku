@@ -42,7 +42,14 @@ router.post("/login", async (req, res) => {
             return res.status(401).json({ message: 'Usuario o contraseña no válidos' });
         }
 
-        const accessToken = jwt.sign({ id: userFound.id }, JWT_SECRET, { expiresIn: '30m' });
+        const userPermissions = await prisma.rolePermission.findMany({
+            where: { roleId: userFound.roleId },
+            include: { permission: true }
+        });
+
+        const permissions = userPermissions.map(rp => rp.permission.code);
+
+        const accessToken = jwt.sign({ id: userFound.id, role: userFound.roleId, permissions }, JWT_SECRET, { expiresIn: '30m' });
         const refreshToken = jwt.sign({ id: userFound.id }, JWT_REFRESH_SECRET, { expiresIn: '1d' });
 
         const refreshExpires = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000); // 7 días
@@ -55,12 +62,6 @@ router.post("/login", async (req, res) => {
             }
         });
 
-        const token = jwt.sign(
-            { id: userFound.id },
-            JWT_SECRET,
-            { expiresIn: '30m' }
-        );
-
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true,
@@ -70,7 +71,9 @@ router.post("/login", async (req, res) => {
 
         return res.status(200).json({
             expires: 30 * 60 * 1000,
-            token
+            access_token: accessToken,
+            permissions,
+            role: userFound.roleId,
         });
 
     } catch (error) {
@@ -102,7 +105,26 @@ router.post("/refresh", async (req, res) => {
             where: { 'id': storedToken.id }
         });
 
-        const newAccessToken = jwt.sign({ id: payload.id }, JWT_SECRET, { expiresIn: '30m' });
+        const userFound = await prisma.user.findUnique({
+            where: { id: payload.id },
+            select: {
+                id: true,
+                roleId: true,
+            }
+        });
+
+        if (!userFound) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        const userPermissions = await prisma.rolePermission.findMany({
+            where: { roleId: userFound.roleId },
+            include: { permission: true }
+        });
+
+        const permissions = userPermissions.map(rp => rp.permission.code);
+
+        const newAccessToken = jwt.sign({ id: payload.id, role: userFound.roleId, permissions }, JWT_SECRET, { expiresIn: '30m' });
 
         const newRefreshToken = jwt.sign({ id: payload.id }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
@@ -124,10 +146,8 @@ router.post("/refresh", async (req, res) => {
         });
 
         return res.status(200).json({
-            accessToken: {
-                token: newAccessToken,
-                expires: Date.now() + 30 * 60 * 1000
-            }
+            access_token: newAccessToken,
+            expires: 30 * 60 * 1000
         });
 
     } catch (error) {

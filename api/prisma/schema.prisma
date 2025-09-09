@@ -28,13 +28,6 @@ model User {
   Sessions    Sessions[]
 }
 
-model Role {
-  id   String @id @default(cuid())
-  code String @unique @default(cuid())
-  name String
-  user User[]
-}
-
 model Faculty {
   id      String    @id @default(cuid())
   name    String    @unique
@@ -72,4 +65,29 @@ model Sessions {
   user         User     @relation(fields: [userId], references: [id])
   expiresAt    DateTime
   refreshToken String
+}
+
+model Role {
+  id         String           @id @default(cuid())
+  code       String           @unique @default(cuid())
+  name       String
+  user       User[]
+  permission RolePermission[]
+}
+
+model Permission {
+  id    String           @id @default(cuid())
+  code  String           @unique
+  name  String
+  roles RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id])
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId], name: "roleId_permissionId")
 }

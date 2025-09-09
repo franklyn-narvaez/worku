@@ -14,6 +14,7 @@ import type { User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { statusLabels } from "../schemas/Update";
+import { useAuth } from "@/hooks/useAuth";
 
 type ExtendedUser = User & {
     college: {
@@ -24,6 +25,8 @@ type ExtendedUser = User & {
 
 const UserTable = () => {
 
+    const { createAuthFetchOptions } = useAuth();
+
     const navigate = useNavigate();
 
     const [users, setUsers] = useState<ExtendedUser[]>([]);
@@ -33,10 +36,14 @@ const UserTable = () => {
     }
 
     useEffect(() => {
-        fetch("http://localhost:3000/api/user")
-            .then((res) => res.json())
-            .then((data) => setUsers(data));
-    }, []);
+        const fetchUsers = async () => {
+            const fetchOptions = await createAuthFetchOptions();
+            const res = await fetch("http://localhost:3000/api/user", fetchOptions);
+            const data = await res.json();
+            setUsers(data);
+        };
+        fetchUsers();
+    }, [createAuthFetchOptions]);
 
     return (
         <Table>
@@ -62,7 +69,7 @@ const UserTable = () => {
                         <TableCell className="p-4">{new Date(user.createdDate).toLocaleDateString()}</TableCell>
                         <TableCell className="p-4">{statusLabels[user.status]}</TableCell>
                         <TableCell className="p-4 text-right">
-                            <button onClick={() => handleEdit(user.id)} className="text-blue-500 hover:underline">Editar</button>
+                            <button type="button" onClick={() => handleEdit(user.id)} className="text-blue-500 hover:underline">Editar</button>
                         </TableCell>
                     </TableRow>
                 ))}

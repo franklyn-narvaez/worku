@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { UserDataProvider } from "@/hooks/useUserData";
 
 function ProtectedWrapper() {
     const { status } = useAuth();
@@ -13,7 +14,9 @@ function ProtectedWrapper() {
     }
 
     return (
-        <Outlet />
+        <UserDataProvider>
+            <Outlet />
+        </UserDataProvider>
     )
 }
 

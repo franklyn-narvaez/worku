@@ -64,7 +64,7 @@ function Register() {
                     <FormField name="password" label="Contraseña" type="password" placeholder="Ingresa tu contraseña" />
                     <FormField name="confirmPassword" label="Confirmar contraseña" type="password" placeholder="Confirma tu contraseña" />
 
-                    <button className="w-full button-create p-3 rounded-lg mt-2" disabled={isSubmitting && !isValid}>
+                    <button type="submit" className="w-full button-create p-3 rounded-lg mt-2" disabled={isSubmitting && !isValid}>
                         Registrar
                     </button>
                 </form>
