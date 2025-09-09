@@ -12,6 +12,7 @@ import { SelectField } from "@/components/SelectField";
 import { DatePickerField } from "@/components/DatePicker";
 import { TextAreaField } from "@/components/TextAreaField";
 import { UpdateSchema, type UpdateType } from "../schemas/Update";
+import { useAuth } from "@/hooks/useAuth";
 
 type UpdateFormProps = {
     offer: Offer & {
@@ -41,6 +42,8 @@ export default function UpdateForm({ offer, college, faculty }: UpdateFormProps)
         },
     });
 
+    const { createAuthFetchOptions } = useAuth();
+
     const {
         handleSubmit,
         formState: { isSubmitting, isValid },
@@ -58,13 +61,18 @@ export default function UpdateForm({ offer, college, faculty }: UpdateFormProps)
             id: offer.id,
             status: data.status === 'true' ? true : false // Ensure the ID of the user being updated is included
         };
-        const response = await fetch(UPDATE_OFFER, {
-            method: "PATCH",
+
+        const authOptions = await createAuthFetchOptions();
+        const fetchOptions = {
+            ...authOptions,
+            method: 'PATCH',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
+                ...(authOptions.headers || {}),
             },
             body: JSON.stringify(newData),
-        });
+        };
+        const response = await fetch(UPDATE_OFFER, fetchOptions);
 
         if (response.ok) {
             navigate(BASE_OFFER);

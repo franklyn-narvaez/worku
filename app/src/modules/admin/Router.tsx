@@ -4,7 +4,7 @@ import CreateForm from './components/CreateForm';
 import UserUpdate from './pages/UserUpdate';
 import { CREATE } from '@/constants/path';
 
-function UserRouter() {
+function AdminRouter() {
     return (
         <Routes>
             <Route path="" element={<Users />} />
@@ -15,4 +15,4 @@ function UserRouter() {
     )
 }
 
-export default UserRouter;
+export default AdminRouter;

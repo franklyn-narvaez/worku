@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
+import { toast } from "react-toastify";
 
 interface LoginFormData {
     email: string;
@@ -26,12 +27,16 @@ function Login() {
     }
 
     const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
+        const res = await login(data.email, data.password);
+        // Usamos el mismo patrón que en register
+        if (res.status === 400) return toast.error("Datos invalidos.");
+        if (res.status === 401) return toast.error("Usuario o contraseña no válidos.");
+        if (res.status === 500) return toast.error("Error del servidor, intenta nuevamente.");
 
-        return login(data.email, data.password).then(() => {
-            navigate('/admin/dashboard');
-        }).catch((err) => {
-            console.error('Error during login:', err);
-        })
+        if (res.status === 200) {
+            toast.success("¡Inicio de sesión exitoso!");
+            navigate("/admin/dashboard");
+        }
     };
 
     return (
@@ -67,7 +72,7 @@ function Login() {
                     errors.password && <span className="text-red-500 text-sm">{errors.password.message as string}</span>
                 }
 
-                <button className="w-full button-create p-3 rounded-lg mt-2">
+                <button type="submit" className="w-full button-create p-3 rounded-lg mt-2">
                     Iniciar sesión
                 </button>
 

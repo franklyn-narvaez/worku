@@ -9,6 +9,7 @@ import {
     UPDATE_USER,
 } from "@/constants/path";
 import { UpdateSchema, statusEnum, statusLabels, type UpdateType } from "../schemas/Update";
+import { useAuth } from "@/hooks/useAuth";
 
 type UpdateFormProps = {
     user: User & {
@@ -33,6 +34,8 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
         },
     });
 
+    const { createAuthFetchOptions } = useAuth();
+
     const {
         handleSubmit,
         formState: { isSubmitting, isValid },
@@ -49,13 +52,18 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
             ...data,
             id: user.id, // Ensure the ID of the user being updated is included
         };
-        const response = await fetch(UPDATE_USER, {
-            method: "PATCH",
+        const authOptions = await createAuthFetchOptions();
+        const fetchOptions = {
+            ...authOptions,
+            method: 'PATCH',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
+                ...(authOptions.headers || {}),
             },
             body: JSON.stringify(newData),
-        });
+        };
+
+        const response = await fetch(UPDATE_USER, fetchOptions);
 
         if (response.ok) {
             navigate(BASE_USER);
@@ -65,7 +73,6 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
         }
     };
 
-    console.log("User data for update:", user);
     return (
         <div className="h-full flex items-center justify-center">
             <FormProvider {...methods}>

@@ -3,10 +3,15 @@ import { Router } from "express";
 import { CreateSchema } from "./createSchema";
 import z from "zod";
 import { UpdateSchema } from "./updateSchema";
+import { authenticate } from "@/middlewares/authenticate";
+import { authorize } from "@/middlewares/authorize";
 
 const router = Router();
 
-router.get("", async (req, res) => {
+router.get("",
+    authenticate,
+    authorize(["view_list_offer"]),
+    async (req, res) => {
     try {
         const offers = await prisma.offer.findMany({
             select: {
@@ -32,7 +37,10 @@ router.get("", async (req, res) => {
     }
 });
 
-router.post("/create", async (req, res) => {
+router.post("/create",
+    authenticate,
+    authorize(["create_offer"]), 
+    async (req, res) => {
     try {
         const parseData = CreateSchema.safeParse(req.body);
         
@@ -73,7 +81,10 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-router.patch("/update", async (req, res) => {
+router.patch("/update",
+    authenticate,
+    authorize(["update_offer"]), 
+    async (req, res) => {
     try {
         const parseData = UpdateSchema.safeParse(req.body);
 

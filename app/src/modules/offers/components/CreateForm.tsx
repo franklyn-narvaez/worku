@@ -9,8 +9,11 @@ import { CreateSchema, type CreateType } from '../schemas/Create';
 import { TextAreaField } from '@/components/TextAreaField';
 import { SelectField } from '@/components/SelectField';
 import { DatePickerField } from '@/components/DatePicker';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function CreateForm() {
+
+    const { createAuthFetchOptions } = useAuth();
 
     const methods = useForm<CreateType>({
         resolver: zodResolver(CreateSchema),
@@ -22,15 +25,23 @@ export default function CreateForm() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(GET_COLLEGE)
-            .then((res) => res.json())
-            .then((data) => setColleges(data));
+        const fetchColleges = async () => {
+            const options = await createAuthFetchOptions();
+            const res = await fetch(GET_COLLEGE, options);
+            const data = await res.json();
+            setColleges(data);
+        }
+        fetchColleges();
     }, []);
 
     useEffect(() => {
-        fetch(GET_FACULTY)
-            .then((res) => res.json())
-            .then((data) => setFaculties(data));
+        const fetchFaculties = async () => {
+            const options = await createAuthFetchOptions();
+            const res = await fetch(GET_FACULTY, options);
+            const data = await res.json();
+            setFaculties(data);
+        }
+        fetchFaculties();
     }, []);
 
     const handleNavigate = () => {
@@ -38,13 +49,17 @@ export default function CreateForm() {
     }
 
     const onSubmit: SubmitHandler<CreateType> = async (data) => {
-        const response = await fetch(CREATE_OFFER, {
+        const authOptions = await createAuthFetchOptions();
+        const fetchOptions = {
+            ...authOptions,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                ...(authOptions.headers || {}),
             },
             body: JSON.stringify(data),
-        });
+        }
+        const response = await fetch(CREATE_OFFER, fetchOptions);
 
         if (response.ok) {
             navigate(BASE_OFFER);

@@ -6,8 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateSchema, type CreateType } from '../schemas/Create';
 import { useNavigate } from 'react-router-dom';
 import { BASE_USER, CREATE_USER, GET_COLLEGE, GET_ROLE } from '@/constants/path';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function CreateForm() {
+
+    const { createAuthFetchOptions } = useAuth();
 
     const methods = useForm<CreateType>({
         resolver: zodResolver(CreateSchema),
@@ -19,15 +22,23 @@ export default function CreateForm() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(GET_COLLEGE)
-            .then((res) => res.json())
-            .then((data) => setColleges(data));
+        const fetchColleges = async () => {
+            const options = await createAuthFetchOptions();
+            const res = await fetch(GET_COLLEGE, options);
+            const data = await res.json();
+            setColleges(data);
+        };
+        fetchColleges();
     }, []);
 
     useEffect(() => {
-        fetch(GET_ROLE)
-            .then((res) => res.json())
-            .then((data) => setRoles(data));
+        const fetchRoles = async () => {
+            const options = await createAuthFetchOptions();
+            const res = await fetch(GET_ROLE, options);
+            const data = await res.json();
+            setRoles(data);
+        };
+        fetchRoles();
     }, []);
 
     const handleNavigate = () => {
@@ -35,13 +46,18 @@ export default function CreateForm() {
     }
 
     const onSubmit: SubmitHandler<CreateType> = async (data) => {
-        const response = await fetch(CREATE_USER, {
+        const authOptions = await createAuthFetchOptions();
+        const fetchOptions = {
+            ...authOptions,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                ...(authOptions.headers || {}),
             },
             body: JSON.stringify(data),
-        });
+        };
+
+        const response = await fetch(CREATE_USER, fetchOptions);
 
         if (response.ok) {
             navigate(BASE_USER);

@@ -50,8 +50,6 @@ const memoryStorage = () => {
 };
 
 async function loginRequest(data: { email: string; password: string }, options: RequestInit) {
-
-
     const response = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
         headers: {
@@ -60,11 +58,19 @@ async function loginRequest(data: { email: string; password: string }, options: 
         body: JSON.stringify(data),
         ...options,
     });
-    if (!response.ok) {
-        throw new Error('Login failed');
+    // Si la respuesta trae contenido JSON
+    let responseData = null;
+    try {
+        responseData = await response.json();
+    } catch {
+        responseData = null; // Evita romper si no hay JSON en la respuesta
     }
-    const data_1 = await response.json();
-    return { status: response.status, data: data_1 };
+    // 🔹 Nunca lanzamos error, devolvemos siempre el status
+    return {
+        status: response.status,
+        ok: response.ok,
+        data: responseData,
+    };
 }
 
 async function logOutRequest(options: RequestInit) {
@@ -89,12 +95,12 @@ async function refreshRequest(options: RequestInit) {
     return { status: response.status, data: await response.json() };
 }
 
+const storage: AuthenticationStorage = memoryStorage();
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [status, setStatus] = useState<Status>('unresolved');
     let refreshPromise: Promise<AccessTokenData> | null = null;
     let refreshTimeout: ReturnType<typeof setTimeout> | null = null;
-    const storage: AuthenticationStorage = memoryStorage();
 
     const resetStorage = () => {
         storage.set({ access_token: undefined, expires: undefined, expires_at: undefined });
@@ -119,9 +125,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const refresh = async () => {
-        const awaitRefresh = async () => {
-            resetStorage();
+        if (refreshPromise) {
+            return refreshPromise; // Evitar solicitudes duplicadas
+        }
 
+        refreshPromise = (async () => {
             const fetchOptions: RequestInit = {
                 credentials: AUTH_CONFIG.credentials,
             };
@@ -131,18 +139,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (response.status === 401) {
                 setStatus('unauthenticated');
                 resetStorage();
+                refreshPromise = null; // Limpiar la promesa
                 throw response.data;
             }
 
             setCredentials(response.data);
             if (status === 'unresolved') setStatus('authenticated');
 
+            refreshPromise = null; // Limpiar la promesa después de completar
             return response.data;
-        };
-
-        refreshPromise = awaitRefresh().catch(err => {
-            throw err;
-        });
+        })();
 
         return refreshPromise;
     };
@@ -193,6 +199,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         refresh();
+
+        const interval = setInterval(() => {
+            refresh().catch(() => setStatus('unauthenticated'));
+        }, 25 * 60 * 1000);
+
+        return () => clearInterval(interval);
     }, []);
 
 

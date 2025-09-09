@@ -10,6 +10,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { OFFER_UPDATE } from "@/constants/path";
+import { useAuth } from "@/hooks/useAuth";
 import type { Offer } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +25,8 @@ type ExtendedOffer = Offer & {
 
 const OfferTable = () => {
 
+    const { createAuthFetchOptions } = useAuth();
+
     const navigate = useNavigate();
 
     const [offers, setOffers] = useState<ExtendedOffer[]>([]);
@@ -33,9 +36,13 @@ const OfferTable = () => {
     }
 
     useEffect(() => {
-        fetch("http://localhost:3000/api/offer")
-            .then((res) => res.json())
-            .then((data) => setOffers(data));
+        const fetchUsers = async () => {
+            const fetchOptions = await createAuthFetchOptions();
+            const res = await fetch("http://localhost:3000/api/offer", fetchOptions);
+            const data = await res.json();
+            setOffers(data);
+        };
+        fetchUsers();
     }, []);
 
     return (
