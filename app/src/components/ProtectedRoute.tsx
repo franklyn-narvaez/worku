@@ -11,6 +11,7 @@ export function ProtectedRoute({ requiredPermissions = [] }: ProtectedProps) {
 
     if (loading) return <div>Loading...</div>;
 
+    console.log({ permissions, requiredPermissions });
     if (
         requiredPermissions.length > 0 &&
         !requiredPermissions.every((p) => permissions.includes(p))

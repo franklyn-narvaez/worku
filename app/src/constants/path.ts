@@ -1,15 +1,23 @@
-//app
-export const REGISTER  = '/register'
-export const CREATE = '/create';
-export const LOGIN = '/login';
-export const LOGOUT = '/logout';
-export const BASE_USER = `/admin/users`;
-export const BASE_OFFER = `/admin/offers`;
-export const USER_CREATE = BASE_USER+CREATE;
-export const USER_REGISTER = BASE_USER+REGISTER;
-export const USER_UPDATE = `${BASE_USER}/update/:id`;
-export const OFFER_CREATE = BASE_OFFER+CREATE;
-export const OFFER_UPDATE = `${BASE_OFFER}/update/:id`;
+// app
+export const REGISTER  = 'register';
+export const CREATE = 'create';
+export const LOGIN = 'login';
+export const LOGOUT = 'logout';
+
+// Estos NO deben comenzar con "/"
+const ADMIN = 'admin';
+export const BASE_USER = 'users';
+export const ADMIN_USER = `${ADMIN}/${BASE_USER}`;
+export const BASE_STUDENT = 'students';
+export const BASE_OFFER = 'offers';
+export const ADMIN_OFFER = `${ADMIN}/${BASE_OFFER}`;
+
+// CRUD dinámico
+export const USER_CREATE = `${ADMIN_USER}/${CREATE}`;
+export const USER_REGISTER = `${ADMIN_USER}/${REGISTER}`;
+export const USER_UPDATE = `${ADMIN_USER}/update/:id`;
+export const OFFER_CREATE = `${ADMIN_OFFER}/${CREATE}`;
+export const OFFER_UPDATE = `${ADMIN_OFFER}/update/:id`;
 
 //api
 export const API_BASE_URL = 'http://localhost:3000/api';
