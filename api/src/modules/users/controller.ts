@@ -145,6 +145,7 @@ router.get("/me", authenticate, async (req, res) => {
 			role: {
 				select: {
 					id: true,
+					name: true,
 					permission: {
 						select: {
 							permission: {
