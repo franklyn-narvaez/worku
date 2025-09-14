@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 
 import {
+    ADMIN_OFFER,
     BASE_OFFER,
     UPDATE_OFFER,
 } from "@/constants/path";
@@ -52,7 +53,7 @@ export default function UpdateForm({ offer, college, faculty }: UpdateFormProps)
     const navigate = useNavigate();
 
     const handleNavigate = () => {
-        navigate(BASE_OFFER);
+        navigate(ADMIN_OFFER);
     };
 
     const onSubmit: SubmitHandler<UpdateType> = async (data) => {

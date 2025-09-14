@@ -43,7 +43,7 @@ const OfferTable = () => {
             setOffers(data);
         };
         fetchUsers();
-    }, []);
+    }, [createAuthFetchOptions]);
 
     return (
         <Table>
@@ -73,7 +73,7 @@ const OfferTable = () => {
                         <TableCell className="p-4">{new Date(offer.closeDate).toLocaleDateString()}</TableCell>
                         <TableCell className="p-4">{offer.status ? "Activa" : "Inactiva"}</TableCell>
                         <TableCell className="p-4 text-right">
-                            <button onClick={() => handleEdit(offer.id)} className="text-blue-500 hover:underline">Editar</button>
+                            <button type="button" onClick={() => handleEdit(offer.id)} className="text-blue-500 hover:underline">Editar</button>
                         </TableCell>
                     </TableRow>
                 ))}

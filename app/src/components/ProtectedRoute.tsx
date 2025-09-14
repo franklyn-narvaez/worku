@@ -1,17 +1,18 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useUserData } from "@/hooks/useUserData";
+import type { ReactNode } from "react";
 
 type ProtectedProps = {
     requiredPermissions?: string[];
+    children?: ReactNode;
 };
 
-export function ProtectedRoute({ requiredPermissions = [] }: ProtectedProps) {
+export function ProtectedRoute({ requiredPermissions = [], children }: ProtectedProps) {
     const { userData, loading } = useUserData();
     const permissions = userData?.role?.permission?.map(rp => rp.permission.code) || [];
 
     if (loading) return <div>Loading...</div>;
 
-    console.log({ permissions, requiredPermissions });
     if (
         requiredPermissions.length > 0 &&
         !requiredPermissions.every((p) => permissions.includes(p))
@@ -19,5 +20,5 @@ export function ProtectedRoute({ requiredPermissions = [] }: ProtectedProps) {
         return <Navigate to="/403" replace />;
     }
 
-    return <Outlet />;
+    return <>{children || <Outlet />}</>;
 }

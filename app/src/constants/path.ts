@@ -5,7 +5,7 @@ export const LOGIN = 'login';
 export const LOGOUT = 'logout';
 
 // Estos NO deben comenzar con "/"
-const ADMIN = 'admin';
+const ADMIN = '/admin';
 export const BASE_USER = 'users';
 export const ADMIN_USER = `${ADMIN}/${BASE_USER}`;
 export const BASE_STUDENT = 'students';

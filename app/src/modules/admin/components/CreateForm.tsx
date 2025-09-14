@@ -5,7 +5,7 @@ import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateSchema, type CreateType } from '../schemas/Create';
 import { useNavigate } from 'react-router-dom';
-import { BASE_USER, CREATE_USER, GET_COLLEGE, GET_ROLE } from '@/constants/path';
+import { ADMIN_USER, BASE_USER, CREATE_USER, GET_COLLEGE, GET_ROLE } from '@/constants/path';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function CreateForm() {
@@ -29,7 +29,7 @@ export default function CreateForm() {
             setColleges(data);
         };
         fetchColleges();
-    }, []);
+    }, [createAuthFetchOptions]);
 
     useEffect(() => {
         const fetchRoles = async () => {
@@ -39,10 +39,10 @@ export default function CreateForm() {
             setRoles(data);
         };
         fetchRoles();
-    }, []);
+    }, [createAuthFetchOptions]);
 
     const handleNavigate = () => {
-        navigate(BASE_USER);
+        navigate(ADMIN_USER);
     }
 
     const onSubmit: SubmitHandler<CreateType> = async (data) => {

@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 
 import {
+    ADMIN_USER,
     BASE_USER,
     UPDATE_USER,
 } from "@/constants/path";
@@ -44,7 +45,7 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
     const navigate = useNavigate();
 
     const handleNavigate = () => {
-        navigate(BASE_USER);
+        navigate(ADMIN_USER);
     };
 
     const onSubmit: SubmitHandler<UpdateType> = async (data) => {
@@ -110,7 +111,7 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
                         className="p-3 rounded block mb-2 bg-[#D9D9D9] text-slate-900 w-full"
                     >
                         <option value="">Selecciona una escuela</option>
-                        {college && college.map((college) => (
+                        {college?.map((college) => (
                             <option key={college.id} value={college.id}>
                                 {college.name}
                             </option>
@@ -130,7 +131,7 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
                         className="p-3 rounded block mb-2 bg-[#D9D9D9] text-slate-900 w-full"
                     >
                         <option value="">Selecciona un rol</option>
-                        {role && role.map((role) => (
+                        {role?.map((role) => (
                             <option key={role.id} value={role.id}>
                                 {role.name}
                             </option>

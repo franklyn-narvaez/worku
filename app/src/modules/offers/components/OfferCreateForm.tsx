@@ -4,14 +4,14 @@ import type { College, Faculty } from "@prisma/client";
 import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from 'react-router-dom';
-import { BASE_OFFER, CREATE_OFFER, GET_COLLEGE, GET_FACULTY } from '@/constants/path';
+import { ADMIN_OFFER, BASE_OFFER, CREATE_OFFER, GET_COLLEGE, GET_FACULTY } from '@/constants/path';
 import { CreateSchema, type CreateType } from '../schemas/Create';
 import { TextAreaField } from '@/components/TextAreaField';
 import { SelectField } from '@/components/SelectField';
 import { DatePickerField } from '@/components/DatePicker';
 import { useAuth } from '@/hooks/useAuth';
 
-export default function CreateForm() {
+export default function OfferCreateForm() {
 
     const { createAuthFetchOptions } = useAuth();
 
@@ -32,7 +32,7 @@ export default function CreateForm() {
             setColleges(data);
         }
         fetchColleges();
-    }, []);
+    }, [createAuthFetchOptions]);
 
     useEffect(() => {
         const fetchFaculties = async () => {
@@ -42,10 +42,10 @@ export default function CreateForm() {
             setFaculties(data);
         }
         fetchFaculties();
-    }, []);
+    }, [createAuthFetchOptions]);
 
     const handleNavigate = () => {
-        navigate(BASE_OFFER);
+        navigate(ADMIN_OFFER);
     }
 
     const onSubmit: SubmitHandler<CreateType> = async (data) => {
