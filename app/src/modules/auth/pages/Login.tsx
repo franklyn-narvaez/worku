@@ -23,7 +23,7 @@ function Login() {
     }
 
     if (status === 'authenticated') {
-        return <Navigate to="/admin/dashboard" />;
+        return <Navigate to="/dashboard" />;
     }
 
     const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
@@ -35,7 +35,7 @@ function Login() {
 
         if (res.status === 200) {
             toast.success("¡Inicio de sesión exitoso!");
-            navigate("/admin/dashboard");
+            navigate("/dashboard");
         }
     };
 

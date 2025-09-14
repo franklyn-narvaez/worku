@@ -1,4 +1,5 @@
-import { BookOpen, Home, Users, LogOut } from "lucide-react"
+import { NavLink } from "react-router-dom";
+import { LogOut } from "lucide-react";
 
 import {
     Sidebar,
@@ -9,31 +10,15 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Link, NavLink } from "react-router-dom"
-import { useAuth } from "@/hooks/useAuth";
+} from "@/components/ui/sidebar";
 
-// Menu items.
-const items = [
-    {
-        title: "Dashboard",
-        url: "/admin/dashboard",
-        icon: Home,
-    },
-    {
-        title: "Usuarios",
-        url: "/admin/users",
-        icon: Users,
-    },
-    {
-        title: "Ofertas",
-        url: "/admin/offers",
-        icon: BookOpen,
-    },
-]
+import { useSidebarRoutes } from "@/hooks/sideBarRoutes";
+import { useAuth } from "@/hooks/useAuth";
 
 export function AppSidebar() {
     const { logout } = useAuth();
+    const sidebarRoutes = useSidebarRoutes();
+
     return (
         <Sidebar>
             <SidebarContent>
@@ -41,32 +26,48 @@ export function AppSidebar() {
                     <SidebarGroupLabel>WorkU</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {items.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <NavLink to={item.url}>
-                                            <item.icon />
-                                            <span>{item.title}</span>
-                                        </NavLink>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
+                            {sidebarRoutes.map((route) => {
+                                const Icon = route.icon; // 👈 Componente del icono pasado en routeConfig
+                                return (
+                                    <SidebarMenuItem key={route.path}>
+                                        <SidebarMenuButton asChild>
+                                            <NavLink
+                                                to={route.path || "#"}
+                                                className={({ isActive }) =>
+                                                    `flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${isActive
+                                                        ? "bg-slate-200 text-slate-900"
+                                                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                                                    }`
+                                                }
+                                            >
+                                                {Icon && <Icon />}
+                                                <span>{route.title}</span>
+                                            </NavLink>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                );
+                            })}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+
             <div className="p-4 border-t border-slate-200">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton onClick={logout} asChild>
-                            <Link to="/auth/login" className="flex items-center gap-2">
-                                <LogOut />
+                        <SidebarMenuButton asChild>
+                            <NavLink
+                                to="/auth/login"
+                                className="flex items-center gap-2 text-slate-600 hover:text-slate-900"
+                                onClick={logout}
+                            >
+                                <LogOut size={20} />
                                 <span>Cerrar sesión</span>
-                            </Link>
+                            </NavLink>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </div>
         </Sidebar>
-    )
+    );
 }
