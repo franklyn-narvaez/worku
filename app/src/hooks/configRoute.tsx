@@ -5,7 +5,7 @@ import NoPermission from "@/components/NoPermission";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import ProtectedWrapper from "@/components/ProtectedWrapper";
 
-import { ADMIN_OFFER, ADMIN_USER, OFFER_CREATE, OFFER_UPDATE, USER_CREATE, USER_UPDATE } from "@/constants/path";
+import { ADMIN_OFFER, ADMIN_USER, OFFER_CREATE, OFFER_UPDATE, STUDENT_APPLICATIONS, STUDENT_OFFERS, STUDENT_PROFILES, USER_CREATE, USER_UPDATE } from "@/constants/path";
 import CreateForm from "@/modules/admin/components/CreateForm";
 import Users from "@/modules/admin/pages/Users";
 import UserUpdate from "@/modules/admin/pages/UserUpdate";
@@ -14,6 +14,9 @@ import Register from "@/modules/auth/pages/Register";
 import OfferCreateForm from "@/modules/offers/components/OfferCreateForm";
 import Offers from "@/modules/offers/pages/Offers";
 import OfferUpdate from "@/modules/offers/pages/OfferUpdate";
+import MyAplications from "@/modules/students/components/Applications";
+import ProfileForm from "@/modules/students/components/ProfileForm";
+import StudentOffers from "@/modules/students/pages/StudentsOffers";
 import { BookOpen, Home, Users as UsersIcon } from "lucide-react";
 import type { ComponentType, ReactElement } from "react";
 
@@ -87,6 +90,10 @@ export const routeConfig: AppRoute[] = [
           },
           { path: OFFER_CREATE, element: <OfferCreateForm />, requiredPermission: "create_offer" },
           { path: OFFER_UPDATE, element: <OfferUpdate />, requiredPermission: "update_offer" },
+
+          { path: STUDENT_OFFERS, element: <StudentOffers />, requiredPermission: "view_offer", title: "Ofertas Estudiantes", showInSidebar: true, icon: BookOpen },
+          { path: STUDENT_APPLICATIONS, element: <MyAplications />, requiredPermission: "view_applications", title: "Mis Aplicaciones", showInSidebar: true, icon: BookOpen },
+          { path: STUDENT_PROFILES, element: <ProfileForm />, requiredPermission: "create_profile", title: "Perfil", showInSidebar: true, icon: BookOpen },
         ],
       },
     ],

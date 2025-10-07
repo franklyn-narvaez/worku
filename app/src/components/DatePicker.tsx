@@ -4,7 +4,7 @@ import * as React from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useFormContext, type RegisterOptions, Controller } from "react-hook-form";
-import { es } from "react-day-picker/locale";
+import { es, fi } from "react-day-picker/locale";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -47,7 +47,7 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
                         <PopoverTrigger asChild>
                             <Button
                                 variant="outline"
-                                className={`w-1/2 p-3 rounded bg-[#D9D9D9] hover:bg-[#D9D9D9] text-slate-900 border ${!field.value ? "text-muted-foreground" : ""
+                                className={`w-full h-auto p-3 rounded bg-[#D9D9D9] hover:bg-[#D9D9D9] text-slate-900 border ${!field.value ? "text-muted-foreground" : ""
                                     } ${error ? "border-red-500" : "border-slate-700"}`}
                             >
                                 {field.value ? format(field.value, "PPP", { locale: es }) : <span>{placeholder}</span>}
