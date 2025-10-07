@@ -14,7 +14,7 @@ import Register from "@/modules/auth/pages/Register";
 import OfferCreateForm from "@/modules/offers/components/OfferCreateForm";
 import Offers from "@/modules/offers/pages/Offers";
 import OfferUpdate from "@/modules/offers/pages/OfferUpdate";
-import MyAplications from "@/modules/students/components/Applications";
+import MyApplications from "@/modules/students/components/Applications";
 import ProfileForm from "@/modules/students/components/ProfileForm";
 import StudentOffers from "@/modules/students/pages/StudentsOffers";
 import { BookOpen, Home, Users as UsersIcon } from "lucide-react";
@@ -92,7 +92,7 @@ export const routeConfig: AppRoute[] = [
           { path: OFFER_UPDATE, element: <OfferUpdate />, requiredPermission: "update_offer" },
 
           { path: STUDENT_OFFERS, element: <StudentOffers />, requiredPermission: "view_offer", title: "Ofertas Estudiantes", showInSidebar: true, icon: BookOpen },
-          { path: STUDENT_APPLICATIONS, element: <MyAplications />, requiredPermission: "view_applications", title: "Mis Aplicaciones", showInSidebar: true, icon: BookOpen },
+          { path: STUDENT_APPLICATIONS, element: <MyApplications />, requiredPermission: "view_applications", title: "Mis Aplicaciones", showInSidebar: true, icon: BookOpen },
           { path: STUDENT_PROFILES, element: <ProfileForm />, requiredPermission: "create_profile", title: "Perfil", showInSidebar: true, icon: BookOpen },
         ],
       },

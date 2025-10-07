@@ -67,23 +67,12 @@ export default function WorkExperienceForm() {
                         placeholder="Ej: 3001234567"
                     />
 
-                    <div className="grid grid-cols md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
                         <DatePickerField
                             name={`workExperiences.${index}.startDate`}
                             label="Fecha de inicio"
                             rules={{ required: "La fecha de inicio es obligatoria" }}
                         />
-
-                        {/* <FormField
-                            name={`workExperiences.${index}.startDate`}
-                            label="Fecha de inicio"
-                            type="date"
-                        /> */}
-                        {/* <FormField
-                            name={`workExperiences.${index}.endDate`}
-                            label="Fecha de finalización"
-                            type="date"
-                        /> */}
                         <DatePickerField
                             name={`workExperiences.${index}.endDate`}
                             label="Fecha de finalización"
