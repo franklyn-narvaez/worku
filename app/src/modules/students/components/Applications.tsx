@@ -22,7 +22,7 @@ type ExtendedApplication = Application & {
     };
 };
 
-const MyAplications = () => {
+const MyApplications = () => {
     const { createAuthFetchOptions } = useAuth();
     const [applications, setApplications] = useState<ExtendedApplication[]>([]);
 
@@ -99,4 +99,4 @@ const MyAplications = () => {
     );
 };
 
-export default MyAplications;
+export default MyApplications;
