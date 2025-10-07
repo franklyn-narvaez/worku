@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 
 import {
     ADMIN_OFFER,
-    BASE_OFFER,
     UPDATE_OFFER,
 } from "@/constants/path";
 import { SelectField } from "@/components/SelectField";
@@ -76,7 +75,7 @@ export default function UpdateForm({ offer, college, faculty }: UpdateFormProps)
         const response = await fetch(UPDATE_OFFER, fetchOptions);
 
         if (response.ok) {
-            navigate(BASE_OFFER);
+            navigate(ADMIN_OFFER);
         } else {
             const errorData = await response.json();
             console.error("Error creating user:", errorData);

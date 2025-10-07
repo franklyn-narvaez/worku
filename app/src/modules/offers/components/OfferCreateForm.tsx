@@ -4,7 +4,7 @@ import type { College, Faculty } from "@prisma/client";
 import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from 'react-router-dom';
-import { ADMIN_OFFER, BASE_OFFER, CREATE_OFFER, GET_COLLEGE, GET_FACULTY } from '@/constants/path';
+import { ADMIN_OFFER, CREATE_OFFER, GET_COLLEGE, GET_FACULTY } from '@/constants/path';
 import { CreateSchema, type CreateType } from '../schemas/Create';
 import { TextAreaField } from '@/components/TextAreaField';
 import { SelectField } from '@/components/SelectField';
@@ -62,7 +62,7 @@ export default function OfferCreateForm() {
         const response = await fetch(CREATE_OFFER, fetchOptions);
 
         if (response.ok) {
-            navigate(BASE_OFFER);
+            navigate(ADMIN_OFFER);
         } else {
             const errorData = await response.json();
             console.error("Error creating user:", errorData);

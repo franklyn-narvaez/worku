@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 
 import {
     ADMIN_USER,
-    BASE_USER,
     UPDATE_USER,
 } from "@/constants/path";
 import { UpdateSchema, statusEnum, statusLabels, type UpdateType } from "../schemas/Update";
@@ -67,7 +66,7 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
         const response = await fetch(UPDATE_USER, fetchOptions);
 
         if (response.ok) {
-            navigate(BASE_USER);
+            navigate(ADMIN_USER);
         } else {
             const errorData = await response.json();
             console.error("Error creating user:", errorData);

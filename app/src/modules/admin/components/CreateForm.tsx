@@ -5,7 +5,7 @@ import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateSchema, type CreateType } from '../schemas/Create';
 import { useNavigate } from 'react-router-dom';
-import { ADMIN_USER, BASE_USER, CREATE_USER, GET_COLLEGE, GET_ROLE } from '@/constants/path';
+import { ADMIN_USER, CREATE_USER, GET_COLLEGE, GET_ROLE } from '@/constants/path';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function CreateForm() {
@@ -60,7 +60,7 @@ export default function CreateForm() {
         const response = await fetch(CREATE_USER, fetchOptions);
 
         if (response.ok) {
-            navigate(BASE_USER);
+            navigate(ADMIN_USER);
         } else {
             const errorData = await response.json();
             console.error("Error creating user:", errorData);
