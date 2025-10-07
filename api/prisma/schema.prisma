@@ -13,19 +13,21 @@ enum UserStatus {
 }
 
 model User {
-  id          String     @id @default(cuid())
-  name        String
-  lastName    String
-  email       String     @unique
-  password    String
-  createdDate DateTime   @default(now())
-  updatedDate DateTime   @updatedAt
-  collegeId   String?
-  college     College?   @relation(fields: [collegeId], references: [id])
-  roleId      String
-  role        Role?      @relation(fields: [roleId], references: [id])
-  status      UserStatus @default(ACTIVE)
-  Sessions    Sessions[]
+  id             String          @id @default(cuid())
+  name           String
+  lastName       String
+  email          String          @unique
+  password       String
+  createdDate    DateTime        @default(now())
+  updatedDate    DateTime        @updatedAt
+  collegeId      String?
+  college        College?        @relation(fields: [collegeId], references: [id])
+  roleId         String
+  role           Role?           @relation(fields: [roleId], references: [id])
+  status         UserStatus      @default(ACTIVE)
+  Sessions       Sessions[]
+  Application    Application[]
+  StudentProfile StudentProfile?
 }
 
 model Faculty {
@@ -45,18 +47,19 @@ model College {
 }
 
 model Offer {
-  id           String   @id @default(cuid())
+  id           String        @id @default(cuid())
   title        String
   description  String?
   requirements String?
   closeDate    DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  status       Boolean  @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  status       Boolean       @default(true)
   collegeId    String?
-  college      College? @relation(fields: [collegeId], references: [id])
+  college      College?      @relation(fields: [collegeId], references: [id])
   facultyId    String?
-  faculty      Faculty? @relation(fields: [facultyId], references: [id])
+  faculty      Faculty?      @relation(fields: [facultyId], references: [id])
+  Application  Application[]
 }
 
 model Sessions {
@@ -90,4 +93,185 @@ model RolePermission {
   permission   Permission @relation(fields: [permissionId], references: [id])
 
   @@unique([roleId, permissionId], name: "roleId_permissionId")
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Application {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  offerId String
+  offer   Offer  @relation(fields: [offerId], references: [id])
+
+  status ApplicationStatus @default(PENDING)
+
+  appliedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, offerId], name: "user_offer_unique")
+}
+
+model StudentProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Datos básicos
+  studentCode         String
+  lastName            String
+  secondLastName      String?
+  fullName            String
+  gender              String
+  birthDate           DateTime
+  age                 Int
+  birthPlace          String
+  idNumber            String
+  idIssuedPlace       String
+  maritalStatus       MaritalStatus
+  dependents          Int
+  familyPosition      FamilyPosition
+  address             String?
+  stratum             String?
+  neighborhood        String?
+  city                String?
+  department          String?
+  phone               String?
+  mobile              String?
+  email               String
+  emergencyContact    String?
+  emergencyPhone      String?
+  occupationalProfile String
+
+  // Información académica
+  planCode       String
+  planName       String
+  semester       Int
+  campus         String
+  academicPeriod String
+  jornada        String
+
+  // Relaciones
+  educations      Education[]
+  trainings       Training[]
+  languages       LanguageSkill[]
+  systems         SystemSkill[]
+  workExperiences WorkExperience[]
+  availabilities  Availability[]
+
+  isComplete Boolean @default(false)
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  FREE_UNION
+  OTHER
+}
+
+enum FamilyPosition {
+  INDEPENDENT
+  HEAD_OF_FAMILY
+  CHILD
+  SPOUSE
+}
+
+model Education {
+  id        String          @id @default(cuid())
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id])
+
+  level       EducationLevel
+  degreeTitle String
+  endYear     Int
+  institution String
+  city        String
+  semesters   Int?
+}
+
+enum EducationLevel {
+  HIGH_SCHOOL
+  UNIVERSITY
+  OTHER
+}
+
+model Training {
+  id        String          @id @default(cuid())
+  studentId String?
+  student   StudentProfile? @relation(fields: [studentId], references: [id])
+
+  institution String
+  courseName  String
+  duration    String
+  endDate     DateTime
+}
+
+model LanguageSkill {
+  id        String          @id @default(cuid())
+  studentId String?
+  student   StudentProfile? @relation(fields: [studentId], references: [id])
+
+  language   String
+  speakLevel LanguageLevel
+  writeLevel LanguageLevel
+  readLevel  LanguageLevel
+}
+
+enum LanguageLevel {
+  EXCELLENT
+  GOOD
+  FAIR
+}
+
+model SystemSkill {
+  id        String          @id @default(cuid())
+  studentId String?
+  student   StudentProfile? @relation(fields: [studentId], references: [id])
+
+  programName String
+}
+
+model WorkExperience {
+  id        String          @id @default(cuid())
+  studentId String?
+  student   StudentProfile? @relation(fields: [studentId], references: [id])
+
+  companyName  String
+  role         String
+  functions    String
+  achievements String?
+  bossName     String
+  bossRole     String
+  bossPhone    String
+  startDate    DateTime
+  endDate      DateTime?
+}
+
+model Availability {
+  id        String   @id @default(cuid())
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id])
+
+  dayOfWeek DayOfWeek
+  startTime1 String?
+  endTime1   String?  
+  startTime2 String?
+  endTime2   String?
+  startTime3 String?
+  endTime3   String?
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
 }
