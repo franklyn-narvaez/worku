@@ -11,7 +11,7 @@ const router = Router();
 router.get(
 	"",
 	authenticate,
-	authorize(["view_list_offer"]),
+	authorize(["view_list_offer_dependence"]),
 	async (req, res) => {
 		try {
 			const offers = await prisma.offer.findMany({
@@ -42,7 +42,7 @@ router.get(
 router.post(
 	"/create",
 	authenticate,
-	authorize(["create_offer"]),
+	authorize(["create_offer_dependence"]),
 	async (req, res) => {
 		try {
 			const parseData = CreateSchema.safeParse(req.body);
@@ -88,7 +88,7 @@ router.get("/:id", async (req, res) => {
 router.patch(
 	"/update",
 	authenticate,
-	authorize(["update_offer"]),
+	authorize(["update_offer_dependence"]),
 	async (req, res) => {
 		try {
 			const parseData = UpdateSchema.safeParse(req.body);
