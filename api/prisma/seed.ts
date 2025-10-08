@@ -19,6 +19,10 @@ async function main() {
 			name: "Ver Lista Oferta Dependencia",
 		},
 		{ code: "update_offer_dependence", name: "Actualizar Oferta Dependencia" },
+		{
+			code: "view_applications_dependence",
+			name: "Ver Aplicaciones Dependencia",
+		},
 
 		{ code: "view_offer", name: "Ver Oferta" },
 		{ code: "apply_offer", name: "Aplicar Oferta" },
@@ -141,6 +145,7 @@ async function main() {
 		"create_offer_dependence",
 		"view_list_offer_dependence",
 		"update_offer_dependence",
+		"view_applications_dependence",
 	];
 	const dependencePermissions = createPermissions.filter((p) =>
 		codeDependencePermissions.includes(p.code),

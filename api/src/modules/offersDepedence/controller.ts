@@ -30,6 +30,11 @@ router.get(
 							name: true,
 						},
 					},
+					_count: {
+						select: {
+							Application: true,
+						},
+					},
 				},
 			});
 			return res.status(200).json(offers);
@@ -126,6 +131,105 @@ router.patch(
 				return res.status(400).json({ errors: z.treeifyError(error) });
 			}
 			return res.status(500).json({ error: "Error al actualizar la oferta" });
+		}
+	},
+);
+
+router.get(
+	"/:id/applicants",
+	authenticate,
+	authorize(["view_applications_dependence"]),
+	async (req, res) => {
+		const { id } = req.params;
+
+		if (!id) {
+			return res.status(400).json({ error: "ID de oferta no proporcionado" });
+		}
+
+		try {
+			const offer = await prisma.offer.findUnique({
+				where: { id },
+				select: { id: true, title: true },
+			});
+
+			if (!offer) {
+				return res.status(404).json({ error: "Oferta no encontrada" });
+			}
+
+			const applications = await prisma.application.findMany({
+				where: { offerId: id as string },
+				include: {
+					user: {
+						select: {
+							id: true,
+							name: true,
+							lastName: true,
+							email: true,
+							college: {
+								select: { id: true, name: true },
+							},
+						},
+					},
+				},
+				orderBy: { appliedAt: "desc" },
+			});
+
+			// Mapear para devolver solo información relevante
+			const applicants = applications.map((app) => ({
+				applicationId: app.id,
+				status: app.status,
+				appliedAt: app.appliedAt,
+				user: app.user,
+			}));
+
+			return res.status(200).json({
+				offer,
+				applicants,
+			});
+		} catch (error) {
+			console.error(error);
+			return res
+				.status(500)
+				.json({ error: "Error al obtener los usuarios de la oferta" });
+		}
+	},
+);
+
+router.patch(
+	"/:id/status",
+	authenticate,
+	authorize(["view_applications_dependence"]),
+	async (req, res) => {
+		const { id } = req.params;
+		const { status } = req.body;
+
+		const validStatuses = [
+			"UNDER_REVIEW",
+			"CALLED_FOR_INTERVIEW",
+			"APPROVED",
+			"REJECTED",
+		];
+
+		if (!validStatuses.includes(status)) {
+			return res.status(400).json({ error: "Estado inválido" });
+		}
+
+		if (!id) {
+			return res.status(400).json({ error: "Falta el ID de la aplicación" });
+		}
+
+		try {
+			const application = await prisma.application.update({
+				where: { id },
+				data: { status },
+			});
+
+			return res.status(200).json(application);
+		} catch (error) {
+			console.error(error);
+			return res
+				.status(500)
+				.json({ error: "Error al actualizar la aplicación" });
 		}
 	},
 );

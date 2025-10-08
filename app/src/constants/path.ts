@@ -28,9 +28,11 @@ export const OFFER_UPDATE = `${ADMIN_OFFER}/update/:id`;
 export const DEPENDENCE_OFFERS = `${BASE_DEPENDENCE}/${BASE_OFFER}`;
 export const DEPENDENCE_OFFER_CREATE = `${DEPENDENCE_OFFERS}/${CREATE}`;
 export const DEPENDENCE_OFFER_UPDATE = `${DEPENDENCE_OFFERS}/update/:id`;
+export const DEPENDENCE_APPLICANTS = `${DEPENDENCE_OFFERS}/:id/applicants`;
 
 //api
-export const API_BASE_URL = "http://localhost:3000/api";
+export const HOST_API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+export const API_BASE_URL = `${HOST_API}/api`;
 export const BASE_COLLEGE = "/college";
 export const BASE_ROLE = "/role";
 export const BASE_OFFER_API = "/offer";
