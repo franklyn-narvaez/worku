@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import Login from "../Login";
+import LoginForm from "../LoginForm";
 import * as auth from "@/hooks/useAuth";
 import "@testing-library/jest-dom";
 import { toast } from "react-toastify";
@@ -18,36 +18,9 @@ vi.mock("react-router-dom", () => {
 	};
 });
 
-describe("Login Page", () => {
+describe("Login Form", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-	});
-
-	it("should show loading state when status is unresolved", () => {
-		vi.spyOn(auth, "useAuth").mockReturnValue({
-			status: "unresolved",
-			login: vi.fn(),
-			logout: vi.fn(),
-			createAuthFetchOptions: vi.fn(),
-			refresh: vi.fn(),
-		});
-		const { getByText } = render(<Login />);
-		const loadingElement = getByText("Loading...");
-		expect(loadingElement).toBeInTheDocument();
-	});
-
-	it("should redirect to dashboard when authenticated", () => {
-		vi.spyOn(auth, "useAuth").mockReturnValue({
-			status: "authenticated",
-			login: vi.fn(),
-			logout: vi.fn(),
-			createAuthFetchOptions: vi.fn(),
-			refresh: vi.fn(),
-		});
-		const { getByText } = render(<Login />);
-		const redirectElement = getByText("Redirected to /dashboard");
-		expect(redirectElement).toBeInTheDocument();
-		expect(navigateMock).toHaveBeenCalled();
 	});
 
 	it("should render the login form", () => {
@@ -58,7 +31,7 @@ describe("Login Page", () => {
 			createAuthFetchOptions: vi.fn(),
 			refresh: vi.fn(),
 		});
-		const { getByText, getByPlaceholderText } = render(<Login />);
+		const { getByText, getByPlaceholderText } = render(<LoginForm />);
 		const title = getByText("Inicio de sesión");
 		const loginButton = getByText("Iniciar sesión");
 		const emailInput = getByPlaceholderText("Ingresa tu correo electrónico");
@@ -79,7 +52,7 @@ describe("Login Page", () => {
 				createAuthFetchOptions: vi.fn(),
 				refresh: vi.fn(),
 			});
-			render(<Login />);
+			render(<LoginForm />);
 			const emailInput = screen.getByPlaceholderText(
 				"Ingresa tu correo electrónico",
 			);
@@ -128,7 +101,7 @@ describe("Login Page", () => {
 				refresh: vi.fn(),
 			});
 
-			const { getByPlaceholderText, getByText } = render(<Login />);
+			const { getByPlaceholderText, getByText } = render(<LoginForm />);
 
 			const emailInput = getByPlaceholderText("Ingresa tu correo electrónico");
 			const passwordInput = getByPlaceholderText("Ingresa tu contraseña");
@@ -157,7 +130,7 @@ describe("Login Page", () => {
 			refresh: vi.fn(),
 		});
 
-		const { getByPlaceholderText, getByText } = render(<Login />);
+		const { getByPlaceholderText, getByText } = render(<LoginForm />);
 
 		const emailInput = getByPlaceholderText("Ingresa tu correo electrónico");
 		const passwordInput = getByPlaceholderText("Ingresa tu contraseña");
