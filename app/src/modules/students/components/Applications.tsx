@@ -12,6 +12,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import type { Application } from "@prisma/client";
+import { API_BASE_URL } from "@/constants/path";
 
 type ExtendedApplication = Application & {
     offer: {
@@ -30,7 +31,7 @@ const MyApplications = () => {
         const fetchApplications = async () => {
             try {
                 const fetchOptions = await createAuthFetchOptions();
-                const res = await fetch("http://localhost:3000/api/student-offers/applications", fetchOptions);
+                const res = await fetch(`${API_BASE_URL}/student-offers/applications`, fetchOptions);
                 const data = await res.json();
                 setApplications(data);
             } catch (error) {
@@ -43,6 +44,12 @@ const MyApplications = () => {
 
     const formatStatus = (status: ExtendedApplication["status"]) => {
         switch (status) {
+            case "SENT":
+                return "Enviada";
+            case "UNDER_REVIEW":
+                return "En revisión";
+            case "CALLED_FOR_INTERVIEW":
+                return "Citad@ a entrevista";
             case "PENDING":
                 return "Pendiente";
             case "APPROVED":
@@ -51,6 +58,25 @@ const MyApplications = () => {
                 return "Rechazada";
             default:
                 return "Desconocido";
+        }
+    };
+
+    const getStatusColor = (status: ExtendedApplication["status"]) => {
+        switch (status) {
+            case "SENT":
+                return "bg-blue-400";
+            case "UNDER_REVIEW":
+                return "bg-purple-500";
+            case "CALLED_FOR_INTERVIEW":
+                return "bg-indigo-500";
+            case "PENDING":
+                return "bg-yellow-400";
+            case "APPROVED":
+                return "bg-green-500";
+            case "REJECTED":
+                return "bg-red-500";
+            default:
+                return "bg-gray-400";
         }
     };
 
@@ -81,13 +107,9 @@ const MyApplications = () => {
                         </TableCell>
                         <TableCell className="p-4">
                             <span
-                                className={`px-2 py-1 rounded text-white text-xs font-medium
-                  ${application.status === "PENDING"
-                                        ? "bg-yellow-500"
-                                        : application.status === "APPROVED"
-                                            ? "bg-green-500"
-                                            : "bg-red-500"
-                                    }`}
+                                className={`px-2 py-1 rounded text-white text-xs font-medium ${getStatusColor(
+                                    application.status
+                                )}`}
                             >
                                 {formatStatus(application.status)}
                             </span>

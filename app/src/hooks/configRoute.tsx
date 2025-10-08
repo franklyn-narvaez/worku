@@ -5,7 +5,7 @@ import NoPermission from "@/components/NoPermission";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import ProtectedWrapper from "@/components/ProtectedWrapper";
 
-import { ADMIN_OFFER, ADMIN_USER, DEPENDENCE_OFFER_CREATE, DEPENDENCE_OFFER_UPDATE, DEPENDENCE_OFFERS, OFFER_CREATE, OFFER_UPDATE, STUDENT_APPLICATIONS, STUDENT_OFFERS, STUDENT_PROFILES, USER_CREATE, USER_UPDATE } from "@/constants/path";
+import { ADMIN_OFFER, ADMIN_USER, DEPENDENCE_APPLICANTS, DEPENDENCE_OFFER_CREATE, DEPENDENCE_OFFER_UPDATE, DEPENDENCE_OFFERS, OFFER_CREATE, OFFER_UPDATE, STUDENT_APPLICATIONS, STUDENT_OFFERS, STUDENT_PROFILES, USER_CREATE, USER_UPDATE } from "@/constants/path";
 import CreateForm from "@/modules/admin/components/CreateForm";
 import Users from "@/modules/admin/pages/Users";
 import UserUpdate from "@/modules/admin/pages/UserUpdate";
@@ -15,6 +15,7 @@ import OfferCreateForm from "@/modules/offers/components/OfferCreateForm";
 import Offers from "@/modules/offers/pages/Offers";
 import OfferUpdate from "@/modules/offers/pages/OfferUpdate";
 import OfferCreateFormDependence from "@/modules/offersDependence/components/OfferCreateFormDependence";
+import { ViewApplicants } from "@/modules/offersDependence/components/ViewApplicants";
 import OffersDependence from "@/modules/offersDependence/pages/OffersDependence";
 import OfferUpdateDependence from "@/modules/offersDependence/pages/OfferUpdateDependence";
 import MyApplications from "@/modules/students/components/Applications";
@@ -97,6 +98,7 @@ export const routeConfig: AppRoute[] = [
           { path: DEPENDENCE_OFFERS, element: <OffersDependence />, requiredPermission: "view_list_offer_dependence", title: "Ofertas", showInSidebar: true, icon: BookOpen },
           { path: DEPENDENCE_OFFER_CREATE, element: <OfferCreateFormDependence />, requiredPermission: "create_offer_dependence" },
           { path: DEPENDENCE_OFFER_UPDATE, element: <OfferUpdateDependence />, requiredPermission: "update_offer_dependence" },
+          { path: DEPENDENCE_APPLICANTS, element: <ViewApplicants />, requiredPermission: "view_applications_dependence" },
 
           { path: STUDENT_OFFERS, element: <StudentOffers />, requiredPermission: "view_offer", title: "Ofertas Estudiantes", showInSidebar: true, icon: BookOpen },
           { path: STUDENT_APPLICATIONS, element: <MyApplications />, requiredPermission: "view_applications", title: "Mis Aplicaciones", showInSidebar: true, icon: BookOpen },

@@ -15,7 +15,7 @@ type ExtendedOffer = Offer & {
         id: string;
         name: string;
     } | null;
-    userApplicationStatus?: "PENDING" | "APPROVED" | "REJECTED" | null;
+    userApplicationStatus?: "SENT" | "UNDER_REVIEW" | "CALLED_FOR_INTERVIEW" | "PENDING" | "APPROVED" | "REJECTED" | null;
 };
 
 const ListOffers = () => {

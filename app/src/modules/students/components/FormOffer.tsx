@@ -18,7 +18,7 @@ type ExtendedOffer = Offer & {
         id: string;
         name: string;
     } | null;
-    userApplicationStatus?: "PENDING" | "APPROVED" | "REJECTED" | null;
+    userApplicationStatus?: "SENT" | "UNDER_REVIEW" | "CALLED_FOR_INTERVIEW" | "PENDING" | "APPROVED" | "REJECTED" | null;
 };
 
 type ApplyOfferType = {
@@ -97,20 +97,30 @@ export function FormOffer({ offer }: { offer: ExtendedOffer }) {
                                 </CardTitle>
                                 <Badge
                                     className={
-                                        offer.userApplicationStatus === "PENDING"
-                                            ? "bg-yellow-400"
-                                            : offer.userApplicationStatus === "APPROVED"
-                                                ? "bg-green-500"
-                                                : offer.userApplicationStatus === "REJECTED"
-                                                    ? "bg-red-500"
-                                                    : "bg-gray-300"
+                                        offer.userApplicationStatus === "SENT"
+                                            ? "bg-blue-400"
+                                            : offer.userApplicationStatus === "UNDER_REVIEW"
+                                                ? "bg-purple-500"
+                                                : offer.userApplicationStatus === "CALLED_FOR_INTERVIEW"
+                                                    ? "bg-indigo-500"
+                                                    : offer.userApplicationStatus === "PENDING"
+                                                        ? "bg-yellow-400"
+                                                        : offer.userApplicationStatus === "APPROVED"
+                                                            ? "bg-green-500"
+                                                            : offer.userApplicationStatus === "REJECTED"
+                                                                ? "bg-red-500"
+                                                                : "bg-gray-300"
                                     }
                                 >
-                                    {offer.userApplicationStatus === "PENDING" && "Pendiente"}
-                                    {offer.userApplicationStatus === "APPROVED" && "Aprobada"}
-                                    {offer.userApplicationStatus === "REJECTED" && "Rechazada"}
+                                    {offer.userApplicationStatus === "SENT" && "Aplicacion enviada"}
+                                    {offer.userApplicationStatus === "UNDER_REVIEW" && "Aplicacion en revisión"}
+                                    {offer.userApplicationStatus === "CALLED_FOR_INTERVIEW" && "Citada a entrevista"}
+                                    {offer.userApplicationStatus === "PENDING" && "Aplicacion pendiente"}
+                                    {offer.userApplicationStatus === "APPROVED" && "Aplicacion aprobada"}
+                                    {offer.userApplicationStatus === "REJECTED" && "Aplicacion rechazada"}
                                     {!offer.userApplicationStatus && "No aplicado"}
                                 </Badge>
+
                             </div>
 
                             <Badge
