@@ -1,7 +1,7 @@
 import type { College, Faculty, Offer } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { GET_COLLEGE, GET_FACULTY } from "@/constants/path";
+import { API_BASE_URL, GET_COLLEGE, GET_FACULTY } from "@/constants/path";
 import UpdateFormDependence from "../components/UpdateFormDependence";
 
 type OfferWithCollege = Offer & {
@@ -35,7 +35,7 @@ export default function OfferUpdateDependence() {
             .then((data) => setFaculties(data));
     }, []);
     useEffect(() => {
-        fetch(`http://localhost:3000/api/offer/${id}`)
+        fetch(`${API_BASE_URL}/offer/${id}`)
             .then((res) => res.json())
             .then((data) => setOffer(data));
     }, [id]);
