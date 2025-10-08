@@ -65,7 +65,7 @@ export default function OfferCreateFormDependence() {
             navigate(DEPENDENCE_OFFERS);
         } else {
             const errorData = await response.json();
-            console.error("Error creating user:", errorData);
+            console.error("Error creating offer:", errorData);
         }
     }
 

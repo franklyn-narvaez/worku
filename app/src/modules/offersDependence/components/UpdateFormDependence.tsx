@@ -78,7 +78,7 @@ export default function UpdateFormDependence({ offer, college, faculty }: Update
             navigate(DEPENDENCE_OFFERS);
         } else {
             const errorData = await response.json();
-            console.error("Error creating user:", errorData);
+            console.error("Error updating offer:", errorData);
         }
     };
 
@@ -140,7 +140,7 @@ export default function UpdateFormDependence({ offer, college, faculty }: Update
                             className="w-1/2 button-create p-3 rounded-lg"
                             disabled={isSubmitting && !isValid}
                         >
-                            Actualziar oferta
+                            Actualizar oferta
                         </button>
                     </div>
 
