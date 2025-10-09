@@ -166,7 +166,11 @@ router.get(
 							lastName: true,
 							email: true,
 							college: {
-								select: { id: true, name: true },
+								select: {
+									id: true,
+									name: true,
+									faculty: { select: { id: true, name: true } },
+								},
 							},
 						},
 					},
@@ -230,6 +234,80 @@ router.patch(
 			return res
 				.status(500)
 				.json({ error: "Error al actualizar la aplicación" });
+		}
+	},
+);
+
+router.get(
+	"/:id/details",
+	authenticate,
+	authorize(["view_applications_dependence"]),
+	async (req, res) => {
+		const { id } = req.params;
+
+		if (!id) {
+			return res.status(400).json({ error: "ID de oferta no proporcionado" });
+		}
+
+		try {
+			const offer = await prisma.offer.findUnique({
+				where: { id: id as string },
+				select: {
+					id: true,
+					title: true,
+					description: true,
+					requirements: true,
+					status: true,
+					createdAt: true,
+					updatedAt: true,
+					closeDate: true,
+					college: {
+						select: {
+							id: true,
+							name: true,
+							faculty: { select: { id: true, name: true } },
+						},
+					},
+					_count: {
+						select: {
+							Application: true,
+						},
+					},
+					Application: {
+						select: {
+							id: true,
+							appliedAt: true,
+							status: true,
+							user: {
+								select: {
+									id: true,
+									name: true,
+									lastName: true,
+									email: true,
+									StudentProfile: {
+										select: {
+											studentCode: true,
+											fullName: true,
+											planName: true,
+											semester: true,
+											campus: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			});
+
+			if (!offer) {
+				return res.status(404).json({ error: "Offer not found" });
+			}
+
+			return res.status(200).json(offer);
+		} catch (error) {
+			console.error(error);
+			return res.status(500).json({ error: "Failed to fetch offer details" });
 		}
 	},
 );

@@ -12,10 +12,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { API_BASE_URL, DEPENDENCE_APPLICANTS, DEPENDENCE_OFFER_UPDATE } from "@/constants/path";
+import { API_BASE_URL, DEPENDENCE_APPLICANTS, DEPENDENCE_OFFER_DETAILS, DEPENDENCE_OFFER_UPDATE } from "@/constants/path";
 import { useAuth } from "@/hooks/useAuth";
 import type { Offer } from "@prisma/client";
-import { Edit, MoreHorizontal, Users } from "lucide-react";
+import { Edit, MoreHorizontal, Users, NotebookText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -45,6 +45,10 @@ const OfferTable = () => {
     const handleViewApplicants = (id: string) => {
         navigate(DEPENDENCE_APPLICANTS.replace(':id', id));
     };
+
+    const handleViewOfferDetails = (id: string) => {
+        navigate(DEPENDENCE_OFFER_DETAILS.replace(':id', id));
+    }
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -106,6 +110,14 @@ const OfferTable = () => {
                                             onClick={() => handleViewApplicants(offer.id)}
                                         >
                                             <Users className="w-4 h-4 mr-2" /> Ver aplicantes
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="justify-start text-blue-600 hover:bg-slate-50"
+                                            onClick={() => handleViewOfferDetails(offer.id)}
+                                        >
+                                            <NotebookText className="w-4 h-4 mr-2" /> Ver detalles
                                         </Button>
                                     </div>
                                 </PopoverContent>

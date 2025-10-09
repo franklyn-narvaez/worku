@@ -29,6 +29,7 @@ export const DEPENDENCE_OFFERS = `${BASE_DEPENDENCE}/${BASE_OFFER}`;
 export const DEPENDENCE_OFFER_CREATE = `${DEPENDENCE_OFFERS}/${CREATE}`;
 export const DEPENDENCE_OFFER_UPDATE = `${DEPENDENCE_OFFERS}/update/:id`;
 export const DEPENDENCE_APPLICANTS = `${DEPENDENCE_OFFERS}/:id/applicants`;
+export const DEPENDENCE_OFFER_DETAILS = `${DEPENDENCE_OFFERS}/:id/details`;
 
 //api
 export const HOST_API = import.meta.env.VITE_API_URL || "http://localhost:3000";
