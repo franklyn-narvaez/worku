@@ -25,6 +25,7 @@ type Applicant = {
         college?: {
             id: string;
             name: string;
+            faculty?: { id: string; name: string } | null;
         } | null;
     };
 };
@@ -225,71 +226,71 @@ export function ViewApplicants() {
                     {data.applicants.map((applicant) => (
                         <div
                             key={applicant.applicationId}
-                            className="flex justify-between items-center p-3 border border-slate-100 rounded-lg hover:bg-slate-50 transition"
+                            className="border border-slate-300 bg-white shadow-md rounded-xl p-4"
                         >
-                            <div className="flex flex-col">
-                                <p className="font-semibold text-slate-700">
-                                    {applicant.user.name} {applicant.user.lastName}
-                                </p>
-                                <p className="text-sm text-slate-600">{applicant.user.email}</p>
-                                <p className="text-xs text-slate-500">
-                                    {applicant.user.college?.name ?? "Escuela no especificada"}
-                                </p>
-                                <p className="text-xs text-slate-400">
-                                    Aplicó el {formatDate(applicant.appliedAt)}
-                                </p>
-                            </div>
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full">
+                                <div className="flex flex-col text-md">
+                                    <p className="font-semibold text-slate-800 flex items-center gap-1">
+                                        👤 {applicant.user.name} {applicant.user.lastName}
+                                    </p>
+                                    <p className="text-slate-600 text-sm flex items-center gap-1 mt-1">
+                                        ✉️ {applicant.user.email}
+                                    </p>
+                                    <p className="text-slate-600 text-sm flex items-center gap-1 mt-1">
+                                        🏫 {applicant.user.college?.faculty?.name ?? "Facultad no especificada"} - {applicant.user.college?.name ?? "Escuela no especificada"}
+                                    </p>
+                                    <p className="text-slate-500 text-sm flex items-center gap-1 mt-1">
+                                        📅 Aplicó el {formatDate(applicant.appliedAt)}
+                                    </p>
+                                </div>
 
-                            <div className="flex flex-col items-end gap-2">
-                                <Badge className={getStatusColor(applicant.status)}>
-                                    {getStatusLabel(applicant.status)}
-                                </Badge>
+                                <div className="flex flex-col items-end mt-3 sm:mt-0">
+                                    <Badge className={`${getStatusColor(applicant.status)} text-white mb-2`}>
+                                        {getStatusLabel(applicant.status)}
+                                    </Badge>
 
-                                {/* 🔹 Mostrar todos los botones de cambio de estado */}
-                                <div className="flex flex-wrap gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                            handleStatusChange(applicant.applicationId, "UNDER_REVIEW")
-                                        }
-                                        className="border-yellow-400 text-yellow-600 hover:bg-yellow-50"
-                                    >
-                                        En revisión
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                            handleStatusChange(
-                                                applicant.applicationId,
-                                                "CALLED_FOR_INTERVIEW"
-                                            )
-                                        }
-                                        className="border-indigo-400 text-indigo-600 hover:bg-indigo-50"
-                                    >
-                                        Entrevista
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                            handleStatusChange(applicant.applicationId, "APPROVED")
-                                        }
-                                        className="border-green-500 text-green-600 hover:bg-green-50"
-                                    >
-                                        Aprobar
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                            handleStatusChange(applicant.applicationId, "REJECTED")
-                                        }
-                                        className="border-red-500 text-red-600 hover:bg-red-50"
-                                    >
-                                        Rechazar
-                                    </Button>
+                                    <div className="flex flex-wrap justify-end gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                handleStatusChange(applicant.applicationId, "UNDER_REVIEW")
+                                            }
+                                            className="border-yellow-400 text-yellow-600 hover:bg-yellow-50"
+                                        >
+                                            En revisión
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                handleStatusChange(applicant.applicationId, "CALLED_FOR_INTERVIEW")
+                                            }
+                                            className="border-indigo-400 text-indigo-600 hover:bg-indigo-50"
+                                        >
+                                            Entrevista
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                handleStatusChange(applicant.applicationId, "APPROVED")
+                                            }
+                                            className="border-green-500 text-green-600 hover:bg-green-50"
+                                        >
+                                            Aprobar
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                handleStatusChange(applicant.applicationId, "REJECTED")
+                                            }
+                                            className="border-red-500 text-red-600 hover:bg-red-50"
+                                        >
+                                            Rechazar
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

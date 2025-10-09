@@ -7,7 +7,9 @@ import ProtectedWrapper from "@/components/ProtectedWrapper";
 import {
 	ADMIN_OFFER,
 	ADMIN_USER,
+	DEPENDENCE_APPLICANTS,
 	DEPENDENCE_OFFER_CREATE,
+	DEPENDENCE_OFFER_DETAILS,
 	DEPENDENCE_OFFER_UPDATE,
 	DEPENDENCE_OFFERS,
 	OFFER_CREATE,
@@ -27,6 +29,8 @@ import OfferCreateForm from "@/modules/offers/components/OfferCreateForm";
 import Offers from "@/modules/offers/pages/Offers";
 import OfferUpdate from "@/modules/offers/pages/OfferUpdate";
 import OfferCreateFormDependence from "@/modules/offersDependence/components/OfferCreateFormDependence";
+import { ViewApplicants } from "@/modules/offersDependence/components/ViewApplicants";
+import ViewOfferDetails from "@/modules/offersDependence/components/ViewOfferDetails";
 import OffersDependence from "@/modules/offersDependence/pages/OffersDependence";
 import OfferUpdateDependence from "@/modules/offersDependence/pages/OfferUpdateDependence";
 import MyApplications from "@/modules/students/components/Applications";
@@ -157,7 +161,16 @@ export const routeConfig: AppRoute[] = [
 						element: <OfferUpdateDependence />,
 						requiredPermission: "update_offer_dependence",
 					},
-
+					{
+						path: DEPENDENCE_APPLICANTS,
+						element: <ViewApplicants />,
+						requiredPermission: "view_applications_dependence",
+					},
+					{
+						path: DEPENDENCE_OFFER_DETAILS,
+						element: <ViewOfferDetails />,
+						requiredPermission: "view_applications_dependence",
+					},
 					{
 						path: STUDENT_OFFERS,
 						element: <StudentOffers />,
