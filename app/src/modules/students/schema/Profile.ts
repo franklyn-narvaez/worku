@@ -1,12 +1,13 @@
-// src/modules/student/schemas/StudentProfile.ts
-import { z } from "zod";
+import type { z } from "zod";
+import { AvailabilityArraySchema } from "./Availability";
 import { BasicDataSchema } from "./BasicData";
 import { EducationsArraySchema } from "./Education";
-import { TrainingsArraySchema } from "./Training";
 import { LanguageArraySchema } from "./Language";
+import { PhotoSchema } from "./Photo";
 import { SystemSkillsArraySchema } from "./SystemSkill";
+import { TrainingsArraySchema } from "./Training";
 import { WorkExperiencesArraySchema } from "./WorkExperience";
-import { AvailabilityArraySchema } from "./Availability";
+import { GradesSchema } from "./Grades";
 
 export const ProfileSchema = BasicDataSchema.extend({
 	educations: EducationsArraySchema,
@@ -15,6 +16,8 @@ export const ProfileSchema = BasicDataSchema.extend({
 	systems: SystemSkillsArraySchema,
 	workExperiences: WorkExperiencesArraySchema,
 	availabilities: AvailabilityArraySchema,
+	photo: PhotoSchema,
+	grades: GradesSchema
 });
 
 export type ProfileType = z.infer<typeof ProfileSchema>;

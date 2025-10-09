@@ -9,6 +9,7 @@ import roleRouter from "./modules/roles/controller";
 import offerRouter from "./modules/offers/controller"; // Assuming you have an offerRouter defined
 import offersDependenceRouter from "./modules/offersDepedence/controller"; // New import for offers dependence
 import studentOfferRouter from "./modules/studentOffers/controller"; // New import for student offers
+import path from 'path';
 
 export async function createApp() {
 	const app = express();
@@ -22,6 +23,10 @@ export async function createApp() {
 			credentials: true, // si usas cookies o headers autenticados
 		}),
 	);
+  
+      app.use('/uploads', (req, res, next) => {
+        next();
+    }, express.static(path.join(process.cwd(), 'uploads')));
 
 	app.use("/ping", (req, res) => {
 		res.send("pong");

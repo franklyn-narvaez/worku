@@ -168,6 +168,8 @@ model StudentProfile {
   availabilities  Availability[]
 
   isComplete Boolean @default(false)
+  Photo      String
+  Grades     String
 }
 
 enum MaritalStatus {
@@ -185,7 +187,7 @@ enum FamilyPosition {
 }
 
 model Education {
-  id        String          @id @default(cuid())
+  id        String         @id @default(cuid())
   studentId String
   student   StudentProfile @relation(fields: [studentId], references: [id])
 
@@ -256,13 +258,13 @@ model WorkExperience {
 }
 
 model Availability {
-  id        String   @id @default(cuid())
+  id        String         @id @default(cuid())
   studentId String
   student   StudentProfile @relation(fields: [studentId], references: [id])
 
-  dayOfWeek DayOfWeek
+  dayOfWeek  DayOfWeek
   startTime1 String?
-  endTime1   String?  
+  endTime1   String?
   startTime2 String?
   endTime2   String?
   startTime3 String?
