@@ -6,6 +6,7 @@ import { LanguageArraySchema } from "./LanguageSchema";
 import { SystemSkillsArraySchema } from "./SystemSkillSchema";
 import { WorkExperiencesArraySchema } from "./WorkExperienceSchema";
 import { AvailabilityArraySchema } from "./AvailabilitySchema";
+import { PhotoSchema } from "./PhotoSchema";
 
 export const ProfileSchema = BasicDataSchema.extend({
 	educations: EducationsArraySchema,
@@ -14,6 +15,7 @@ export const ProfileSchema = BasicDataSchema.extend({
 	systems: SystemSkillsArraySchema,
 	workExperiences: WorkExperiencesArraySchema,
 	availabilities: AvailabilityArraySchema,
+	photo: PhotoSchema,
 });
 
 export type ProfileType = z.infer<typeof ProfileSchema>;

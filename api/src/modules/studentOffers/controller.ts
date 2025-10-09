@@ -2,9 +2,10 @@ import { prisma } from "@/libs/db";
 import { Router } from "express";
 import { authenticate } from "@/middlewares/authenticate";
 import { authorize } from "@/middlewares/authorize";
-import { ProfileSchema } from "./ProfileSchema";
 import z from "zod";
 import { buildNestedCreate } from "@/utils/PrismaHelper";
+import { uploadPhoto } from "@/middlewares/upload";
+import { ProfileSchema } from "./schemas/ProfileSchema";
 
 const router = Router();
 
@@ -113,9 +114,31 @@ router.post(
 	"/profile",
 	authenticate,
 	authorize(["create_profile"]),
+	uploadPhoto.single('photo'),
 	async (req, res) => {
 		try {
-			const parsedProfile = ProfileSchema.safeParse(req.body);
+  		console.log("req.file:", req.file);
+  		console.log("req.body:", req.body);
+
+
+			if (!req.file) {
+				return res.status(400).json({
+					message: "La imagen es obligatoria",
+				});
+			}
+
+			let parsedRequestData;
+			try {
+				parsedRequestData = JSON.parse(req.body.profileData);
+			} catch (error) {
+				return res.status(400).json({
+					message: "Datos del perfil inválidos",
+				});
+			}
+
+			parsedRequestData.photo = req.file.path;
+
+			const parsedProfile = ProfileSchema.safeParse(parsedRequestData);
 
 			if (!parsedProfile.success) {
 				console.log("Validation errors:", parsedProfile.error);
@@ -132,11 +155,13 @@ router.post(
 				systems,
 				workExperiences,
 				availabilities,
+				photo,
 				...basicData
 			} = parsedProfile.data;
 
 			const createData: any = {
 				...basicData,
+				Photo: photo,
 				isComplete: true,
 				user: { connect: { id: req.user.id } },
 			};
@@ -150,7 +175,6 @@ router.post(
 				availabilities,
 			};
 
-			// Crear relaciones dinámicamente
 			for (const [key, value] of Object.entries(nestedRelations)) {
 				const nested = buildNestedCreate(value as any[]);
 				if (nested) createData[key] = nested;

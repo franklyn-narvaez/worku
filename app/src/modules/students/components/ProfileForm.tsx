@@ -1,298 +1,323 @@
-import { FormProvider, useForm, type SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-
-import {
-    ProfileSchema,
-    type ProfileType,
-} from "../schema/Profile";
-
-import BasicForm from "./BasicForm";
-import EducationForm from "./EducationForm";
-import TrainingForm from "./TrainingForm";
-import LanguageForm from "./LanguageForm";
-import { SystemSkillsForm } from "./SystemSkillsForm";
-import WorkExperienceForm from "./WorkExperienceForm";
-
-import { STUDENT_PROFILE, UPDATE_PROFILE, VIEW_PROFILE } from "@/constants/path";
-import { useAuth } from "@/hooks/useAuth";
-import { toast } from "react-toastify";
-import AvailabilityForm from "./AvailabilityForm";
-import type { DayOfWeekType } from "../schema/Availability";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useState } from 'react';
+import { FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { STUDENT_PROFILE, UPDATE_PROFILE, VIEW_PROFILE } from '@/constants/path';
+import { useAuth } from '@/hooks/useAuth';
+import type { DayOfWeekType } from '../schema/Availability';
+import { ProfileSchema, type ProfileType } from '../schema/Profile';
+import AvailabilityForm from './AvailabilityForm';
+import BasicForm from './BasicForm';
+import EducationForm from './EducationForm';
+import LanguageForm from './LanguageForm';
+import PhotoForm from './PhotoForm';
+import { SystemSkillsForm } from './SystemSkillsForm';
+import TrainingForm from './TrainingForm';
+import WorkExperienceForm from './WorkExperienceForm';
 
 const days = [
-    { value: "MONDAY", label: "Lunes" },
-    { value: "TUESDAY", label: "Martes" },
-    { value: "WEDNESDAY", label: "Miércoles" },
-    { value: "THURSDAY", label: "Jueves" },
-    { value: "FRIDAY", label: "Viernes" },
-    { value: "SATURDAY", label: "Sábado" },
-    { value: "SUNDAY", label: "Domingo" },
+	{ value: 'MONDAY', label: 'Lunes' },
+	{ value: 'TUESDAY', label: 'Martes' },
+	{ value: 'WEDNESDAY', label: 'Miércoles' },
+	{ value: 'THURSDAY', label: 'Jueves' },
+	{ value: 'FRIDAY', label: 'Viernes' },
+	{ value: 'SATURDAY', label: 'Sábado' },
+	{ value: 'SUNDAY', label: 'Domingo' },
 ];
 
-const initialAvailability = days.map((day) => ({
-    dayOfWeek: day.value as DayOfWeekType,
-    startTime1: "", endTime1: "",
-    startTime2: "", endTime2: "",
-    startTime3: "", endTime3: "",
+const initialAvailability = days.map(day => ({
+	dayOfWeek: day.value as DayOfWeekType,
+	startTime1: '',
+	endTime1: '',
+	startTime2: '',
+	endTime2: '',
+	startTime3: '',
+	endTime3: '',
 }));
 
-function mergeAvailabilityData(
-    availabilities: any[],
-    baseAvailability: typeof initialAvailability
-) {
-    return baseAvailability.map((day) => {
-        const match = availabilities.find(
-            (a) => a.dayOfWeek === day.dayOfWeek
-        );
-        return {
-            ...day,
-            ...match,
-        };
-    });
+const steps = [
+	{ title: 'Datos Básicos', component: <BasicForm /> },
+	{ title: 'Educación', component: <EducationForm /> },
+	{ title: 'Capacitaciones', component: <TrainingForm /> },
+	{ title: 'Idiomas', component: <LanguageForm /> },
+	{ title: 'Conocimientos en Sistemas', component: <SystemSkillsForm /> },
+	{ title: 'Experiencia Laboral', component: <WorkExperienceForm /> },
+	{ title: 'Disponibilidad', component: <AvailabilityForm /> },
+	{ title: 'Foto', component: <PhotoForm /> },
+];
+
+function mergeAvailabilityData(availabilities: any[], baseAvailability: typeof initialAvailability) {
+	return baseAvailability.map(day => {
+		const match = availabilities.find(a => a.dayOfWeek === day.dayOfWeek);
+		return {
+			...day,
+			...match,
+		};
+	});
 }
 
 export default function ProfileForm() {
-    const navigate = useNavigate();
+	const navigate = useNavigate();
 
-    const { createAuthFetchOptions } = useAuth();
+	const { createAuthFetchOptions } = useAuth();
 
-    const [step, setStep] = useState(0);
+	const [step, setStep] = useState(0);
 
-    const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(false);
 
-    const [profileId, setProfileId] = useState<string | null>(null);
+	const [profileId, setProfileId] = useState<string | null>(null);
 
-    const methods = useForm<ProfileType>({
-        resolver: zodResolver(ProfileSchema),
-        defaultValues: {
-            educations: [],
-            trainings: [],
-            languages: [],
-            systems: [],
-            workExperiences: [],
-            availabilities: initialAvailability,
-        },
-        mode: "onSubmit",
-    });
+	const methods = useForm<ProfileType>({
+		resolver: zodResolver(ProfileSchema),
+		defaultValues: {
+			educations: [],
+			trainings: [],
+			languages: [],
+			systems: [],
+			workExperiences: [],
+			availabilities: initialAvailability,
+		},
+		mode: 'onSubmit',
+	});
 
-    useEffect(() => {
-        console.log(methods.formState.errors);
-    })
+	const totalSteps = steps.length;
 
-    const steps = [
-        { title: "Datos Básicos", component: <BasicForm /> },
-        { title: "Educación", component: <EducationForm /> },
-        { title: "Capacitaciones", component: <TrainingForm /> },
-        { title: "Idiomas", component: <LanguageForm /> },
-        { title: "Conocimientos en Sistemas", component: <SystemSkillsForm /> },
-        { title: "Experiencia Laboral", component: <WorkExperienceForm /> },
-        { title: "Disponibilidad", component: <AvailabilityForm /> },
-    ];
+	useEffect(() => {
+		const fetchProfile = async () => {
+			try {
+				const authOptions = await createAuthFetchOptions();
+				const response = await fetch(VIEW_PROFILE, authOptions);
 
-    const totalSteps = steps.length;
+				if (response.ok) {
+					const data = await response.json();
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const authOptions = await createAuthFetchOptions();
-                const response = await fetch(VIEW_PROFILE, authOptions);
+					// Guardamos el ID para saber si debemos hacer PUT
+					setProfileId(data.id);
 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Perfil cargado:", data);
+					const mergedAvailabilities = mergeAvailabilityData(data.availabilities || [], initialAvailability);
 
-                    // Guardamos el ID para saber si debemos hacer PUT
-                    setProfileId(data.id);
+					methods.reset({
+						...data,
+						educations: data.educations || [],
+						trainings: data.trainings || [],
+						languages: data.languages || [],
+						systems: (data.systems || []).map((s: any) => ({
+							programName: s.programName,
+						})),
+						workExperiences: data.workExperiences || [],
+						availabilities: mergedAvailabilities,
+					});
+				} else if (response.status === 404) {
+					console.log('No hay perfil creado aún');
+				} else {
+					const errorData = await response.json();
+					console.error('Error al cargar perfil:', errorData);
+					toast.error('Error al cargar el perfil existente.');
+				}
+			} catch (error) {
+				console.error('Error fetching profile:', error);
+				toast.error('Error al conectar con el servidor.');
+			} finally {
+				setLoading(false);
+			}
+		};
 
-                    const mergedAvailabilities = mergeAvailabilityData(
-                        data.availabilities || [],
-                        initialAvailability
-                    );
+		fetchProfile();
+	}, [createAuthFetchOptions, methods.reset]);
 
-                    methods.reset({
-                        ...data,
-                        educations: data.educations || [],
-                        trainings: data.trainings || [],
-                        languages: data.languages || [],
-                        systems: (data.systems || []).map((s: any) => ({
-                            programName: s.programName,
-                        })),
-                        workExperiences: data.workExperiences || [],
-                        availabilities: mergedAvailabilities,
-                    });
-                } else if (response.status === 404) {
-                    console.log("No hay perfil creado aún");
-                } else {
-                    const errorData = await response.json();
-                    console.error("Error al cargar perfil:", errorData);
-                    toast.error("Error al cargar el perfil existente.");
-                }
-            } catch (error) {
-                console.error("Error fetching profile:", error);
-                toast.error("Error al conectar con el servidor.");
-            } finally {
-                setLoading(false);
-            }
-        };
+	const onSubmit: SubmitHandler<ProfileType> = async profileData => {
+		const educations = profileData.educations.map(edu => ({
+			...edu,
+			semesters: edu.semesters ? Number(edu.semesters) : null,
+		}));
 
-        fetchProfile();
-    }, [createAuthFetchOptions, methods.reset]);
+		profileData = { ...profileData, educations };
 
-    const onSubmit: SubmitHandler<ProfileType> = async (data) => {
-        const educations = data.educations.map((edu) => ({
-            ...edu,
-            semesters: edu.semesters ? Number(edu.semesters) : null,
-        }));
+		const authOptions = await createAuthFetchOptions();
 
-        data = { ...data, educations };
+		const isUpdating = !!profileId;
+		const url = isUpdating ? UPDATE_PROFILE : STUDENT_PROFILE;
+		const method = isUpdating ? 'PATCH' : 'POST';
 
-        const authOptions = await createAuthFetchOptions();
+		//files
+		const formData = new FormData();
+		let photoFile: File | null = null;
 
-        const isUpdating = !!profileId;
-        const url = isUpdating ? UPDATE_PROFILE : STUDENT_PROFILE;
-        const method = isUpdating ? "PATCH" : "POST";
+		if (profileData.photo instanceof FileList && profileData.photo.length > 0) {
+			photoFile = profileData.photo[0];
+		} else if (profileData.photo instanceof File) {
+			photoFile = profileData.photo;
+		}
 
-        const fetchOptions = {
-            ...authOptions,
-            method,
-            headers: {
-                "Content-Type": "application/json",
-                ...(authOptions.headers || {}),
-            },
-            body: JSON.stringify(data),
-        };
+		if (photoFile) {
+			formData.append('photo', photoFile);
+			console.log('Archivo agregado al FormData:', photoFile.name);
+		} else {
+			console.log('No se encontró archivo válido');
+		}
 
-        try {
-            const response = await fetch(url, fetchOptions);
+		const { photo, ...dataWithoutPhoto } = profileData;
+		formData.append('profileData', JSON.stringify(dataWithoutPhoto));
 
-            if (response.ok) {
-                toast.success(
-                    isUpdating
-                        ? "Perfil actualizado exitosamente 🎉"
-                        : "Perfil creado exitosamente 🎉"
-                );
-                navigate("/dashboard");
-            } else {
-                const errorData = await response.json();
-                console.error("Error guardando perfil:", errorData);
-                toast.error("Ocurrió un error al guardar el perfil.");
-            }
-        } catch (error) {
-            console.error("Error en la solicitud:", error);
-            toast.error("Error al conectar con el servidor.");
-        }
-    };
+		const fetchOptions = {
+			...authOptions,
+			method,
+			body: formData,
+		};
 
-    /** Avanzar al siguiente paso validando la sección actual */
-    const handleNext = async () => {
-        setStep((prev) => {
-            if (prev === 0) {
-                methods.trigger(
-                    [
-                        "studentCode", "lastName", "secondLastName", "fullName",
-                        "planCode", "planName", "semester", "campus", "academicPeriod", "jornada",
-                        "gender", "birthDate", "age", "birthPlace",
-                        "idNumber", "idIssuedPlace", "maritalStatus", "dependents", "familyPosition",
-                        "address", "stratum", "neighborhood", "city", "department",
-                        "email", "phone", "mobile",
-                        "emergencyContact", "emergencyPhone", "occupationalProfile"
-                    ]
-                );
-            }
-            if (Object.keys(methods.formState.errors).length > 0) {
-                toast.error("Por favor, corrija los errores antes de continuar.");
-                return prev;
-            }
+		try {
+			const response = await fetch(url, fetchOptions);
 
-            return Math.min(prev + 1, totalSteps - 1)
-        });
-    };
+			if (response.ok) {
+				toast.success(isUpdating ? 'Perfil actualizado exitosamente 🎉' : 'Perfil creado exitosamente 🎉');
+				navigate('/dashboard');
+			} else {
+				const errorData = await response.json();
+				console.error('Error guardando perfil:', errorData);
+				toast.error('Ocurrió un error al guardar el perfil.');
+			}
+		} catch (error) {
+			console.error('Error en la solicitud:', error);
+			toast.error('Error al conectar con el servidor.');
+		}
+	};
 
-    const handlePrev = () => {
-        setStep((prev) => Math.max(prev - 1, 0));
-    };
+	const handleNext = async () => {
+		const basicFields: (keyof ProfileType)[] = [
+			'studentCode',
+			'lastName',
+			'secondLastName',
+			'fullName',
+			'planCode',
+			'planName',
+			'semester',
+			'campus',
+			'academicPeriod',
+			'jornada',
+			'gender',
+			'birthDate',
+			'age',
+			'birthPlace',
+			'idNumber',
+			'idIssuedPlace',
+			'maritalStatus',
+			'dependents',
+			'familyPosition',
+			'address',
+			'stratum',
+			'neighborhood',
+			'city',
+			'department',
+			'email',
+			'phone',
+			'mobile',
+			'emergencyContact',
+			'emergencyPhone',
+			'occupationalProfile',
+		];
 
-    if (loading) {
-        return <p className="text-center text-lg">Cargando perfil...</p>;
-    }
+		let fieldsToValidate: (keyof ProfileType)[] = [];
 
-    return (
-        <div className="min-h-screen w-full overflow-y-auto">
-            <div className="max-w-7xl mx-auto py-8 px-4">
-                <FormProvider {...methods}>
-                    <form
-                        onSubmit={methods.handleSubmit(onSubmit)}
-                        className="bg-white p-6 rounded-lg shadow-lg space-y-8"
-                    >
-                        {/* Barra de progreso */}
-                        <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
-                            <div
-                                className="bg-green-500 h-3 rounded-full transition-all duration-300"
-                                style={{
-                                    width: `${((step + 1) / totalSteps) * 100}%`,
-                                }}
-                            ></div>
-                        </div>
+		if (step === 0) fieldsToValidate = basicFields;
+		if (step === 7) fieldsToValidate = ['photo'];
 
-                        {/* Header de pasos */}
-                        <div className="flex justify-between mb-6">
-                            {steps.map((s, index) => (
-                                <div
-                                    key={s.title}
-                                    className={`flex-1 text-center text-sm font-medium transition-colors duration-200
-                                        ${index === step
-                                            ? "text-green-600 font-bold"
-                                            : "text-gray-400"
-                                        }
+		if (fieldsToValidate.length > 0) {
+			const valid = await methods.trigger(fieldsToValidate, { shouldFocus: true });
+			if (!valid) {
+				if (step === 7) {
+					toast.error('Por favor selecciona una imagen válida antes de continuar.');
+				} else {
+					toast.error('Corrige los errores antes de continuar.');
+				}
+				return;
+			}
+		}
+
+		setStep(prev => Math.min(prev + 1, totalSteps - 1));
+	};
+
+	const handlePrev = () => {
+		setStep(prev => Math.max(prev - 1, 0));
+	};
+
+	if (loading) {
+		return <p className="text-center text-lg">Cargando perfil...</p>;
+	}
+
+	return (
+		<div className="min-h-screen w-full overflow-y-auto">
+			<div className="max-w-7xl mx-auto py-8 px-4">
+				<FormProvider {...methods}>
+					<form onSubmit={methods.handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow-lg space-y-8">
+						{/* Barra de progreso */}
+						<div className="w-full bg-gray-200 rounded-full h-3 mb-6">
+							<div
+								className="bg-green-500 h-3 rounded-full transition-all duration-300"
+								style={{
+									width: `${((step + 1) / totalSteps) * 100}%`,
+								}}
+							></div>
+						</div>
+
+						{/* Header de pasos */}
+						<div className="flex justify-between mb-6">
+							{steps.map((s, index) => (
+								<div
+									key={s.title}
+									className={`flex-1 text-center text-sm font-medium transition-colors duration-200
+                                        ${index === step ? 'text-green-600 font-bold' : 'text-gray-400'}
                                     `}
-                                >
-                                    {s.title}
-                                </div>
-                            ))}
-                        </div>
+								>
+									{s.title}
+								</div>
+							))}
+						</div>
 
-                        {/* Contenido dinámico del paso actual */}
-                        <div className="p-4 border rounded-lg shadow-sm bg-gray-50">
-                            {steps[step].component}
-                        </div>
+						{/* Contenido dinámico del paso actual */}
+						<div className="p-4 border rounded-lg shadow-sm bg-gray-50">{steps[step].component}</div>
 
-                        {/* Botones de navegación */}
-                        <div className="flex justify-between gap-x-2 mt-6">
-                            {step > 0 && (
-                                <button
-                                    type="button"
-                                    onClick={handlePrev}
-                                    className="w-1/3 bg-gray-300 text-black p-3 rounded-lg hover:bg-gray-400 transition"
-                                >
-                                    Atrás
-                                </button>
-                            )}
+						{/* Botones de navegación */}
+						<div className="flex justify-between gap-x-10 mt-6">
+							{step > 0 && (
+								<button
+									type="button"
+									onClick={handlePrev}
+									className="w-1/2 bg-gray-300 text-black p-3 rounded-lg hover:bg-gray-400 transition"
+								>
+									Atrás
+								</button>
+							)}
 
-                            {step < totalSteps - 1 && (
-                                <button
-                                    type="button"
-                                    onClick={handleNext}
-                                    className="w-2/3 bg-[#2c2c2c] text-white p-3 rounded-lg hover:bg-green-600 transition"
-                                >
-                                    Siguiente
-                                </button>
-                            )}
+							{step < totalSteps - 1 && (
+								<button
+									type="button"
+									onClick={handleNext}
+									className="w-1/2 bg-[#2c2c2c] text-white p-3 rounded-lg hover:bg-gray-700 transition"
+								>
+									Siguiente
+								</button>
+							)}
 
-                            {step === totalSteps - 1 && (
-                                <button
-                                    type="submit"
-                                    className="w-2/3 bg-[#2c2c2c] text-white p-3 rounded-lg hover:bg-green-600 transition"
-                                    disabled={methods.formState.isSubmitting}
-                                >
-                                    {profileId ? "Actualizar Datos" : "Crear Perfil"}
-                                </button>
-                            )}
-                        </div>
-                    </form>
-                </FormProvider>
-            </div>
-        </div>
-    );
+							{step === totalSteps - 1 && (
+								<button
+									type="submit"
+									onClick={e => {
+										console.log('Submit button clicked');
+										console.log('Form valid:', methods.formState.isValid);
+										console.log('Form errors:', methods.formState.errors);
+										console.log('Current photo value:', methods.getValues('photo'));
+									}}
+									className="w-2/3 bg-[#2c2c2c] text-white p-3 rounded-lg hover:bg-green-600 transition"
+									disabled={methods.formState.isSubmitting}
+								>
+									{profileId ? 'Actualizar Datos' : 'Crear Perfil'}
+								</button>
+							)}
+						</div>
+					</form>
+				</FormProvider>
+			</div>
+		</div>
+	);
 }
