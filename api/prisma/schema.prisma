@@ -166,6 +166,7 @@ model StudentProfile {
 
   isComplete Boolean @default(false)
   Photo      String
+  Grades     String
 }
 
 enum MaritalStatus {

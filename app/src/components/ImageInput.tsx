@@ -54,6 +54,17 @@ export const FileInputField: React.FC<FileInputProps> = ({
 	}, [watchedValue]);
 
 	const renderContent = () => {
+		if (typeof watchedValue === 'string' && watchedValue) {
+			return (
+				<figure className="flex flex-col items-center justify-center w-full h-full">
+					<div className="w-full h-64 flex items-center justify-center overflow-hidden">
+						<img src={watchedValue} alt="Imagen actual" className="object-contain max-w-full max-h-full" />
+					</div>
+					<figcaption className="text-sm text-gray-500 my-2">Imagen actual</figcaption>
+				</figure>
+			);
+		}
+
 		if (getFiles.length > 0) {
 			if (preview && !multiple) {
 				const file = getFiles[0];

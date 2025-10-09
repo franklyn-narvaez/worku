@@ -8,10 +8,10 @@ import collegeRouter from './modules/colleges/controller';
 import roleRouter from './modules/roles/controller';
 import offerRouter from './modules/offers/controller'; // Assuming you have an offerRouter defined
 import studentOfferRouter from './modules/studentOffers/controller'; // New import for student offers
+import path from 'path';
 
 export async function createApp() {
     const app = express();
-
 
     app.use(morgan('dev'))
     app.use(express.json());
@@ -20,6 +20,11 @@ export async function createApp() {
         origin: 'http://localhost:5173',
         credentials: true // si usas cookies o headers autenticados
     }));
+
+    // static server
+    app.use('/uploads', (req, res, next) => {
+        next();
+    }, express.static(path.join(process.cwd(), 'uploads')));
 
 
     app.use('/ping', (req, res) => {

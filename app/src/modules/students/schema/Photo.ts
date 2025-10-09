@@ -1,3 +1,4 @@
+// Photo.ts
 import { z } from 'zod';
 
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
@@ -7,17 +8,19 @@ export const PhotoSchema = z
   .any()
   .refine(
     (file) => {
-      // Si es FileList, extraer el primer archivo
+      if (typeof file === 'string') return true;
+
       if (file instanceof FileList) {
         file = file.length > 0 ? file[0] : undefined;
       }
-      // La imagen es obligatoria, debe existir
       return file !== undefined && file !== null;
     },
-    { message: 'La imagen es obligatoria. Selecciona una imagen.' }
+    { message: 'Selecciona una imagen.' }
   )
   .refine(
     (file) => {
+      if (typeof file === 'string') return true;
+
       if (file instanceof FileList) {
         file = file.length > 0 ? file[0] : undefined;
       }
@@ -27,6 +30,8 @@ export const PhotoSchema = z
   )
   .refine(
     (file) => {
+      if (typeof file === 'string') return true;
+
       if (file instanceof FileList) {
         file = file.length > 0 ? file[0] : undefined;
       }
@@ -36,6 +41,8 @@ export const PhotoSchema = z
   )
   .refine(
     (file) => {
+      if (typeof file === 'string') return true;
+
       if (file instanceof FileList) {
         file = file.length > 0 ? file[0] : undefined;
       }

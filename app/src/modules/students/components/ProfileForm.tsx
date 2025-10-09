@@ -10,6 +10,7 @@ import { ProfileSchema, type ProfileType } from '../schema/Profile';
 import AvailabilityForm from './AvailabilityForm';
 import BasicForm from './BasicForm';
 import EducationForm from './EducationForm';
+import GradesForm from './GradesForm';
 import LanguageForm from './LanguageForm';
 import PhotoForm from './PhotoForm';
 import { SystemSkillsForm } from './SystemSkillsForm';
@@ -45,6 +46,7 @@ const steps = [
 	{ title: 'Experiencia Laboral', component: <WorkExperienceForm /> },
 	{ title: 'Disponibilidad', component: <AvailabilityForm /> },
 	{ title: 'Foto', component: <PhotoForm /> },
+	{ title: 'Notas', component: <GradesForm /> },
 ];
 
 function mergeAvailabilityData(availabilities: any[], baseAvailability: typeof initialAvailability) {
@@ -84,158 +86,193 @@ export default function ProfileForm() {
 	const totalSteps = steps.length;
 
 	useEffect(() => {
-		const fetchProfile = async () => {
-			try {
-				const authOptions = await createAuthFetchOptions();
-				const response = await fetch(VIEW_PROFILE, authOptions);
+    const fetchProfile = async () => {
+        try {
+            const authOptions = await createAuthFetchOptions();
+            const response = await fetch(VIEW_PROFILE, authOptions);
 
-				if (response.ok) {
-					const data = await response.json();
+            if (response.ok) {
+                const data = await response.json();
 
-					// Guardamos el ID para saber si debemos hacer PUT
-					setProfileId(data.id);
+                setProfileId(data.id);
 
-					const mergedAvailabilities = mergeAvailabilityData(data.availabilities || [], initialAvailability);
+                const mergedAvailabilities = mergeAvailabilityData(data.availabilities || [], initialAvailability);
 
-					methods.reset({
-						...data,
-						educations: data.educations || [],
-						trainings: data.trainings || [],
-						languages: data.languages || [],
-						systems: (data.systems || []).map((s: any) => ({
-							programName: s.programName,
-						})),
-						workExperiences: data.workExperiences || [],
-						availabilities: mergedAvailabilities,
-					});
-				} else if (response.status === 404) {
-					console.log('No hay perfil creado aún');
-				} else {
-					const errorData = await response.json();
-					console.error('Error al cargar perfil:', errorData);
-					toast.error('Error al cargar el perfil existente.');
-				}
-			} catch (error) {
-				console.error('Error fetching profile:', error);
-				toast.error('Error al conectar con el servidor.');
-			} finally {
-				setLoading(false);
-			}
-		};
+                methods.reset({
+                    ...data,
+                    educations: data.educations || [],
+                    trainings: data.trainings || [],
+                    languages: data.languages || [],
+                    systems: (data.systems || []).map((s: any) => ({
+                        programName: s.programName,
+                    })),
+                    workExperiences: data.workExperiences || [],
+                    availabilities: mergedAvailabilities,
+                    photo: data.Photo || undefined,
+                    grades: data.Grades || undefined,
+                });
+            } else if (response.status === 404) {
+                console.log('No hay perfil creado aún');
+            } else {
+                const errorData = await response.json();
+                console.error('Error al cargar perfil:', errorData);
+                toast.error('Error al cargar el perfil existente.');
+            }
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+            toast.error('Error al conectar con el servidor.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-		fetchProfile();
-	}, [createAuthFetchOptions, methods.reset]);
+    fetchProfile();
+}, [createAuthFetchOptions, methods.reset]);
 
 	const onSubmit: SubmitHandler<ProfileType> = async profileData => {
-		const educations = profileData.educations.map(edu => ({
-			...edu,
-			semesters: edu.semesters ? Number(edu.semesters) : null,
-		}));
+    const educations = profileData.educations.map(edu => ({
+        ...edu,
+        semesters: edu.semesters ? Number(edu.semesters) : null,
+    }));
 
-		profileData = { ...profileData, educations };
+    profileData = { ...profileData, educations };
 
-		const authOptions = await createAuthFetchOptions();
+    const authOptions = await createAuthFetchOptions();
 
-		const isUpdating = !!profileId;
-		const url = isUpdating ? UPDATE_PROFILE : STUDENT_PROFILE;
-		const method = isUpdating ? 'PATCH' : 'POST';
+    const isUpdating = !!profileId;
+    const url = isUpdating ? UPDATE_PROFILE : STUDENT_PROFILE;
+    const method = isUpdating ? 'PATCH' : 'POST';
 
-		//files
-		const formData = new FormData();
-		let photoFile: File | null = null;
+    const hasNewPhoto = profileData.photo instanceof File ||
+                       (profileData.photo instanceof FileList && profileData.photo.length > 0);
+    const hasNewGrades = profileData.grades instanceof File ||
+                        (profileData.grades instanceof FileList && profileData.grades.length > 0);
 
-		if (profileData.photo instanceof FileList && profileData.photo.length > 0) {
-			photoFile = profileData.photo[0];
-		} else if (profileData.photo instanceof File) {
-			photoFile = profileData.photo;
-		}
+    if (isUpdating && !hasNewPhoto && !hasNewGrades) {
+        const fetchOptions = {
+            ...authOptions,
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                ...(authOptions.headers || {}),
+            },
+            body: JSON.stringify(profileData),
+        };
 
-		if (photoFile) {
-			formData.append('photo', photoFile);
-			console.log('Archivo agregado al FormData:', photoFile.name);
-		} else {
-			console.log('No se encontró archivo válido');
-		}
+        try {
+            const response = await fetch(url, fetchOptions);
+            if (response.ok) {
+                toast.success('Perfil actualizado exitosamente 🎉');
+                navigate('/dashboard');
+            } else {
+                const errorData = await response.json();
+                console.error('Error guardando perfil:', errorData);
+                toast.error('Ocurrió un error al guardar el perfil.');
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+            toast.error('Error al conectar con el servidor.');
+        }
+        return;
+    }
 
-		const { photo, ...dataWithoutPhoto } = profileData;
-		formData.append('profileData', JSON.stringify(dataWithoutPhoto));
+    const formData = new FormData();
 
-		const fetchOptions = {
-			...authOptions,
-			method,
-			body: formData,
-		};
+    let photoFile: File | null = null;
+    if (profileData.photo instanceof FileList && profileData.photo.length > 0) {
+        photoFile = profileData.photo[0];
+    } else if (profileData.photo instanceof File) {
+        photoFile = profileData.photo;
+    }
 
-		try {
-			const response = await fetch(url, fetchOptions);
+    let gradesFile: File | null = null;
+    if (profileData.grades instanceof FileList && profileData.grades.length > 0) {
+        gradesFile = profileData.grades[0];
+    } else if (profileData.grades instanceof File) {
+        gradesFile = profileData.grades;
+    }
 
-			if (response.ok) {
-				toast.success(isUpdating ? 'Perfil actualizado exitosamente 🎉' : 'Perfil creado exitosamente 🎉');
-				navigate('/dashboard');
-			} else {
-				const errorData = await response.json();
-				console.error('Error guardando perfil:', errorData);
-				toast.error('Ocurrió un error al guardar el perfil.');
-			}
-		} catch (error) {
-			console.error('Error en la solicitud:', error);
-			toast.error('Error al conectar con el servidor.');
-		}
+    if (photoFile) {
+        formData.append('photo', photoFile);
+    }
+    if (gradesFile) {
+        formData.append('grades', gradesFile);
+    }
+
+    const dataToSend = { ...profileData };
+
+    if (!photoFile && typeof profileData.photo === 'string') {
+        dataToSend.photo = profileData.photo;
+    } else {
+        delete dataToSend.photo;
+    }
+
+    if (!gradesFile && typeof profileData.grades === 'string') {
+        dataToSend.grades = profileData.grades;
+    } else {
+        delete dataToSend.grades;
+    }
+
+    formData.append('profileData', JSON.stringify(dataToSend));
+
+    const fetchOptions = {
+        ...authOptions,
+        method,
+        body: formData,
+    };
+
+    try {
+        const response = await fetch(url, fetchOptions);
+
+        if (response.ok) {
+            toast.success(isUpdating ? 'Perfil actualizado exitosamente 🎉' : 'Perfil creado exitosamente 🎉');
+            navigate('/dashboard');
+        } else {
+            const errorData = await response.json();
+            console.error('Error guardando perfil:', errorData);
+            toast.error('Ocurrió un error al guardar el perfil.');
+        }
+    } catch (error) {
+        console.error('Error en la solicitud:', error);
+        toast.error('Error al conectar con el servidor.');
+    }
 	};
+
 
 	const handleNext = async () => {
-		const basicFields: (keyof ProfileType)[] = [
-			'studentCode',
-			'lastName',
-			'secondLastName',
-			'fullName',
-			'planCode',
-			'planName',
-			'semester',
-			'campus',
-			'academicPeriod',
-			'jornada',
-			'gender',
-			'birthDate',
-			'age',
-			'birthPlace',
-			'idNumber',
-			'idIssuedPlace',
-			'maritalStatus',
-			'dependents',
-			'familyPosition',
-			'address',
-			'stratum',
-			'neighborhood',
-			'city',
-			'department',
-			'email',
-			'phone',
-			'mobile',
-			'emergencyContact',
-			'emergencyPhone',
-			'occupationalProfile',
-		];
+    const basicFields: (keyof ProfileType)[] = [
+        'studentCode', 'lastName', 'secondLastName', 'fullName',
+        'planCode', 'planName', 'semester', 'campus', 'academicPeriod', 'jornada',
+        'gender', 'birthDate', 'age', 'birthPlace',
+        'idNumber', 'idIssuedPlace', 'maritalStatus', 'dependents', 'familyPosition',
+        'address', 'stratum', 'neighborhood', 'city', 'department',
+        'email', 'phone', 'mobile',
+        'emergencyContact', 'emergencyPhone', 'occupationalProfile',
+    ];
 
-		let fieldsToValidate: (keyof ProfileType)[] = [];
+    let fieldsToValidate: (keyof ProfileType)[] = [];
 
-		if (step === 0) fieldsToValidate = basicFields;
-		if (step === 7) fieldsToValidate = ['photo'];
+    if (step === 0) fieldsToValidate = basicFields;
+    if (step === 7) fieldsToValidate = ['photo'];
+    if (step === 8) fieldsToValidate = ['grades'];
 
-		if (fieldsToValidate.length > 0) {
-			const valid = await methods.trigger(fieldsToValidate, { shouldFocus: true });
-			if (!valid) {
-				if (step === 7) {
-					toast.error('Por favor selecciona una imagen válida antes de continuar.');
-				} else {
-					toast.error('Corrige los errores antes de continuar.');
-				}
-				return;
-			}
-		}
+    if (fieldsToValidate.length > 0) {
+        const valid = await methods.trigger(fieldsToValidate, { shouldFocus: true });
+        if (!valid) {
+            if (step === 7) {
+                toast.error('Por favor selecciona una imagen válida antes de continuar.');
+            } else if (step === 8) {
+                toast.error('Por favor selecciona un certificado de notas válido antes de continuar.');
+            } else {
+                toast.error('Corrige los errores antes de continuar.');
+            }
+            return;
+        }
+    }
 
-		setStep(prev => Math.min(prev + 1, totalSteps - 1));
-	};
+    setStep(prev => Math.min(prev + 1, totalSteps - 1));
+};
+
 
 	const handlePrev = () => {
 		setStep(prev => Math.max(prev - 1, 0));

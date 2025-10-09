@@ -1,6 +1,6 @@
 import { Trash2 } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
-import FileInputField from '@/components/FileInput';
+import FileInputField from '@/components/ImageInput';
 import { Button } from '@/components/ui/button';
 
 export default function PhotoForm() {

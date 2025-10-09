@@ -7,6 +7,7 @@ import { SystemSkillsArraySchema } from "./SystemSkillSchema";
 import { WorkExperiencesArraySchema } from "./WorkExperienceSchema";
 import { AvailabilityArraySchema } from "./AvailabilitySchema";
 import { PhotoSchema } from "./PhotoSchema";
+import { GradeSchema } from "./GradeSchema";
 
 export const ProfileSchema = BasicDataSchema.extend({
 	educations: EducationsArraySchema,
@@ -16,6 +17,7 @@ export const ProfileSchema = BasicDataSchema.extend({
 	workExperiences: WorkExperiencesArraySchema,
 	availabilities: AvailabilityArraySchema,
 	photo: PhotoSchema,
+	grades: GradeSchema,
 });
 
 export type ProfileType = z.infer<typeof ProfileSchema>;
