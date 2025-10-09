@@ -9,7 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { OFFER_UPDATE } from "@/constants/path";
+import { API_BASE_URL, OFFER_UPDATE } from "@/constants/path";
 import { useAuth } from "@/hooks/useAuth";
 import type { Offer } from "@prisma/client";
 import { useEffect, useState } from "react";
@@ -38,7 +38,7 @@ const OfferTable = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             const fetchOptions = await createAuthFetchOptions();
-            const res = await fetch("http://localhost:3000/api/offer", fetchOptions);
+            const res = await fetch(`${API_BASE_URL}/offer`, fetchOptions);
             const data = await res.json();
             setOffers(data);
         };

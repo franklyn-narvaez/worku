@@ -96,6 +96,9 @@ model RolePermission {
 }
 
 enum ApplicationStatus {
+  SENT
+  UNDER_REVIEW
+  CALLED_FOR_INTERVIEW
   PENDING
   APPROVED
   REJECTED
@@ -109,7 +112,7 @@ model Application {
   offerId String
   offer   Offer  @relation(fields: [offerId], references: [id])
 
-  status ApplicationStatus @default(PENDING)
+  status ApplicationStatus @default(SENT)
 
   appliedAt DateTime @default(now())
   updatedAt DateTime @updatedAt
