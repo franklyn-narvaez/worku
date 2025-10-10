@@ -216,7 +216,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: just need to run once
 	useEffect(() => {
-		refresh();
+	  refresh().catch(() => setStatus("unauthenticated"));
 
 		const interval = setInterval(
 			() => {

@@ -43,12 +43,12 @@ export default function availabilitiesForm() {
                     {fields.map((item, index) => (
                         <tr key={item.id} className="text-center">
                             <td className="p-2 font-medium">{daysOfWeek[item.dayOfWeek]}</td>
-                            <td><FormField name={`availabilities.${index}.startTime1`} label="" type="time" /></td>
-                            <td><FormField name={`availabilities.${index}.endTime1`} label="" type="time" /></td>
-                            <td><FormField name={`availabilities.${index}.startTime2`} label="" type="time" /></td>
-                            <td><FormField name={`availabilities.${index}.endTime2`} label="" type="time" /></td>
-                            <td><FormField name={`availabilities.${index}.startTime3`} label="" type="time" /></td>
-                            <td><FormField name={`availabilities.${index}.endTime3`} label="" type="time" /></td>
+                            <td className="px-2"><FormField name={`availabilities.${index}.startTime1`} label="" type="time" /></td>
+                            <td className="px-2"><FormField name={`availabilities.${index}.endTime1`} label="" type="time" /></td>
+                            <td className="px-2"><FormField name={`availabilities.${index}.startTime2`} label="" type="time" /></td>
+                            <td className="px-2"><FormField name={`availabilities.${index}.endTime2`} label="" type="time" /></td>
+                            <td className="px-2"><FormField name={`availabilities.${index}.startTime3`} label="" type="time" /></td>
+                            <td className="px-2"><FormField name={`availabilities.${index}.endTime3`} label="" type="time" /></td>
                         </tr>
                     ))}
                 </tbody>

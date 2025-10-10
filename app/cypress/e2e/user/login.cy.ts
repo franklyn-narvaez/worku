@@ -7,55 +7,52 @@ describe('Login test', () => {
 	});
 
 	it('cv base case', () => {
-		cy.get('#username-field').clear();
-		cy.get('#username-field').type(Cypress.env('ADMIN'));
-		cy.get('#pass-field').clear();
-		cy.get('#pass-field').type(Cypress.env('PASSWORD'));
-		cy.get('.inline-flex').click();
+		cy.get('[name="email"]').clear();
+		cy.get('[name="email"]').type(Cypress.env('ADMIN'));
+		cy.get('[name="password"]').clear();
+		cy.get('[name="password"]').type(Cypress.env('PASSWORD'));
+		cy.get('#root button.w-full').click();
 
+		// toastyfy message
+		cy.url().should('include', '/dashboard')
 		// home should be in the page
-		cy.get('.space-y-2 > :nth-child(1) > .flex').should('contain', 'Inicio');
+		cy.get('#root div.group\\/sidebar-wrapper > div.flex-1.flex > div').should('have.text', 'dashboard');
 	});
 
-	// username
-
+	// email
 	it('ci username empty', () => {
-		cy.get('#pass-field').type(Cypress.env('PASSWORD'));
-		cy.get('.inline-flex').click();
-
-		cy.get('.text-red-600').should('have.text', 'Ingresa el usuario.');
+  	cy.get('[name="password"]').clear();
+  	cy.get('[name="password"]').type(Cypress.env('PASSWORD'));
+  	cy.get('#root button.w-full').click();
+    cy.get('#root p.text-red-500').should('have.text', 'El correo electrónico no es válido');
 	});
 
 	it('ci username not exits', () => {
-		cy.get('#username-field').type('nouser');
-		cy.get('#pass-field').type(Cypress.env('PASSWORD'));
-		cy.get('.inline-flex').click();
+  	cy.get('[name="email"]').clear();
+  	cy.get('[name="email"]').type('nouser@eexample.com');
+  	cy.get('[name="password"]').clear();
+  	cy.get('[name="password"]').type(Cypress.env('PASSWORD'));
+  	cy.get('#root button.w-full').click();
+   cy.get('#root div.Toastify__toast').should('have.text', 'Usuario o contraseña no válidos.');
 
-		cy.get('[role="status"]').should('have.text', 'Revisa tu usuario y contraseña');
 	});
 
 	// password
-
 	it('password-ci-empty', () => {
-		cy.get('#username-field').clear();
-		cy.get('#username-field').type(Cypress.env('ADMIN'));
-		cy.get('#pass-field').clear();
-		cy.get('.inline-flex').click();
-		cy.get('.text-red-600').should('have.text', 'Ingresa la contraseña.');
+	  cy.get('[name="email"]').clear();
+		cy.get('[name="email"]').type(Cypress.env('ADMIN'));
+		cy.get('[name="password"]').clear();
+ 	  cy.get('#root button.w-full').click();
+
+    cy.get('#root p.text-red-500').should('have.text', 'Ingresa la contraseña.');
 	});
 
 	it('password-ci-bad-password', () => {
-		cy.get('#username-field').clear();
-		cy.get('#username-field').type(Cypress.env('ADMIN'));
-		cy.get('#pass-field').clear();
-		cy.get('#pass-field').type('123456789');
-		cy.get('.inline-flex').click();
-		cy.get('[role="status"]').should('have.text', 'Revisa tu usuario y contraseña');
-	});
-
-	it('login-studio', function() {
-		
-		cy.get('[name="email"]').click();
+  	cy.get('[name="email"]').clear();
+  	cy.get('[name="email"]').type(Cypress.env('ADMIN'));
+  	cy.get('[name="password"]').clear();
+  	cy.get('[name="password"]').type('123456789');
 		cy.get('#root button.w-full').click();
+		cy.get('#root div.Toastify__toast').should('have.text', 'Usuario o contraseña no válidos.');
 	});
 });
