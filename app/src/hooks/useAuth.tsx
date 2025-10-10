@@ -82,25 +82,27 @@ async function loginRequest(
 }
 
 async function logOutRequest(options: RequestInit) {
-	const response = await fetch("http://localhost:3000/api/auth/logout", {
-		method: "POST",
-		...options,
-	});
-	if (!response.ok) {
-		throw new Error("Logout failed");
+	try {
+		const response = await fetch("http://localhost:3000/api/auth/logout", {
+			method: "POST",
+			...options,
+		});
+		return { status: response.status, data: await response.json() };
+	} catch (_error) {
+		return { status: 500, data: { message: "Network error" } };
 	}
-	return { status: response.status, data: await response.json() };
 }
 
 async function refreshRequest(options: RequestInit) {
-	const response = await fetch("http://localhost:3000/api/auth/refresh", {
-		method: "POST",
-		...options,
-	});
-	if (!response.ok) {
+	try {
+		const response = await fetch("http://localhost:3000/api/auth/refresh", {
+			method: "POST",
+			...options,
+		});
 		return { status: response.status, data: await response.json() };
+	} catch (_error) {
+		return { status: 500, data: { message: "Network error" } };
 	}
-	return { status: response.status, data: await response.json() };
 }
 
 const storage: AuthenticationStorage = memoryStorage();
@@ -151,7 +153,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 			const response = await refreshRequest(fetchOptions);
 
-			if (response.status === 401) {
+			if (response.status !== 200) {
 				setStatus("unauthenticated");
 				resetStorage();
 				refreshPromise = null; // Limpiar la promesa
@@ -190,13 +192,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 		const response = await logOutRequest(fetchOptions);
 
-		if (response.status === 401) {
+		if (response.status !== 200) {
 			throw response.data;
 		}
 
+		setStatus("unauthenticated");
 		if (refreshTimeout) clearTimeout(refreshTimeout);
 		resetStorage();
-		setStatus("unauthenticated");
 	};
 
 	const createAuthFetchOptions = async () => {
@@ -212,6 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		return fetchOptions;
 	};
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: just need to run once
 	useEffect(() => {
 		refresh();
 
@@ -223,7 +226,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		);
 
 		return () => clearInterval(interval);
-	});
+	}, []);
 
 	return (
 		<AuthContext.Provider
