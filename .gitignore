@@ -42,4 +42,10 @@ yarn-error.log*
 next-env.d.ts
 
 # files
-uploads/
+uploads/*
+
+# Test
+*.out
+test_results
+cypress/screenshots/
+cypress/videos/
