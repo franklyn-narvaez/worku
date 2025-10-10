@@ -214,7 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		return fetchOptions;
 	};
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: just need to run once
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ju
 	useEffect(() => {
 	  refresh().catch(() => setStatus("unauthenticated"));
 
