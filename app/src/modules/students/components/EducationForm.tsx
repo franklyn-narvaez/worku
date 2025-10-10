@@ -26,7 +26,7 @@ export default function EducationForm() {
                 return (
                     <div
                         key={field.id}
-                        className="grid grid-cols-6 gap-4 p-4 border rounded-lg mb-4"
+                        className="grid grid-cols-5 gap-4 p-4 border rounded-lg mb-4"
                     >
                         {/* Nivel educativo */}
                         <SelectField

@@ -13,8 +13,6 @@ function ProtectedWrapper() {
 		return <Navigate to="/auth/login" />;
 	}
 
-	console.log("Authenticated, rendering children routes");
-
 	return (
 		<UserDataProvider>
 			<Outlet />

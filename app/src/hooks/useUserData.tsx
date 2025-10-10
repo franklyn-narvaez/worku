@@ -35,6 +35,7 @@ export const UserDataProvider = ({
 	const [loading, setLoading] = useState(true);
 	const { createAuthFetchOptions } = useAuth();
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: just need to run once
 	useEffect(() => {
 		const fetchUserData = async () => {
 			try {
@@ -53,7 +54,7 @@ export const UserDataProvider = ({
 			}
 		};
 		fetchUserData();
-	}, [createAuthFetchOptions]);
+	}, []);
 
 	return (
 		<UserDataContext.Provider value={{ userData, setUserData, loading }}>
