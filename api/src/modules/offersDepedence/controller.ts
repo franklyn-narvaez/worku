@@ -5,7 +5,7 @@ import z from "zod";
 import { UpdateSchema } from "./updateSchema";
 import { authenticate } from "@/middlewares/authenticate";
 import { authorize } from "@/middlewares/authorize";
-import path from "path/win32";
+import path from "path";
 
 const router = Router();
 
