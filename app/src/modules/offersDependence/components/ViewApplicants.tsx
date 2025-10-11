@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
-import { API_BASE_URL, DEPENDENCE_OFFERS } from "@/constants/path";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { API_BASE_URL, DEPENDENCE_APPLICANTS_DETAILS, DEPENDENCE_OFFERS } from "@/constants/path";
 
 type ApplicationStatus =
     | "UNDER_REVIEW"
@@ -51,6 +51,7 @@ export function ViewApplicants() {
     const { createAuthFetchOptions } = useAuth();
     const [data, setData] = useState<OfferApplicants | null>(null);
     const [loading, setLoading] = useState(true);
+    const location = useLocation();
 
     const fetchApplicants = useCallback(async () => {
         try {
@@ -81,7 +82,11 @@ export function ViewApplicants() {
     }, [fetchApplicants]);
 
     const handleBack = () => {
-        navigate(DEPENDENCE_OFFERS);
+        if (location.state?.from) {
+            navigate(location.state.from);
+        } else {
+            navigate(DEPENDENCE_OFFERS);
+        }
     };
 
     const handleStatusChange = async (
@@ -201,13 +206,13 @@ export function ViewApplicants() {
     }
 
     return (
-        <div className="space-y-4 mt-6">
+        <div className="space-y-4 mt-6 pr-6">
             <Button
                 variant="outline"
                 onClick={handleBack}
                 className="border-slate-300 hover:bg-slate-100"
             >
-                ← Volver a ofertas
+                ← Volver
             </Button>
             <Card className="border border-slate-200 shadow-sm">
                 <CardHeader>
@@ -248,6 +253,21 @@ export function ViewApplicants() {
                                     <Badge className={`${getStatusColor(applicant.status)} text-white mb-2`}>
                                         {getStatusLabel(applicant.status)}
                                     </Badge>
+
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            navigate(
+                                                DEPENDENCE_APPLICANTS_DETAILS.replace(':id', applicant.user.id),
+                                                { state: { from: `${DEPENDENCE_OFFERS}/${data.offer.id}/applicants` } }
+                                            )
+
+                                        }
+                                        className="border-slate-400 text-slate-600 hover:bg-slate-100 mb-2"
+                                    >
+                                        Ver perfil
+                                    </Button>
 
                                     <div className="flex flex-wrap justify-end gap-2">
                                         <Button

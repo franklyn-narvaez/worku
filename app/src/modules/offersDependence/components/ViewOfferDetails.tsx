@@ -93,7 +93,9 @@ export default function ViewOfferDetails() {
 
     const handleBack = () => navigate(DEPENDENCE_OFFERS);
     const handleViewApplicants = () =>
-        navigate(DEPENDENCE_APPLICANTS.replace(":id", offer?.id || ""));
+        navigate(DEPENDENCE_APPLICANTS.replace(":id", offer?.id || ""), {
+            state: { from: `${DEPENDENCE_OFFERS}/${offer?.id}/details` },
+        });
 
     if (loading) {
         return (
