@@ -5,6 +5,7 @@ import z from "zod";
 import { UpdateSchema } from "./updateSchema";
 import { authenticate } from "@/middlewares/authenticate";
 import { authorize } from "@/middlewares/authorize";
+import path from "path/win32";
 
 const router = Router();
 
@@ -311,5 +312,46 @@ router.get(
 		}
 	},
 );
+
+router.get(
+	"/applicants/:id/profile",
+	authenticate,
+	authorize(["view_applications_dependence"]),
+	async (req, res) => {
+		try {
+			const id = req.params.id;
+			if (!id) {
+				return res.status(400).json({ error: "Falta el ID del usuario" });
+			}
+			const profile = await prisma.studentProfile.findUnique({
+				where: { userId: id },
+				include: {
+					educations: true,
+					trainings: true,
+					languages: true,
+					systems: true,
+					workExperiences: true,
+					availabilities: true,
+				},
+			});
+
+			if (!profile) {
+				return res.status(404).json({ message: "Perfil no encontrado" });
+			}
+
+			const profileWithUrls = {
+				...profile,
+				Photo: profile.Photo ? `${req.protocol}://${req.get('host')}/uploads/profile/${path.basename(profile.Photo)}` : null,
+				Grades: profile.Grades ? `${req.protocol}://${req.get('host')}/uploads/grades/${path.basename(profile.Grades)}` : null
+			};
+
+			return res.status(200).json(profileWithUrls);
+		} catch (error) {
+			console.error("Error fetching profile:", error);
+			return res.status(500).json({ error: "Error interno del servidor" });
+		}
+	},
+);
+
 
 export default router;
