@@ -116,6 +116,8 @@ model Application {
 
   appliedAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  interviewDate DateTime?
+  attendedInterview Boolean?
 
   @@unique([userId, offerId], name: "user_offer_unique")
 }

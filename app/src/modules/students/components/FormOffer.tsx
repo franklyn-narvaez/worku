@@ -1,13 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { STUDENT_PROFILES, VIEW_PROFILE } from "@/constants/path";
+import { API_BASE_URL, STUDENT_PROFILES, VIEW_PROFILE } from "@/constants/path";
 import { useAuth } from "@/hooks/useAuth";
 import type { Offer } from "@prisma/client";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
 
 type ExtendedOffer = Offer & {
     college: {
@@ -18,7 +17,16 @@ type ExtendedOffer = Offer & {
         id: string;
         name: string;
     } | null;
-    userApplicationStatus?: "SENT" | "UNDER_REVIEW" | "CALLED_FOR_INTERVIEW" | "PENDING" | "APPROVED" | "REJECTED" | null;
+    userApplicationStatus?:
+    | "SENT"
+    | "UNDER_REVIEW"
+    | "CALLED_FOR_INTERVIEW"
+    | "PENDING"
+    | "APPROVED"
+    | "REJECTED"
+    | null;
+    interviewDate?: Date | null;
+    attendedInterview?: boolean | null;
 };
 
 type ApplyOfferType = {
@@ -31,6 +39,66 @@ const formatDate = (date: string | Date) =>
         month: "long",
         day: "numeric",
     });
+const formatTime = (date: string | Date) =>
+    new Date(date).toLocaleString("es-CO", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+    });
+const getStatusLabel = (
+    status: ExtendedOffer["userApplicationStatus"],
+    attendedInterview?: boolean | null
+) => {
+    if (status === "CALLED_FOR_INTERVIEW") {
+        if (attendedInterview === true) return "Entrevista realizada";
+        if (attendedInterview === false) return "No asistió a la entrevista";
+        return "Citada a entrevista";
+    }
+
+    switch (status) {
+        case "SENT":
+            return "Aplicación enviada";
+        case "UNDER_REVIEW":
+            return "Aplicación en revisión";
+        case "APPROVED":
+            return "Aplicación aprobada";
+        case "REJECTED":
+            return "Aplicación rechazada";
+        case "PENDING":
+            return "Aplicación pendiente";
+        default:
+            return "No aplicado";
+    }
+};
+
+const getStatusColor = (
+    status: ExtendedOffer["userApplicationStatus"],
+    attendedInterview?: boolean | null
+) => {
+    if (status === "CALLED_FOR_INTERVIEW") {
+        if (attendedInterview === true) return "bg-blue-500"; // asistió
+        if (attendedInterview === false) return "bg-orange-400"; // no asistió
+        return "bg-indigo-500"; // citado
+    }
+
+    switch (status) {
+        case "SENT":
+            return "bg-blue-400";
+        case "UNDER_REVIEW":
+            return "bg-purple-500";
+        case "APPROVED":
+            return "bg-green-500";
+        case "REJECTED":
+            return "bg-red-500";
+        case "PENDING":
+            return "bg-yellow-400";
+        default:
+            return "bg-gray-300";
+    }
+};
 
 export function FormOffer({ offer }: { offer: ExtendedOffer }) {
     const { createAuthFetchOptions } = useAuth();
@@ -45,10 +113,7 @@ export function FormOffer({ offer }: { offer: ExtendedOffer }) {
         try {
             const authOptions = await createAuthFetchOptions();
 
-            const studentProfile = await fetch(
-                VIEW_PROFILE,
-                authOptions
-            );
+            const studentProfile = await fetch(VIEW_PROFILE, authOptions);
 
             if (!studentProfile.ok) {
                 toast.warn("Debes completar tu perfil antes de aplicar a una oferta.");
@@ -57,7 +122,7 @@ export function FormOffer({ offer }: { offer: ExtendedOffer }) {
             }
 
             const response = await fetch(
-                `http://localhost:3000/api/student-offers/${data.offerId}/apply`,
+                `${API_BASE_URL}/student-offers/${data.offerId}/apply`,
                 {
                     ...authOptions,
                     method: "POST",
@@ -84,9 +149,7 @@ export function FormOffer({ offer }: { offer: ExtendedOffer }) {
 
     return (
         <div>
-            <form
-                onSubmit={handleSubmit(onSubmit)}
-            >
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200">
                     {/* Header */}
                     <CardHeader>
@@ -96,31 +159,16 @@ export function FormOffer({ offer }: { offer: ExtendedOffer }) {
                                     {offer.title}
                                 </CardTitle>
                                 <Badge
-                                    className={
-                                        offer.userApplicationStatus === "SENT"
-                                            ? "bg-blue-400"
-                                            : offer.userApplicationStatus === "UNDER_REVIEW"
-                                                ? "bg-purple-500"
-                                                : offer.userApplicationStatus === "CALLED_FOR_INTERVIEW"
-                                                    ? "bg-indigo-500"
-                                                    : offer.userApplicationStatus === "PENDING"
-                                                        ? "bg-yellow-400"
-                                                        : offer.userApplicationStatus === "APPROVED"
-                                                            ? "bg-green-500"
-                                                            : offer.userApplicationStatus === "REJECTED"
-                                                                ? "bg-red-500"
-                                                                : "bg-gray-300"
-                                    }
+                                    className={`${getStatusColor(
+                                        offer.userApplicationStatus,
+                                        offer.attendedInterview
+                                    )} text-white`}
                                 >
-                                    {offer.userApplicationStatus === "SENT" && "Aplicacion enviada"}
-                                    {offer.userApplicationStatus === "UNDER_REVIEW" && "Aplicacion en revisión"}
-                                    {offer.userApplicationStatus === "CALLED_FOR_INTERVIEW" && "Citada a entrevista"}
-                                    {offer.userApplicationStatus === "PENDING" && "Aplicacion pendiente"}
-                                    {offer.userApplicationStatus === "APPROVED" && "Aplicacion aprobada"}
-                                    {offer.userApplicationStatus === "REJECTED" && "Aplicacion rechazada"}
-                                    {!offer.userApplicationStatus && "No aplicado"}
+                                    {getStatusLabel(
+                                        offer.userApplicationStatus,
+                                        offer.attendedInterview
+                                    )}
                                 </Badge>
-
                             </div>
 
                             <Badge
@@ -129,8 +177,47 @@ export function FormOffer({ offer }: { offer: ExtendedOffer }) {
                             >
                                 {offer.status ? "Activa" : "Inactiva"}
                             </Badge>
-
                         </div>
+                        {offer.interviewDate && (
+                            <p className="text-sm mt-2">
+                                {offer.userApplicationStatus === "CALLED_FOR_INTERVIEW" &&
+                                    offer.attendedInterview === null && (
+                                        <span className="text-indigo-600 font-medium">
+                                            📅 Programada para: {formatTime(offer.interviewDate)}
+                                        </span>
+                                    )}
+
+                                {offer.userApplicationStatus === "CALLED_FOR_INTERVIEW" &&
+                                    offer.attendedInterview === true && (
+                                        <span className="text-blue-600 font-medium">
+                                            ✅ Entrevista realizada el{" "}
+                                            {formatTime(offer.interviewDate)}
+                                        </span>
+                                    )}
+
+                                {offer.userApplicationStatus === "CALLED_FOR_INTERVIEW" &&
+                                    offer.attendedInterview === false && (
+                                        <span className="text-orange-600 font-medium">
+                                            ❌ No asististe a la entrevista programada el{" "}
+                                            {formatTime(offer.interviewDate)}
+                                        </span>
+                                    )}
+
+                                {offer.userApplicationStatus === "APPROVED" && (
+                                    <span className="text-green-600 font-medium">
+                                        ✅ Aplicación aprobada tras entrevista el{" "}
+                                        {formatTime(offer.interviewDate)}
+                                    </span>
+                                )}
+
+                                {offer.userApplicationStatus === "REJECTED" && (
+                                    <span className="text-red-600 font-medium">
+                                        ❌ Aplicación rechazada tras entrevista el{" "}
+                                        {formatTime(offer.interviewDate)}
+                                    </span>
+                                )}
+                            </p>
+                        )}
 
                         <p className="text-sm text-slate-500">
                             Publicada: {formatDate(offer.createdAt)}
@@ -170,11 +257,7 @@ export function FormOffer({ offer }: { offer: ExtendedOffer }) {
                         </p>
 
                         {/* Campo oculto para enviar el ID */}
-                        <input
-                            type="hidden"
-                            value={offer.id}
-                            {...register("offerId")}
-                        />
+                        <input type="hidden" value={offer.id} {...register("offerId")} />
 
                         <div className="pt-2">
                             <Button
@@ -183,18 +266,16 @@ export function FormOffer({ offer }: { offer: ExtendedOffer }) {
                                 className="w-full"
                                 disabled={!offer.status || alreadyApplied}
                             >
-                                {
-                                    alreadyApplied
-                                        ? "Ya has aplicado"
-                                        : offer.status
-                                            ? "Aplicar a la oferta"
-                                            : "Oferta cerrada"
-                                }
+                                {alreadyApplied
+                                    ? "Ya has aplicado"
+                                    : offer.status
+                                        ? "Aplicar a la oferta"
+                                        : "Oferta cerrada"}
                             </Button>
                         </div>
                     </CardContent>
                 </Card>
             </form>
         </div>
-    )
+    );
 }
