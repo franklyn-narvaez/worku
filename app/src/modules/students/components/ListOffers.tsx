@@ -35,11 +35,10 @@ const ListOffers = () => {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6">Ofertas disponibles</h1>
-
+            <h1 className="text-2xl font-bold mb-6">Ofertas</h1>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {offers.map((offer) => (<FormOffer offer={offer} key={offer.id} />))}
-
+              {offers.length > 0 && offers.map((offer) => (<FormOffer offer={offer} key={offer.id} />))}
+              {offers.length ==0 && <p>No hay ofertas disponibles</p>}
             </div>
         </div>
     )

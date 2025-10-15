@@ -1,13 +1,13 @@
 services:
-  db-dev:
+  db-test:
     image: postgres:16
-    container_name: db-dev2
+    container_name: db-test
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=user
-      - POSTGRES_DB=dbdev
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=test
     volumes:
-      - db-dev:/var/lib/postgresql/data
+      - db-test:/var/lib/postgresql/data
     ports:
       - 5432:5432
     networks:
@@ -34,7 +34,7 @@ services:
       - db-net
     attach: false
     depends_on:
-      db-dev:
+      db-test:
         condition: service_healthy
 
 networks:
@@ -42,4 +42,4 @@ networks:
 
 volumes:
   pgadmin-dev:
-  db-dev:
+  db-test:
