@@ -1,6 +1,5 @@
 import { getDatabaseUrl } from "../src/utils/prismaHelper";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 import dotenv from "dotenv";
 import { seedTest } from "./seed.test";
