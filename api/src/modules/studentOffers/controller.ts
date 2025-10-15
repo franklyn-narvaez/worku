@@ -1,12 +1,12 @@
-import { prisma } from "@/libs/db";
 import { Router } from "express";
+import path from "path";
+import z from "zod";
+import { prisma } from "@/libs/db";
 import { authenticate } from "@/middlewares/authenticate";
 import { authorize } from "@/middlewares/authorize";
-import z from "zod";
-import { buildNestedCreate } from "@/utils/PrismaHelper";
-import { ProfileSchema } from "./schemas/ProfileSchema";
-import path from "path";
 import { upload } from "@/middlewares/upload";
+import { buildNestedCreate } from "@/utils/prismaHelper";
+import { ProfileSchema } from "./schemas/ProfileSchema";
 
 interface MulterRequest extends Request {
   files?: { [fieldname: string]: Express.Multer.File[] };

@@ -9,8 +9,7 @@ export const RegisterSchema = z
 			.string()
 			.min(6, "La contraseña debe tener al menos 6 caracteres"),
 		confirmPassword: z
-			.string()
-			.min(6, "La confirmación de contraseña debe tener al menos 6 caracteres"),
+			.string(),
 		collegeId: z.string().min(1, "La escuela es requerida"),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
