@@ -5,6 +5,7 @@ import z from "zod";
 import { UpdateSchema } from "./updateSchema";
 import { authenticate } from "@/middlewares/authenticate";
 import { authorize } from "@/middlewares/authorize";
+import path from "path";
 
 const router = Router();
 
@@ -183,6 +184,8 @@ router.get(
 				applicationId: app.id,
 				status: app.status,
 				appliedAt: app.appliedAt,
+				interviewDate: app.interviewDate,
+				attendedInterview: app.attendedInterview,
 				user: app.user,
 			}));
 
@@ -200,42 +203,96 @@ router.get(
 );
 
 router.patch(
-	"/:id/status",
-	authenticate,
-	authorize(["view_applications_dependence"]),
-	async (req, res) => {
-		const { id } = req.params;
-		const { status } = req.body;
+  "/:id/status",
+  authenticate,
+  authorize(["view_applications_dependence"]),
+  async (req, res) => {
+    const { id } = req.params;
+    const { status, interviewDate, attendedInterview } = req.body;
 
-		const validStatuses = [
-			"UNDER_REVIEW",
-			"CALLED_FOR_INTERVIEW",
-			"APPROVED",
-			"REJECTED",
-		];
+    const validStatuses = [
+      "UNDER_REVIEW",
+      "CALLED_FOR_INTERVIEW",
+      "APPROVED",
+      "REJECTED",
+    ];
 
-		if (!validStatuses.includes(status)) {
-			return res.status(400).json({ error: "Estado inválido" });
-		}
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: "Estado inválido" });
+    }
 
-		if (!id) {
-			return res.status(400).json({ error: "Falta el ID de la aplicación" });
-		}
+    try {
+      if (!id) {
+        return res.status(400).json({ error: "ID de aplicación no proporcionado" });
+      }
 
-		try {
-			const application = await prisma.application.update({
-				where: { id },
-				data: { status },
-			});
+      const application = await prisma.application.findUnique({
+        where: { id },
+      });
 
-			return res.status(200).json(application);
-		} catch (error) {
-			console.error(error);
-			return res
-				.status(500)
-				.json({ error: "Error al actualizar la aplicación" });
-		}
-	},
+      if (!application) {
+        return res.status(404).json({ error: "Aplicación no encontrada" });
+      }
+
+      // 🔒 Validaciones de flujo
+      if (application.status === "SENT" && status !== "UNDER_REVIEW") {
+        return res.status(400).json({ error: "Debe pasar primero por revisión" });
+      }
+
+      if (application.status === "UNDER_REVIEW" && status === "APPROVED") {
+        return res.status(400).json({ error: "Debe pasar por entrevista antes de aprobar" });
+      }
+
+      if (status === "CALLED_FOR_INTERVIEW" && !interviewDate) {
+        return res.status(400).json({ error: "Debe incluir una fecha de entrevista" });
+      }
+
+      // 🔸 Si se intenta marcar asistencia a entrevista
+      if (typeof attendedInterview === "boolean") {
+        if (!application.interviewDate) {
+          return res.status(400).json({ error: "No se puede marcar asistencia sin fecha de entrevista" });
+        }
+
+        const now = new Date();
+        const interview = new Date(application.interviewDate);
+
+        if (interview > now) {
+          return res.status(400).json({ error: "No puedes marcar asistencia antes de la fecha de entrevista" });
+        }
+      }
+
+      // 🔸 Si se aprueba o rechaza antes de la entrevista
+      if ((status === "APPROVED" || status === "REJECTED") && application.interviewDate) {
+        const now = new Date();
+        const interview = new Date(application.interviewDate);
+        if (interview > now) {
+          return res.status(400).json({
+            error: "No se puede aprobar o rechazar antes de la fecha de la entrevista",
+          });
+        }
+      }
+
+      const updated = await prisma.application.update({
+        where: { id },
+        data: {
+          status,
+          interviewDate:
+            status === "CALLED_FOR_INTERVIEW"
+              ? new Date(interviewDate)
+              : application.interviewDate,
+          attendedInterview:
+            typeof attendedInterview === "boolean"
+              ? attendedInterview
+              : application.attendedInterview,
+        },
+      });
+
+      return res.status(200).json(updated);
+    } catch (error) {
+      console.error("Error al actualizar aplicación:", error);
+      return res.status(500).json({ error: "Error interno del servidor" });
+    }
+  }
 );
 
 router.get(
@@ -311,5 +368,46 @@ router.get(
 		}
 	},
 );
+
+router.get(
+	"/applicants/:id/profile",
+	authenticate,
+	authorize(["view_applications_dependence"]),
+	async (req, res) => {
+		try {
+			const id = req.params.id;
+			if (!id) {
+				return res.status(400).json({ error: "Falta el ID del usuario" });
+			}
+			const profile = await prisma.studentProfile.findUnique({
+				where: { userId: id },
+				include: {
+					educations: true,
+					trainings: true,
+					languages: true,
+					systems: true,
+					workExperiences: true,
+					availabilities: true,
+				},
+			});
+
+			if (!profile) {
+				return res.status(404).json({ message: "Perfil no encontrado" });
+			}
+
+			const profileWithUrls = {
+				...profile,
+				Photo: profile.Photo ? `${req.protocol}://${req.get('host')}/uploads/profile/${path.basename(profile.Photo)}` : null,
+				Grades: profile.Grades ? `${req.protocol}://${req.get('host')}/uploads/grades/${path.basename(profile.Grades)}` : null
+			};
+
+			return res.status(200).json(profileWithUrls);
+		} catch (error) {
+			console.error("Error fetching profile:", error);
+			return res.status(500).json({ error: "Error interno del servidor" });
+		}
+	},
+);
+
 
 export default router;

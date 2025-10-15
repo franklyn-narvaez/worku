@@ -8,6 +8,7 @@ import {
 	ADMIN_OFFER,
 	ADMIN_USER,
 	DEPENDENCE_APPLICANTS,
+	DEPENDENCE_APPLICANTS_DETAILS,
 	DEPENDENCE_OFFER_CREATE,
 	DEPENDENCE_OFFER_DETAILS,
 	DEPENDENCE_OFFER_UPDATE,
@@ -29,6 +30,7 @@ import OfferCreateForm from "@/modules/offers/components/OfferCreateForm";
 import Offers from "@/modules/offers/pages/Offers";
 import OfferUpdate from "@/modules/offers/pages/OfferUpdate";
 import OfferCreateFormDependence from "@/modules/offersDependence/components/OfferCreateFormDependence";
+import StudentProfileView from "@/modules/offersDependence/components/StudentProfileView";
 import { ViewApplicants } from "@/modules/offersDependence/components/ViewApplicants";
 import ViewOfferDetails from "@/modules/offersDependence/components/ViewOfferDetails";
 import OffersDependence from "@/modules/offersDependence/pages/OffersDependence";
@@ -169,6 +171,11 @@ export const routeConfig: AppRoute[] = [
 					{
 						path: DEPENDENCE_OFFER_DETAILS,
 						element: <ViewOfferDetails />,
+						requiredPermission: "view_applications_dependence",
+					},
+					{
+						path: DEPENDENCE_APPLICANTS_DETAILS,
+						element: <StudentProfileView />,
 						requiredPermission: "view_applications_dependence",
 					},
 					{

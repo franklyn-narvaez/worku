@@ -50,8 +50,6 @@ const MyApplications = () => {
                 return "En revisión";
             case "CALLED_FOR_INTERVIEW":
                 return "Citad@ a entrevista";
-            case "PENDING":
-                return "Pendiente";
             case "APPROVED":
                 return "Aprobada";
             case "REJECTED":
@@ -69,8 +67,6 @@ const MyApplications = () => {
                 return "bg-purple-500";
             case "CALLED_FOR_INTERVIEW":
                 return "bg-indigo-500";
-            case "PENDING":
-                return "bg-yellow-400";
             case "APPROVED":
                 return "bg-green-500";
             case "REJECTED":
@@ -80,18 +76,43 @@ const MyApplications = () => {
         }
     };
 
+    const formatInterviewDate = (date: string | Date | null | undefined) => {
+        if (!date) return "No programada";
+        const formatted = new Date(date).toLocaleString("es-CO", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        });
+        return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+    };
+
+    const formatAttendance = (attendedInterview: boolean | null | undefined) => {
+        if (attendedInterview === true)
+            return <span className="text-green-600 font-medium">Asistió</span>;
+        if (attendedInterview === false)
+            return <span className="text-red-600 font-medium">No asistió</span>;
+        return <span className="text-yellow-600 font-medium">No definida</span>;
+    };
+
     return (
         <Table>
             <TableCaption>Lista de aplicaciones realizadas</TableCaption>
             <TableHeader className="bg-slate-100 border-b">
                 <TableRow>
-                    <TableHead>Titulo</TableHead>
+                    <TableHead>Título</TableHead>
                     <TableHead>Descripción</TableHead>
                     <TableHead>Fecha de aplicación</TableHead>
                     <TableHead>Fecha de cierre</TableHead>
+                    <TableHead>Entrevista</TableHead>
+                    <TableHead>Asistencia</TableHead>
                     <TableHead>Estado</TableHead>
                 </TableRow>
             </TableHeader>
+
             <TableBody>
                 {applications.map((application) => (
                     <TableRow key={application.id} className="border-b hover:bg-slate-50">
@@ -100,10 +121,22 @@ const MyApplications = () => {
                             {application.offer.description || "Sin descripción"}
                         </TableCell>
                         <TableCell className="p-4">
-                            {new Date(application.appliedAt).toLocaleDateString()}
+                            {new Date(application.appliedAt).toLocaleDateString("es-CO")}
                         </TableCell>
                         <TableCell className="p-4">
-                            {new Date(application.offer.closeDate).toLocaleDateString()}
+                            {new Date(application.offer.closeDate).toLocaleDateString("es-CO")}
+                        </TableCell>
+                        <TableCell className="p-4">
+                            {application.interviewDate ? (
+                                <span>
+                                    {formatInterviewDate(application.interviewDate)}
+                                </span>
+                            ) : (
+                                "No programada"
+                            )}
+                        </TableCell>
+                        <TableCell className="p-4">
+                            {formatAttendance(application.attendedInterview)}
                         </TableCell>
                         <TableCell className="p-4">
                             <span

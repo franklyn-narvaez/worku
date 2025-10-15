@@ -44,6 +44,8 @@ router.get("", authenticate, authorize(["view_offer"]), async (req, res) => {
 					},
 					select: {
 						status: true,
+						interviewDate: true,
+						attendedInterview: true,
 					},
 				},
 			},
@@ -51,6 +53,8 @@ router.get("", authenticate, authorize(["view_offer"]), async (req, res) => {
 		const formattedOffers = offers.map((offer) => ({
 			...offer,
 			userApplicationStatus: offer.Application[0]?.status || null,
+			interviewDate: offer.Application[0]?.interviewDate || null,
+			attendedInterview: offer.Application[0]?.attendedInterview ?? null,
 			Application: undefined,
 		}));
 
@@ -103,7 +107,20 @@ router.get("/applications", authenticate, async (req, res) => {
 						title: true,
 						description: true,
 						closeDate: true,
+
+						Application: {
+							where: {
+								userId: req.user.id,
+							},
+							select:{
+								status: true,
+								interviewDate: true,
+								attendedInterview: true
+							}
+						},
+
 					},
+
 				},
 			},
 		});
