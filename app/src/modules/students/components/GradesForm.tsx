@@ -4,10 +4,7 @@ import PdfInputField from '@/components/PdfInput';
 import { Button } from '@/components/ui/button';
 
 export default function GradesForm() {
-	const {
-		watch,
-		setValue,
-	} = useFormContext();
+	const { watch, setValue } = useFormContext();
 
 	const gradesValue = watch('grades');
 
@@ -15,29 +12,21 @@ export default function GradesForm() {
 		setValue('grades', undefined);
 	};
 
-	const hasFile = gradesValue && (
-		typeof gradesValue === 'string' ||
-		gradesValue instanceof File ||
-		(gradesValue instanceof FileList && gradesValue.length > 0)
-	);
+	const hasFile =
+		gradesValue &&
+		(typeof gradesValue === 'string' ||
+			gradesValue instanceof File ||
+			(gradesValue instanceof FileList && gradesValue.length > 0));
 
 	return (
 		<div className="space-y-6">
 			<h2 className="text-xl font-semibold">Certificado de Notas</h2>
 
-			<PdfInputField
-				name="grades"
-				label="Selecciona tu certificado de notas (PDF)"
-				required={true}
-			/>
+			<PdfInputField name="grades" label="Selecciona tu certificado de notas (PDF)" required={true} />
 
 			{hasFile && (
 				<div className="flex justify-center w-full">
-					<Button
-						variant="outline"
-						onClick={handleDeleteGrades}
-						type="button"
-					>
+					<Button variant="outline" onClick={handleDeleteGrades} type="button">
 						<Trash2 size={22} />
 						<span className="xl:block">Cambiar documento</span>
 					</Button>

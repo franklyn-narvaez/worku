@@ -1,5 +1,5 @@
-import { useFormContext, type RegisterOptions } from "react-hook-form";
-import type React from "react";
+import { useFormContext, type RegisterOptions } from 'react-hook-form';
+import type React from 'react';
 
 interface FormFieldProps {
 	name: string;
@@ -9,13 +9,7 @@ interface FormFieldProps {
 	rules?: RegisterOptions;
 }
 
-export const FormField: React.FC<FormFieldProps> = ({
-	name,
-	label,
-	type = "text",
-	placeholder,
-	rules,
-}) => {
+export const FormField: React.FC<FormFieldProps> = ({ name, label, type = 'text', placeholder, rules }) => {
 	const {
 		register,
 		formState: { errors },
@@ -33,7 +27,7 @@ export const FormField: React.FC<FormFieldProps> = ({
 				type={type}
 				placeholder={placeholder}
 				{...register(name, rules)}
-				className={`p-3 rounded block bg-[#D9D9D9] text-slate-900 w-full border ${error ? "border-red-500" : "border-slate-700"}`}
+				className={`p-3 rounded block bg-[#D9D9D9] text-slate-900 w-full border ${error ? 'border-red-500' : 'border-slate-700'}`}
 			/>
 			{error && <p className="text-red-500 text-sm mt-1">{error}</p>}
 		</div>

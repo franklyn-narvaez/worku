@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import type { User, Permission } from "@prisma/client";
-import { GET_ME } from "@/constants/path";
-import { useAuth } from "./useAuth";
+import { createContext, useContext, useEffect, useState } from 'react';
+import type { User, Permission } from '@prisma/client';
+import { GET_ME } from '@/constants/path';
+import { useAuth } from './useAuth';
 
 export type RoleWithPermissions = {
 	id: string;
@@ -26,11 +26,7 @@ type UserDataContext = {
 	loading: boolean;
 };
 
-export const UserDataProvider = ({
-	children,
-}: {
-	children: React.ReactNode;
-}) => {
+export const UserDataProvider = ({ children }: { children: React.ReactNode }) => {
 	const [userData, setUserData] = useState<ExtendedUser | null>(null);
 	const [loading, setLoading] = useState(true);
 	const { createAuthFetchOptions } = useAuth();
@@ -48,7 +44,7 @@ export const UserDataProvider = ({
 					setUserData(data);
 				}
 			} catch (error) {
-				console.error("Error fetching user data:", error);
+				console.error('Error fetching user data:', error);
 			} finally {
 				setLoading(false);
 			}
@@ -56,11 +52,7 @@ export const UserDataProvider = ({
 		fetchUserData();
 	}, []);
 
-	return (
-		<UserDataContext.Provider value={{ userData, setUserData, loading }}>
-			{children}
-		</UserDataContext.Provider>
-	);
+	return <UserDataContext.Provider value={{ userData, setUserData, loading }}>{children}</UserDataContext.Provider>;
 };
 
 export function useUserData() {

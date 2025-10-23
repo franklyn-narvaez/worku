@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from 'react-router-dom';
 
 import {
 	Sidebar,
@@ -9,10 +9,10 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 
-import { useSidebarRoutes } from "@/hooks/sideBarRoutes";
-import LogOutButton from "./LogOutButton";
+import { useSidebarRoutes } from '@/hooks/sideBarRoutes';
+import LogOutButton from './LogOutButton';
 
 export function AppSidebar() {
 	const sidebarRoutes = useSidebarRoutes();
@@ -24,18 +24,18 @@ export function AppSidebar() {
 					<SidebarGroupLabel>WorkU</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{sidebarRoutes.map((route) => {
+							{sidebarRoutes.map(route => {
 								const Icon = route.icon; // 👈 Componente del icono pasado en routeConfig
 								return (
 									<SidebarMenuItem key={route.path}>
 										<SidebarMenuButton asChild>
 											<NavLink
-												to={route.path || "#"}
+												to={route.path || '#'}
 												className={({ isActive }) =>
 													`flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${
 														isActive
-															? "bg-slate-200 text-slate-900"
-															: "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+															? 'bg-slate-200 text-slate-900'
+															: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
 													}`
 												}
 											>

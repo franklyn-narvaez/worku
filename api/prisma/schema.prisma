@@ -172,6 +172,17 @@ model StudentProfile {
   isComplete Boolean @default(false)
   Photo      String
   Grades     String
+  status     ProfileStatus @default(DRAFT)
+  submittedAt DateTime?
+  reviewedAt DateTime?
+  rejectComment String?
+}
+
+enum ProfileStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
 }
 
 enum MaritalStatus {

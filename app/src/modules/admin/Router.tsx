@@ -5,14 +5,14 @@ import UserUpdate from './pages/UserUpdate';
 import { CREATE } from '@/constants/path';
 
 function AdminRouter() {
-    return (
-        <Routes>
-            <Route path="" element={<Users />} />
-            <Route path={CREATE} element={<CreateForm />} />
-            <Route path="update/:id" element={<UserUpdate />} />
-            <Route path="*" element={<div>Not Found</div>} />
-        </Routes>
-    )
+	return (
+		<Routes>
+			<Route path="" element={<Users />} />
+			<Route path={CREATE} element={<CreateForm />} />
+			<Route path="update/:id" element={<UserUpdate />} />
+			<Route path="*" element={<div>Not Found</div>} />
+		</Routes>
+	);
 }
 
 export default AdminRouter;

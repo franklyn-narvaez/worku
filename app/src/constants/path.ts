@@ -4,9 +4,9 @@ export const CREATE = "create";
 export const LOGIN = "login";
 export const LOGOUT = "logout";
 
-// Estos NO deben comenzar con "/"
 const ADMIN = "/admin";
 export const BASE_DEPENDENCE = "/dependence";
+export const BASE_DIRECTOR_APP = "/director";
 export const BASE_USER = "users";
 export const BASE_STUDENT = "/student";
 export const BASE_OFFER = "offers";
@@ -31,6 +31,10 @@ export const DEPENDENCE_OFFER_UPDATE = `${DEPENDENCE_OFFERS}/update/:id`;
 export const DEPENDENCE_APPLICANTS = `${DEPENDENCE_OFFERS}/:id/applicants`;
 export const DEPENDENCE_OFFER_DETAILS = `${DEPENDENCE_OFFERS}/:id/details`;
 export const DEPENDENCE_APPLICANTS_DETAILS = `${DEPENDENCE_OFFERS}/applicants/:id/profile`;
+export const DIRECTOR_REVIEW_PROFILES = `${BASE_DIRECTOR_APP}/review-profiles`;
+export const DIRECTOR_REVIEW_PROFILE = `${DIRECTOR_REVIEW_PROFILES}/:id/profile`;
+export const DIRECTOR_REVIEW_PROFILE_HISTORY = `${DIRECTOR_REVIEW_PROFILES}/history`;
+export const DIRECTOR_HISTORY_PROFILE = `${DIRECTOR_REVIEW_PROFILES}/:id/profile/history`;
 
 //api
 export const HOST_API = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -41,6 +45,7 @@ export const BASE_OFFER_API = "/offer";
 export const BASE_USER_API = "/user";
 export const BASE_STUDENT_OFFER = "/student-offers";
 export const BASE_OFFER_DEPENDENCE = "/offers-dependence";
+export const BASE_DIRECTOR = "/director";
 
 export const GET_COLLEGE = API_BASE_URL + BASE_COLLEGE;
 export const GET_FACULTY = `${API_BASE_URL + BASE_COLLEGE}/faculty`;
@@ -60,3 +65,7 @@ export const APPLY_TO_OFFER = `${API_BASE_URL}/student-offer/:offerId/apply`;
 export const STUDENT_PROFILE = `${STUDENT_OFFER}/profile`;
 export const VIEW_PROFILE = `${STUDENT_OFFER}/view-profile`;
 export const UPDATE_PROFILE = `${STUDENT_OFFER}/update-profile`;
+
+export const REVIEW_PROFILE = `${API_BASE_URL}${BASE_DIRECTOR}`;
+
+export const REVIEW_PROFILE_HISTORY = `${REVIEW_PROFILE}/profiles/history`;

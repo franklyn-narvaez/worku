@@ -1,7 +1,7 @@
-import { LogOut } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { LogOut } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function LogOutButton() {
 	const { logout } = useAuth();
@@ -11,10 +11,10 @@ function LogOutButton() {
 		e.preventDefault();
 		await logout()
 			.then(() => {
-				navigate("/auth/login");
+				navigate('/auth/login');
 			})
 			.catch(() => {
-				toast.error("Error al cerrar sesión");
+				toast.error('Error al cerrar sesión');
 			});
 	};
 	return (

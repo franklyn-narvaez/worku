@@ -46,49 +46,47 @@ export const PdfInputField: React.FC<PdfInputProps> = ({ name, className, rules 
 	};
 
 	const renderContent = () => {
-    // Si hay un PDF existente (string URL)
-    if (typeof watchedValue === 'string' && watchedValue) {
-        // Extraer nombre del archivo de la URL
-        const fileName = watchedValue.split('/').pop() || 'documento-actual.pdf';
+		// Si hay un PDF existente (string URL)
+		if (typeof watchedValue === 'string' && watchedValue) {
+			// Extraer nombre del archivo de la URL
+			const fileName = watchedValue.split('/').pop() || 'documento-actual.pdf';
 
-        return (
-            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                <div className="flex items-center space-x-3">
-                    <FileText className="w-8 h-8 text-green-600" />
-                    <div>
-                        <p className="text-sm font-medium text-gray-900">{fileName}</p>
-                        <p className="text-xs text-green-600">Archivo actual</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+			return (
+				<div className="p-4 bg-green-50 rounded-lg border border-green-200">
+					<div className="flex items-center space-x-3">
+						<FileText className="w-8 h-8 text-green-600" />
+						<div>
+							<p className="text-sm font-medium text-gray-900">{fileName}</p>
+							<p className="text-xs text-green-600">Archivo actual</p>
+						</div>
+					</div>
+				</div>
+			);
+		}
 
-    // Si hay un archivo seleccionado nuevo
-    if (getFile) {
-        return (
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
-                <div className="flex items-center space-x-3">
-                    <FileText className="w-8 h-8 text-red-600" />
-                    <div>
-                        <p className="text-sm font-medium text-gray-900">{getFile.name}</p>
-                        <p className="text-xs text-gray-500">{formatFileSize(getFile.size)}</p>
-                    </div>
-                </div>
+		// Si hay un archivo seleccionado nuevo
+		if (getFile) {
+			return (
+				<div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+					<div className="flex items-center space-x-3">
+						<FileText className="w-8 h-8 text-red-600" />
+						<div>
+							<p className="text-sm font-medium text-gray-900">{getFile.name}</p>
+							<p className="text-xs text-gray-500">{formatFileSize(getFile.size)}</p>
+						</div>
+					</div>
+				</div>
+			);
+		}
 
-            </div>
-        );
-    }
-
-    return (
-        <div className="text-center py-8">
-            <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 mb-2">Selecciona un archivo PDF</p>
-            <p className="text-sm text-gray-500">Tamaño máximo: 2MB</p>
-        </div>
-    );
-};
-
+		return (
+			<div className="text-center py-8">
+				<Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+				<p className="text-gray-600 mb-2">Selecciona un archivo PDF</p>
+				<p className="text-sm text-gray-500">Tamaño máximo: 2MB</p>
+			</div>
+		);
+	};
 
 	return (
 		<div className="space-y-2">

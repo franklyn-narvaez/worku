@@ -1,9 +1,9 @@
-import ListOferts from "../components/ListOffers";
+import ListOferts from '../components/ListOffers';
 
 export default function StudentsOffers() {
-    return (
-        <div>
-            <ListOferts />
-        </div>
-    )
+	return (
+		<div>
+			<ListOferts />
+		</div>
+	);
 }
