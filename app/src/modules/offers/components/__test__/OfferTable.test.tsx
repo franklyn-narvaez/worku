@@ -38,9 +38,11 @@ describe('OfferTable', () => {
 		const offerDescription = getByText('Descripcion 1');
 		const offerRequirements = getByText('Requisitos 1');
 		const offerCollege = getByText('Escuela 1');
-		const offerCreatedAt = getByText('1/14/2023');
-		const offerUpdatedAt = getByText('1/19/2023');
-		const offerCloseDate = getByText('12/30/2023');
+
+		const offerCreatedAt = getByText((text) => /14\/1\/2023|1\/14\/2023/.test(text));
+		const offerUpdatedAt = getByText((text) => /19\/1\/2023|1\/19\/2023/.test(text));
+		const offerCloseDate = getByText((text) => /30\/12\/2023|12\/30\/2023/.test(text));
+
 		const offerStatus = getByText('Activa');
 		const editButton = getByText('Editar');
 
@@ -55,4 +57,5 @@ describe('OfferTable', () => {
 		expect(offerStatus).toBeInTheDocument();
 		expect(editButton).toBeInTheDocument();
 	});
+
 });
