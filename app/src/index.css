@@ -4,9 +4,9 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0);
+  --background: oklch(0.9373 0.007 264.74);
   --foreground: oklch(0.145 0 0);
-  --button-color-create: #2C2C2C;
+  --button-color-create: #cd1f32;
   --text-color-title: #2C2C2C;
   --radius: 0.625rem;
   --card: oklch(1 0 0);
@@ -14,6 +14,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
+  --primary-red: #D32F2F;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -38,11 +39,15 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --table-header: oklch(0.5303 0.036 257.29);
+  --table-row: oklch(0.985 0 0);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-table-header: var(--table-header);
+  --color-table-row: var(--table-row);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-button-create: var(--button-color-create);
@@ -72,6 +77,7 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-primary-red: var(--primary-red);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -80,6 +86,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
 }
 
 body {

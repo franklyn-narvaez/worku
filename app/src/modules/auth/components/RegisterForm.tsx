@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FormField } from '@components/FormField';
 import { RegisterSchema, type RegisterType } from '../schemas/register';
 import { useNavigate } from 'react-router-dom';
+import LogInUnivalle from '../../../public/LogInUnivalle.png';
 
 function RegisterForm(props: { colleges: College[] }) {
 	const methods = useForm<RegisterType>({
@@ -29,10 +30,18 @@ function RegisterForm(props: { colleges: College[] }) {
 	});
 
 	return (
-		<div className="h-full flex items-center justify-center">
+		<div className="h-full flex items-center justify-center  bg-background">
 			<FormProvider {...methods}>
-				<form onSubmit={onSubmit} className="w-1/4">
-					<h1 className="text-text-title font-bold text-4xl mb-4">Crear cuenta</h1>
+				<form onSubmit={onSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-xl flex-col items-center">
+
+					<div className="mb-6 flex justify-center">
+						<img
+							src={LogInUnivalle}
+							alt="Worku Logo"
+							className="h-25 w-auto object-contain"
+						/>
+					</div>
+					{/* <h1 className="text-text-title font-bold text-4xl mb-4">Crear cuenta</h1> */}
 
 					<FormField name="name" label="Nombre" placeholder="Ingresa tu nombre" />
 					<FormField name="lastName" label="Apellido" placeholder="Ingresa tu apellido" />
@@ -70,6 +79,16 @@ function RegisterForm(props: { colleges: College[] }) {
 					>
 						Registrar
 					</button>
+
+					<p className="text-center text-sm text-gray-600 mt-4">
+						¿Ya tienes una cuenta?{' '}
+						<span
+							onClick={() => navigate('/auth/login')}
+							className="text-primary-red hover:underline cursor-pointer"
+						>
+							Inicia sesión
+						</span>
+					</p>
 				</form>
 			</FormProvider>
 		</div>

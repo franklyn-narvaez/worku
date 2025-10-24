@@ -39,7 +39,7 @@ const UserTable = () => {
 	return (
 		<Table>
 			<TableCaption>Lista de usuarios</TableCaption>
-			<TableHeader className="bg-slate-100 border-b">
+			<TableHeader className="bg-table-header">
 				<TableRow>
 					<TableHead>Nombre</TableHead>
 					<TableHead>Apellido</TableHead>
@@ -52,7 +52,7 @@ const UserTable = () => {
 			</TableHeader>
 			<TableBody>
 				{users.map(user => (
-					<TableRow key={user.id} className="border-b hover:bg-slate-50">
+					<TableRow key={user.id} className="border-b bg-table-row hover:bg-slate-50">
 						<TableCell className="p-4">{user.name}</TableCell>
 						<TableCell className="p-4">{user.lastName}</TableCell>
 						<TableCell className="p-4">{user.email}</TableCell>
