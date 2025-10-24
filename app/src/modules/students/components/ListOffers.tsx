@@ -25,10 +25,14 @@ const ListOffers = () => {
 
     useEffect(() => {
         const fetchOffers = async () => {
-            const fetchOptions = await createAuthFetchOptions();
-            const res = await fetch(STUDENT_OFFER, fetchOptions);
-            const data = await res.json();
-            setOffers(data);
+            try {
+                const fetchOptions = await createAuthFetchOptions();
+                const res = await fetch(STUDENT_OFFER, fetchOptions);
+                const data = await res.json();
+                setOffers(Array.isArray(data) ? data : []);
+            } catch (error) {
+                setOffers([]);
+            }
         };
         fetchOffers();
     }, [createAuthFetchOptions]);
