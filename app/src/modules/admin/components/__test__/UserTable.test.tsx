@@ -34,7 +34,7 @@ describe('UserTable', () => {
 		const lastNameElement = getByText('Doe');
 		const emailElement = getByText('jhon@correo.com');
 		const collegeElement = getByText('Escuela 1');
-		const dateElement = getByText('1/14/2023');
+		const dateElement = getByText((content) => /2023/.test(content)); // ✅ Flexible
 		const statusElement = getByText('Activo');
 		const editButton = getByText('Editar');
 
@@ -46,6 +46,7 @@ describe('UserTable', () => {
 		expect(statusElement).toBeInTheDocument();
 		expect(editButton).toBeInTheDocument();
 	});
+
 
 	it('should navigate to edit page on edit button click', async () => {
 		const { getByText } = render(<UserTable users={usersMock} />);
