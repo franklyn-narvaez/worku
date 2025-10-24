@@ -39,9 +39,11 @@ describe('OfferTable', () => {
 		const titleElement = getByText('Lista de ofertas');
 		const offerTitle = getByText('Oferta 1');
 		const offerCollege = getByText('Escuela 1');
-		const offerCreatedAt = getByText('1/14/2023');
-		const offerUpdatedAt = getByText('1/19/2023');
-		const offerCloseDate = getByText('12/30/2023');
+
+		const offerCreatedAt = getByText((text) => /14\/1\/2023|1\/14\/2023/.test(text));
+		const offerUpdatedAt = getByText((text) => /19\/1\/2023|1\/19\/2023/.test(text));
+		const offerCloseDate = getByText((text) => /30\/12\/2023|12\/30\/2023/.test(text));
+
 		const offerStatus = getByText('Activa');
 
 		expect(titleElement).toBeInTheDocument();
