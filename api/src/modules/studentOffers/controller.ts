@@ -142,9 +142,6 @@ router.post(
 	]),
 	async (req, res) => {
 		try {
-			console.log("req.files:", req.files);
-			console.log("req.body:", req.body);
-
 			const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
 			if (!files ||
@@ -169,7 +166,7 @@ router.post(
 				parsedRequestData = JSON.parse(req.body.profileData);
 			} catch (error) {
 				return res.status(400).json({
-					message: "Datos del perfil inválidos",
+					message: "Datos del perfil invalidos",
 				});
 			}
 
@@ -179,7 +176,6 @@ router.post(
 			const parsedProfile = ProfileSchema.safeParse(parsedRequestData);
 
 			if (!parsedProfile.success) {
-				console.log("Validation errors:", parsedProfile.error);
 				return res.status(400).json({
 					message: "Datos inválidos",
 					errors: parsedProfile.error.format(),

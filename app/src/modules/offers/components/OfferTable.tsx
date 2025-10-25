@@ -1,39 +1,14 @@
-'use client';
-
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { API_BASE_URL, OFFER_UPDATE } from '@/constants/path';
-import { useAuth } from '@/hooks/useAuth';
-import type { Offer } from '@prisma/client';
-import { useEffect, useState } from 'react';
+import { OFFER_UPDATE } from '@/constants/path';
 import { useNavigate } from 'react-router-dom';
+import type { ExtendedOffer } from '../types/offer';
 
-type ExtendedOffer = Offer & {
-	college: {
-		id: string;
-		name: string;
-	} | null;
-};
-
-const OfferTable = () => {
-	const { createAuthFetchOptions } = useAuth();
-
+const OfferTable = (props: { offers: ExtendedOffer[] }) => {
 	const navigate = useNavigate();
-
-	const [offers, setOffers] = useState<ExtendedOffer[]>([]);
 
 	const handleEdit = (id: string) => {
 		navigate(OFFER_UPDATE.replace(':id', id));
 	};
-
-	useEffect(() => {
-		const fetchUsers = async () => {
-			const fetchOptions = await createAuthFetchOptions();
-			const res = await fetch(`${API_BASE_URL}/offer`, fetchOptions);
-			const data = await res.json();
-			setOffers(data);
-		};
-		fetchUsers();
-	}, [createAuthFetchOptions]);
 
 	return (
 		<Table>
@@ -52,7 +27,7 @@ const OfferTable = () => {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{offers.map(offer => (
+				{props.offers.map(offer => (
 					<TableRow key={offer.id} className="border-b hover:bg-slate-50">
 						<TableCell className="p-4">{offer.title}</TableCell>
 						<TableCell className="p-4">{offer.description}</TableCell>

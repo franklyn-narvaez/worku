@@ -1,37 +1,14 @@
-'use client';
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import {
-	API_BASE_URL,
-	DEPENDENCE_APPLICANTS,
-	DEPENDENCE_OFFER_DETAILS,
-	DEPENDENCE_OFFER_UPDATE,
-} from '@/constants/path';
-import { useAuth } from '@/hooks/useAuth';
-import type { Offer } from '@prisma/client';
+import { DEPENDENCE_APPLICANTS, DEPENDENCE_OFFER_DETAILS, DEPENDENCE_OFFER_UPDATE } from '@/constants/path';
 import { Edit, MoreHorizontal, Users, NotebookText } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { ExtendedOffer } from '../types/offer';
 
-type ExtendedOffer = Offer & {
-	college: {
-		id: string;
-		name: string;
-	} | null;
-	_count: {
-		Application: number;
-	};
-};
-
-const OfferTable = () => {
-	const { createAuthFetchOptions } = useAuth();
-
+const OfferTable = (props: { offers: ExtendedOffer[] }) => {
 	const navigate = useNavigate();
-
-	const [offers, setOffers] = useState<ExtendedOffer[]>([]);
 
 	const handleEdit = (id: string) => {
 		navigate(DEPENDENCE_OFFER_UPDATE.replace(':id', id));
@@ -44,16 +21,6 @@ const OfferTable = () => {
 	const handleViewOfferDetails = (id: string) => {
 		navigate(DEPENDENCE_OFFER_DETAILS.replace(':id', id));
 	};
-
-	useEffect(() => {
-		const fetchUsers = async () => {
-			const fetchOptions = await createAuthFetchOptions();
-			const res = await fetch(`${API_BASE_URL}/offers-dependence`, fetchOptions);
-			const data = await res.json();
-			setOffers(data);
-		};
-		fetchUsers();
-	}, [createAuthFetchOptions]);
 
 	return (
 		<Table>
@@ -71,14 +38,14 @@ const OfferTable = () => {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{offers.map(offer => (
+				{props.offers.map(offer => (
 					<TableRow key={offer.id} className="border-b hover:bg-slate-50">
 						<TableCell className="p-4">{offer.title}</TableCell>
 						<TableCell className="p-4">{offer.college?.name ?? 'Sin escuela'}</TableCell>
 						<TableCell className="p-4">{new Date(offer.createdAt).toLocaleDateString()}</TableCell>
 						<TableCell className="p-4">{new Date(offer.updatedAt).toLocaleDateString()}</TableCell>
 						<TableCell className="p-4">{new Date(offer.closeDate).toLocaleDateString()}</TableCell>
-						<TableCell className="p-4">{offer._count.Application ?? 0}</TableCell>
+						<TableCell className="p-4">{offer.count.Application ?? 0}</TableCell>
 						<TableCell className="p-4">
 							{offer.status ? <Badge variant="success">Activa</Badge> : <Badge variant="destructive">Inactiva</Badge>}
 						</TableCell>
@@ -98,7 +65,8 @@ const OfferTable = () => {
 											className="justify-start text-blue-600 hover:bg-blue-50"
 											onClick={() => handleEdit(offer.id)}
 										>
-											<Edit className="w-4 h-4 mr-2" /> Editar
+											<Edit className="w-4 h-4 mr-2" />
+											Editar
 										</Button>
 										<Button
 											variant="ghost"

@@ -31,8 +31,8 @@ export default function OfferCreateForm() {
 			const options = await createAuthFetchOptions();
 			const res = await fetch(GET_COLLEGE, options);
 			const data = await res.json();
-			setColleges(data);
-		};
+			setColleges(Array.isArray(data) ? data : []);
+		}
 		fetchColleges();
 	}, [createAuthFetchOptions]);
 
@@ -41,8 +41,8 @@ export default function OfferCreateForm() {
 			const options = await createAuthFetchOptions();
 			const res = await fetch(GET_FACULTY, options);
 			const data = await res.json();
-			setFaculties(data);
-		};
+			setFaculties(Array.isArray(data) ? data : []);
+		}
 		fetchFaculties();
 	}, [createAuthFetchOptions]);
 

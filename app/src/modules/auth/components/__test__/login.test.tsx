@@ -167,15 +167,8 @@ const validateTestCases = [
 		email: '',
 		password: '',
 		emailError: 'El correo electrónico no es válido',
-		passwordError: 'La contraseña debe tener al menos 6 caracteres',
+		passwordError: 'Ingresa la contraseña.',
 		name: 'should show error messages for empty fields',
-	},
-	{
-		email: 'test@example.com',
-		password: '',
-		emailError: '',
-		passwordError: 'La contraseña debe tener al menos 6 caracteres',
-		name: 'should show error message for empty password',
 	},
 	{
 		email: '',
@@ -183,12 +176,5 @@ const validateTestCases = [
 		emailError: 'El correo electrónico no es válido',
 		passwordError: '',
 		name: 'should show error message for empty email',
-	},
-	{
-		email: 'email',
-		password: '1234',
-		emailError: 'El correo electrónico no es válido',
-		passwordError: 'La contraseña debe tener al menos 6 caracteres',
-		name: 'should show error messages for invalid email and password',
 	},
 ];

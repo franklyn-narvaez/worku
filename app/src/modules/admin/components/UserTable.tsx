@@ -1,40 +1,15 @@
-'use client';
-
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { USER_UPDATE } from '@/constants/path';
-import type { User } from '@prisma/client';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { statusLabels } from '../schemas/Update';
-import { useAuth } from '@/hooks/useAuth';
+import type { ExtendedUser } from '../types/user';
 
-type ExtendedUser = User & {
-	college: {
-		id: string;
-		name: string;
-	} | null;
-};
-
-const UserTable = () => {
-	const { createAuthFetchOptions } = useAuth();
-
+const UserTable = (props: { users: ExtendedUser[] }) => {
 	const navigate = useNavigate();
-
-	const [users, setUsers] = useState<ExtendedUser[]>([]);
 
 	const handleEdit = (id: string) => {
 		navigate(USER_UPDATE.replace(':id', id));
 	};
-
-	useEffect(() => {
-		const fetchUsers = async () => {
-			const fetchOptions = await createAuthFetchOptions();
-			const res = await fetch('http://localhost:3000/api/user', fetchOptions);
-			const data = await res.json();
-			setUsers(data);
-		};
-		fetchUsers();
-	}, [createAuthFetchOptions]);
 
 	return (
 		<Table>
@@ -51,7 +26,7 @@ const UserTable = () => {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{users.map(user => (
+				{props.users.map(user => (
 					<TableRow key={user.id} className="border-b hover:bg-slate-50">
 						<TableCell className="p-4">{user.name}</TableCell>
 						<TableCell className="p-4">{user.lastName}</TableCell>

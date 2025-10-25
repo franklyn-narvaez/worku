@@ -11,60 +11,59 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface DatePickerFieldProps {
-	name: string;
-	label: string;
-	placeholder?: string;
-	rules?: RegisterOptions;
+    name: string;
+    label: string;
+    placeholder?: string;
+    rules?: RegisterOptions;
 }
 
 export const DatePickerField: React.FC<DatePickerFieldProps> = ({
-	name,
-	label,
-	placeholder = 'Selecciona una fecha',
-	rules,
+    name,
+    label,
+    placeholder = 'Selecciona una fecha',
+    rules,
 }) => {
-	const {
-		control,
-		formState: { errors },
-	} = useFormContext();
+    const {
+        control,
+        formState: { errors },
+    } = useFormContext();
 
-	const error = errors[name]?.message as string;
+    const error = errors[name]?.message as string;
 
-	return (
-		<div className="mb-2">
-			<label className="text-slate-900 mb-2 block text-sm">{label}</label>
+    return (
+        <div className="mb-2">
+            <label className="text-slate-900 mb-2 block text-sm">{label}</label>
 
-			<Controller
-				name={name}
-				control={control}
-				rules={rules}
-				render={({ field }) => (
-					<Popover>
-						<PopoverTrigger asChild>
-							<Button
-								variant="outline"
-								className={`w-full h-auto p-3 rounded bg-[#D9D9D9] hover:bg-[#D9D9D9] text-slate-900 border ${
-									!field.value ? 'text-muted-foreground' : ''
-								} ${error ? 'border-red-500' : 'border-slate-700'}`}
-							>
-								{field.value ? format(field.value, 'PPP', { locale: es }) : <span>{placeholder}</span>}
-								<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-							</Button>
-						</PopoverTrigger>
-						<PopoverContent className="w-auto p-0" align="start">
-							<Calendar
-								mode="single"
-								selected={field.value}
-								onSelect={field.onChange}
-								disabled={date => date < new Date()}
-								captionLayout="dropdown"
-							/>
-						</PopoverContent>
-					</Popover>
-				)}
-			/>
+            <Controller
+                name={name}
+                control={control}
+                rules={rules}
+                render={({ field }) => (
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                className={`w-full h-auto p-3 rounded bg-[#D9D9D9] hover:bg-[#D9D9D9] text-slate-900 border ${!field.value ? 'text-muted-foreground' : ''
+                                    } ${error ? 'border-red-500' : 'border-slate-700'}`}
+                            >
+                                {field.value ? format(field.value, 'PPP', { locale: es }) : <span>{placeholder}</span>}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={date => date < new Date()}
+                                captionLayout="dropdown"
+                            />
+                        </PopoverContent>
+                    </Popover>
+                )}
+            />
 
-			{error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-		</div>
-	);
+            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+        </div>
+    );
 };
