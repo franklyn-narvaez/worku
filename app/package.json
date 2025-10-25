@@ -6,14 +6,16 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
-		"lint": "eslint .",
 		"preview": "vite preview",
 		"test": "vitest",
-		"cy:open": "cypress open"
+		"cy:open": "cypress open",
+		"format": "biome format --write .",
+		"lint": "biome lint ."
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.1.1",
 		"@radix-ui/react-dialog": "^1.1.14",
+		"@radix-ui/react-label": "^2.1.7",
 		"@radix-ui/react-popover": "^1.1.14",
 		"@radix-ui/react-select": "^2.2.6",
 		"@radix-ui/react-separator": "^1.1.7",

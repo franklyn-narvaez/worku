@@ -1,5 +1,5 @@
 import { FormField } from '@/components/FormField';
-import type { College, Role } from '@prisma/client';
+import type { College, Role, User } from '@prisma/client';
 import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';

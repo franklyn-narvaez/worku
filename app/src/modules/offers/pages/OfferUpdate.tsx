@@ -1,48 +1,45 @@
-import type { College, Faculty, Offer } from "@prisma/client";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import UpdateForm from "../components/UpdateForm";
-import { GET_COLLEGE, GET_FACULTY } from "@/constants/path";
+import type { College, Faculty, Offer } from '@prisma/client';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import UpdateForm from '../components/UpdateForm';
+import { GET_COLLEGE, GET_FACULTY } from '@/constants/path';
 
 type OfferWithCollege = Offer & {
-    college: {
-        id: string;
-        name: string;
-    } | null;
-    faculty: {
-        id: string;
-        name: string;
-    } | null;
+	college: {
+		id: string;
+		name: string;
+	} | null;
+	faculty: {
+		id: string;
+		name: string;
+	} | null;
 };
 
 export default function OfferUpdate() {
+	const { id } = useParams();
 
-    const { id } = useParams();
+	const [offer, setOffer] = useState<OfferWithCollege>();
+	const [colleges, setColleges] = useState<College[]>([]);
+	const [faculties, setFaculties] = useState<Faculty[]>([]);
 
-    const [offer, setOffer] = useState<OfferWithCollege>();
-    const [colleges, setColleges] = useState<College[]>([]);
-    const [faculties, setFaculties] = useState<Faculty[]>([]);
+	useEffect(() => {
+		fetch(GET_COLLEGE)
+			.then(res => res.json())
+			.then(data => setColleges(data));
+	}, []);
 
-    useEffect(() => {
-        fetch(GET_COLLEGE)
-            .then((res) => res.json())
-            .then((data) => setColleges(data));
-    }, []);
+	useEffect(() => {
+		fetch(GET_FACULTY)
+			.then(res => res.json())
+			.then(data => setFaculties(data));
+	}, []);
+	useEffect(() => {
+		fetch(`http://localhost:3000/api/offer/${id}`)
+			.then(res => res.json())
+			.then(data => setOffer(data));
+	}, [id]);
 
-    useEffect(() => {
-        fetch(GET_FACULTY)
-            .then((res) => res.json())
-            .then((data) => setFaculties(data));
-    }, []);
-    useEffect(() => {
-        fetch(`http://localhost:3000/api/offer/${id}`)
-            .then((res) => res.json())
-            .then((data) => setOffer(data));
-    }, [id]);
-
-    return (
-        <div className="p-6 gap-4">
-            {offer && <UpdateForm offer={offer} college={colleges} faculty={faculties} />}
-        </div>
-    );
+	return (
+		<div className="p-6 gap-4">{offer && <UpdateForm offer={offer} college={colleges} faculty={faculties} />}</div>
+	);
 }

@@ -9,6 +9,7 @@ import roleRouter from "./modules/roles/controller";
 import offerRouter from "./modules/offers/controller"; // Assuming you have an offerRouter defined
 import offersDependenceRouter from "./modules/offersDepedence/controller"; // New import for offers dependence
 import studentOfferRouter from "./modules/studentOffers/controller"; // New import for student offers
+import directorRouter from "./modules/director/controller"; // Director routes
 import path from 'path';
 
 export async function createApp() {
@@ -39,6 +40,7 @@ export async function createApp() {
 	app.use("/api/offer", offerRouter);
 	app.use("/api/offers-dependence", offersDependenceRouter); // New route for offers dependence
 	app.use("/api/student-offers", studentOfferRouter); // New route for student offers
+	app.use("/api/director", directorRouter); // Director routes
 
 	const routes = Router();
 

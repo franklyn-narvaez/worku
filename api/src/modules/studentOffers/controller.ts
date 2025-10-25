@@ -1,11 +1,16 @@
-import { prisma } from "@/libs/db";
 import { Router } from "express";
+import path from "path";
+import z from "zod";
+import { prisma } from "@/libs/db";
 import { authenticate } from "@/middlewares/authenticate";
 import { authorize } from "@/middlewares/authorize";
-import { buildNestedCreate } from "@/utils/PrismaHelper";
-import { ProfileSchema } from "./schemas/ProfileSchema";
-import path from "path";
 import { upload } from "@/middlewares/upload";
+import { buildNestedCreate } from "@/utils/prismaHelper";
+import { ProfileSchema } from "./schemas/ProfileSchema";
+
+interface MulterRequest extends Request {
+	files?: { [fieldname: string]: Express.Multer.File[] };
+}
 
 const router = Router();
 
@@ -280,6 +285,19 @@ router.patch(
 	]),
 	async (req, res) => {
 		try {
+			const existingProfile = await prisma.studentProfile.findUnique({
+				where: { userId: req.user.id },
+			});
+
+			if (!existingProfile) {
+				return res.status(404).json({ error: "Perfil no encontrado" });
+			}
+
+			if (["SUBMITTED", "APPROVED"].includes(existingProfile.status)) {
+				return res.status(403).json({
+					error: "No puedes editar el perfil mientras está en revisión o aprobado.",
+				});
+			}
 			let parsedData;
 
 			const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
@@ -381,5 +399,57 @@ router.patch(
 		}
 	},
 );
+
+
+router.patch(
+	"/profile/:id/submit",
+	authenticate,
+	authorize(["create_profile"]),
+	async (req, res) => {
+		try {
+			const { id } = req.params;
+
+			if (!id) {
+				return res.status(400).json({ error: "ID de perfil inválido" });
+			}
+
+			const profile = await prisma.studentProfile.findUnique({
+				where: { id },
+				include: {
+					educations: true,
+					trainings: true,
+					languages: true,
+					systems: true,
+					workExperiences: true,
+					availabilities: true,
+				},
+			});
+
+			if (!profile) {
+				return res.status(404).json({ error: "Perfil no encontrado" });
+			}
+
+			if (["SUBMITTED", "APPROVED"].includes(profile.status)) {
+				return res.status(400).json({
+					error: "El perfil ya fue enviado o aprobado.",
+				});
+			}
+
+			const updated = await prisma.studentProfile.update({
+				where: { id },
+				data: { status: "SUBMITTED", submittedAt: new Date() },
+			});
+
+			return res.status(200).json({
+				message: "Perfil enviado a revisión correctamente.",
+				data: updated,
+			});
+		} catch (error) {
+			console.error("Error enviando perfil a revisión:", error);
+			return res.status(500).json({ error: "Error interno del servidor" });
+		}
+	}
+);
+
 
 export default router;

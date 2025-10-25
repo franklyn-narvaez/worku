@@ -1,29 +1,26 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext<AuthContext>({
 	login: async () => ({ status: 500 }),
 	logout: async () => {},
 	refresh: async () => ({}),
-	status: "unresolved",
+	status: 'unresolved',
 	createAuthFetchOptions: async () => ({}) as RequestInit,
 });
 
 type AuthContext = {
-	login: (
-		email: string,
-		password: string,
-	) => Promise<{ status: number; data?: any }>;
+	login: (email: string, password: string) => Promise<{ status: number; data?: any }>;
 	logout: () => Promise<void>;
 	refresh: () => Promise<any>;
 	status: Status;
 	createAuthFetchOptions: () => Promise<RequestInit>;
 };
 
-type Status = "authenticated" | "unresolved" | "unauthenticated";
+type Status = 'authenticated' | 'unresolved' | 'unauthenticated';
 
 const AUTH_CONFIG = {
 	msRefreshBeforeExpires: 30000, // 30 seconds
-	credentials: "include" as RequestCredentials,
+	credentials: 'include' as RequestCredentials,
 };
 
 type AccessTokenData = {
@@ -36,10 +33,7 @@ type ExtendedV1AccessTokenData = AccessTokenData & {
 };
 
 export interface AuthenticationStorage {
-	get: () =>
-		| Promise<ExtendedV1AccessTokenData | null>
-		| ExtendedV1AccessTokenData
-		| null;
+	get: () => Promise<ExtendedV1AccessTokenData | null> | ExtendedV1AccessTokenData | null;
 	set: (value: ExtendedV1AccessTokenData | null) => Promise<void> | void;
 }
 
@@ -54,14 +48,11 @@ const memoryStorage = () => {
 	} as AuthenticationStorage;
 };
 
-async function loginRequest(
-	data: { email: string; password: string },
-	options: RequestInit,
-) {
-	const response = await fetch("http://localhost:3000/api/auth/login", {
-		method: "POST",
+async function loginRequest(data: { email: string; password: string }, options: RequestInit) {
+	const response = await fetch('http://localhost:3000/api/auth/login', {
+		method: 'POST',
 		headers: {
-			"Content-Type": "application/json",
+			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(data),
 		...options,
@@ -83,32 +74,32 @@ async function loginRequest(
 
 async function logOutRequest(options: RequestInit) {
 	try {
-		const response = await fetch("http://localhost:3000/api/auth/logout", {
-			method: "POST",
+		const response = await fetch('http://localhost:3000/api/auth/logout', {
+			method: 'POST',
 			...options,
 		});
 		return { status: response.status, data: await response.json() };
 	} catch (_error) {
-		return { status: 500, data: { message: "Network error" } };
+		return { status: 500, data: { message: 'Network error' } };
 	}
 }
 
 async function refreshRequest(options: RequestInit) {
 	try {
-		const response = await fetch("http://localhost:3000/api/auth/refresh", {
-			method: "POST",
+		const response = await fetch('http://localhost:3000/api/auth/refresh', {
+			method: 'POST',
 			...options,
 		});
 		return { status: response.status, data: await response.json() };
 	} catch (_error) {
-		return { status: 500, data: { message: "Network error" } };
+		return { status: 500, data: { message: 'Network error' } };
 	}
 }
 
 const storage: AuthenticationStorage = memoryStorage();
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-	const [status, setStatus] = useState<Status>("unresolved");
+	const [status, setStatus] = useState<Status>('unresolved');
 	let refreshPromise: Promise<AccessTokenData> | null = null;
 	let refreshTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -125,16 +116,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		data.expires_at = Date.now() + expires;
 		storage.set(data);
 
-		if (
-			expires > AUTH_CONFIG.msRefreshBeforeExpires &&
-			expires < Number.MAX_SAFE_INTEGER
-		) {
+		if (expires > AUTH_CONFIG.msRefreshBeforeExpires && expires < Number.MAX_SAFE_INTEGER) {
 			if (refreshTimeout) clearTimeout(refreshTimeout);
 
 			refreshTimeout = setTimeout(() => {
 				refreshTimeout = null;
 
-				refresh().catch((_err) => {
+				refresh().catch(_err => {
 					/* throw err; */
 				});
 			}, expires - AUTH_CONFIG.msRefreshBeforeExpires);
@@ -154,14 +142,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			const response = await refreshRequest(fetchOptions);
 
 			if (response.status !== 200) {
-				setStatus("unauthenticated");
+				setStatus('unauthenticated');
 				resetStorage();
 				refreshPromise = null; // Limpiar la promesa
 				throw response.data;
 			}
 
 			setCredentials(response.data);
-			if (status === "unresolved") setStatus("authenticated");
+			if (status === 'unresolved') setStatus('authenticated');
 
 			refreshPromise = null; // Limpiar la promesa después de completar
 			return response.data;
@@ -180,7 +168,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		const response = await loginRequest({ email, password }, fetchOptions);
 
 		if (response.status === 200) {
-			setStatus("authenticated");
+			setStatus('authenticated');
 			setCredentials(response.data);
 		}
 
@@ -196,7 +184,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			throw response.data;
 		}
 
-		setStatus("unauthenticated");
+		setStatus('unauthenticated');
 		if (refreshTimeout) clearTimeout(refreshTimeout);
 		resetStorage();
 	};
@@ -216,11 +204,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: ju
 	useEffect(() => {
-	  refresh().catch(() => setStatus("unauthenticated"));
+		refresh().catch(() => setStatus('unauthenticated'));
 
 		const interval = setInterval(
 			() => {
-				refresh().catch(() => setStatus("unauthenticated"));
+				refresh().catch(() => setStatus('unauthenticated'));
 			},
 			25 * 60 * 1000,
 		);
@@ -229,9 +217,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	}, []);
 
 	return (
-		<AuthContext.Provider
-			value={{ login, logout, refresh, status, createAuthFetchOptions }}
-		>
+		<AuthContext.Provider value={{ login, logout, refresh, status, createAuthFetchOptions }}>
 			{children}
 		</AuthContext.Provider>
 	);
