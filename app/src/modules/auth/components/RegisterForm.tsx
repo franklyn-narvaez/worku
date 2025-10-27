@@ -26,13 +26,16 @@ function RegisterForm(props: { colleges: College[] }) {
 		if (res.status === 400) return toast.error('El usuario ya existe o hay un error en los datos.');
 		if (res.status === 500) return toast.error('Error al registrar el usuario.');
 		if (res.status === 404) return toast.error('Rol no encontrado.');
-		if (res.ok) navigate('/auth/login');
+		if (res.status === 201) {
+			toast.success('¡Registro exitoso! Por favor, inicia sesión.');
+			navigate('/auth/login');
+		}
 	});
 
 	return (
-		<div className="h-full flex items-center justify-center  bg-background">
+		<div className="h-full flex items-center justify-center bg-login-image">
 			<FormProvider {...methods}>
-				<form onSubmit={onSubmit} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-xl flex-col items-center">
+				<form onSubmit={onSubmit} className="bg-white/95 p-8 rounded-2xl shadow-2xl border border-gray-400 w-full max-w-2xl flex-col items-center">
 
 					<div className="mb-6 flex justify-center">
 						<img
@@ -41,8 +44,6 @@ function RegisterForm(props: { colleges: College[] }) {
 							className="h-25 w-auto object-contain"
 						/>
 					</div>
-					{/* <h1 className="text-text-title font-bold text-4xl mb-4">Crear cuenta</h1> */}
-
 					<FormField name="name" label="Nombre" placeholder="Ingresa tu nombre" />
 					<FormField name="lastName" label="Apellido" placeholder="Ingresa tu apellido" />
 					<FormField name="email" label="Correo electrónico" placeholder="Ingresa tu correo" />

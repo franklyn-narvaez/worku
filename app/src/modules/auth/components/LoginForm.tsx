@@ -20,17 +20,18 @@ function LoginForm() {
 		if (res.status === 400) return toast.error('Datos invalidos.');
 		if (res.status === 401) return toast.error('Usuario o contraseña no válidos.');
 		if (res.status === 500) return toast.error('Error del servidor, intenta nuevamente.');
-
 		if (res.status === 200) {
 			toast.success('¡Inicio de sesión exitoso!');
-			navigate('/dashboard');
+			setTimeout(() => {
+				navigate('/dashboard');
+			}, 1000);
 		}
 	};
 
 	return (
-		<div className="h-screen flex items-center justify-center bg-background">
+		<div className="h-screen flex items-center justify-center bg-login-image">
 			<FormProvider {...methods}>
-				<form onSubmit={methods.handleSubmit(onSubmit)} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-xl flex-col items-center">
+				<form onSubmit={methods.handleSubmit(onSubmit)} className="bg-white/95 p-8 rounded-2xl shadow-2xl border border-gray-400 w-full max-w-xl flex-col items-center">
 					<div className="mb-6 flex justify-center">
 						<img
 							src={LogInUnivalle}
@@ -38,7 +39,6 @@ function LoginForm() {
 							className="h-32 w-auto object-contain"
 						/>
 					</div>
-					{/* <h1 className="text-text-title font-bold text-4xl mb-4">Inicio de sesión</h1> */}
 					<FormField name="email" label="Correo electrónico" placeholder="Ingresa tu correo electrónico" />
 
 					<FormField type="password" name="password" placeholder="Ingresa tu contraseña" label="Contraseña" />
