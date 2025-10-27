@@ -41,9 +41,7 @@ router.get(
 
 router.post("/register", async (req, res) => {
 	try {
-		console.log("Registering user with data:", req.body);
 		const parseData = registerSchema.safeParse(req.body);
-		console.log();
 
 		if (!parseData.success) {
 			return res.status(400).json({
@@ -79,7 +77,7 @@ router.post("/register", async (req, res) => {
 
 		const { password: _, ...user } = newUser;
 
-		return res.json(user);
+		return res.status(201).json(user);
 	} catch (error) {
 		if (error instanceof z.ZodError) {
 			return res.status(400).json({ errors: z.treeifyError(error) });
@@ -94,9 +92,7 @@ router.post(
 	authorize(["create_user"]),
 	async (req, res) => {
 		try {
-			console.log("Registering user with data:", req.body);
 			const parseData = CreateSchema.safeParse(req.body);
-			console.log();
 
 			if (!parseData.success) {
 				return res.status(400).json({
@@ -122,7 +118,7 @@ router.post(
 
 			const { password: _, ...user } = newUser;
 
-			return res.json(user);
+			return res.status(201).json(user);
 		} catch (error) {
 			if (error instanceof z.ZodError) {
 				return res.status(400).json({ errors: z.treeifyError(error) });

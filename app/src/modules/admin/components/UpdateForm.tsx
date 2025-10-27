@@ -7,14 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import { ADMIN_USER, UPDATE_USER } from '@/constants/path';
 import { UpdateSchema, statusEnum, statusLabels, type UpdateType } from '../schemas/Update';
 import { useAuth } from '@/hooks/useAuth';
+import type { ExtendedUser } from '../types/user';
 
 type UpdateFormProps = {
-	user: User & {
-		college: {
-			id: string;
-			name: string;
-		} | null;
-	};
+	user: ExtendedUser;
 	college?: College[];
 	role?: Role[];
 };
@@ -129,7 +125,7 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
 
 					<div className="flex justify-between gap-x-2 mt-4">
 						<button type="submit" className="w-1/2 button-create p-3 rounded-lg" disabled={isSubmitting && !isValid}>
-							Actualizar Usuario
+							Actualizar
 						</button>
 						<button
 							type="button"
