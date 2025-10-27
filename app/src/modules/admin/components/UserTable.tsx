@@ -14,7 +14,7 @@ const UserTable = (props: { users: ExtendedUser[] }) => {
 	return (
 		<Table>
 			<TableCaption>Lista de usuarios</TableCaption>
-			<TableHeader className="bg-slate-100 border-b">
+			<TableHeader className="bg-table-header">
 				<TableRow>
 					<TableHead>Nombre</TableHead>
 					<TableHead>Apellido</TableHead>

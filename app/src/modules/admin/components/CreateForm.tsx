@@ -42,9 +42,9 @@ export default function CreateForm(props: { colleges: College[]; roles: Role[] }
 	};
 
 	return (
-		<div className="h-full flex items-center justify-center">
+		<div className="h-full flex items-center justify-center bg-background">
 			<FormProvider {...methods}>
-				<form onSubmit={handleSubmit(onSubmit)} className="w-1/2">
+				<form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-3xl flex-col items-center">
 					<h1 className="text-text-title font-bold text-4xl mb-4">Crear Usuario</h1>
 					<FormField name="name" label="Nombre" type="text" placeholder="Ingrese su nombre" />
 					<FormField name="lastName" label="Apellido" type="text" placeholder="Ingrese su apellido" />
@@ -71,7 +71,8 @@ export default function CreateForm(props: { colleges: College[]; roles: Role[] }
 					<label htmlFor="roleId" className="text-slate-900 mb-2 block text-sm">
 						Rol
 					</label>
-					<select {...methods.register('roleId')} className="p-3 rounded block mb-2 bg-[#D9D9D9] text-slate-900 w-full">
+					<select
+						{...methods.register('roleId')} className="p-3 rounded block mb-2 bg-[#D9D9D9] text-slate-900 w-full">
 						<option value="">Selecciona un rol</option>
 						{props.roles.map(role => (
 							<option key={role.id} value={role.id}>
