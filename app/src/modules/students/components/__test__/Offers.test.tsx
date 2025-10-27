@@ -81,7 +81,8 @@ describe("ListOffers", () => {
         );
 
         await waitFor(() => {
-            expect(screen.getByText("Ofertas disponibles")).toBeInTheDocument();
+            expect(screen.getByText("Ofertas")).toBeInTheDocument();
+            expect(screen.getByText("No hay ofertas disponibles")).toBeInTheDocument();
             expect(screen.queryByText("Oferta 1")).not.toBeInTheDocument();
         });
     });

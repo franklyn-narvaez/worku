@@ -4,14 +4,15 @@ export default defineConfig({
   env: {
     baseUrl: 'http://localhost:5173',
     login: 'http://localhost:5173/auth/login',
+    MODE: 'test',
   },
   e2e: {
     setupNodeEvents(on, config) {
-     	config.baseUrl = config.env.baseUrl;
-			config.viewportWidth = 1920;
-			config.viewportHeight = 1080;
+      config.baseUrl = config.env.baseUrl;
+      config.viewportWidth = 1920;
+      config.viewportHeight = 1080;
 
-			return config
+      return config
     },
   },
 

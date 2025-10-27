@@ -1,5 +1,5 @@
 import { FormField } from '@/components/FormField';
-import type { College, Role, User } from '@prisma/client';
+import type { College, Role } from '@prisma/client';
 import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
@@ -119,12 +119,12 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
 							</option>
 						))}
 					</select>
-					{methods.formState.errors.roleId && (
-						<span className="text-red-500 text-sm">{methods.formState.errors.roleId.message}</span>
+					{methods.formState.errors.status && (
+						<span className="text-red-500 text-sm">{methods.formState.errors.status.message}</span>
 					)}
 
 					<div className="flex justify-between gap-x-2 mt-4">
-						<button type="submit" className="w-1/2 button-create p-3 rounded-lg" disabled={isSubmitting && !isValid}>
+						<button type="submit" className="w-1/2 button-update p-3 rounded-lg" disabled={isSubmitting && !isValid}>
 							Actualizar
 						</button>
 						<button

@@ -189,6 +189,12 @@ describe("Offers Controller", () => {
 
     // ✅ PATCH /update-profile
     it("actualiza perfil exitosamente", async () => {
+        (prisma.studentProfile.findUnique as any).mockResolvedValue({
+            id: "p1",
+            userId: "user123",
+            status: "DRAFT",
+        });
+
         (prisma.studentProfile.update as any).mockResolvedValue({
             id: "p1",
             userId: "user123",

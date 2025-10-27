@@ -5,7 +5,7 @@ export type ExtendedOffer = Offer & {
 		id: string;
 		name: string;
 	} | null;
-	count: {
+	_count: {
 		Application: number;
 	};
 };

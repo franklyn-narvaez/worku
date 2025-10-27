@@ -25,7 +25,7 @@ import {
 	USER_CREATE,
 	USER_UPDATE,
 } from '@/constants/path';
-import CreateForm from '@/modules/admin/components/CreateForm';
+import UserCreate from '@/modules/admin/pages/UserCreate';
 import Users from '@/modules/admin/pages/Users';
 import UserUpdate from '@/modules/admin/pages/UserUpdate';
 import Login from '@/modules/auth/pages/Login';
@@ -117,7 +117,7 @@ export const routeConfig: AppRoute[] = [
 					},
 					{
 						path: USER_CREATE,
-						element: <CreateForm />,
+						element: <UserCreate />,
 						requiredPermission: 'create_user',
 					},
 					{

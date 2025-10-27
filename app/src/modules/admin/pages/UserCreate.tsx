@@ -7,37 +7,36 @@ import CreateForm from "../components/CreateForm";
 function UserCreate() {
 
     const { createAuthFetchOptions } = useAuth();
-    
-    const [colleges, setColleges] = useState<College[]| undefined>(undefined);
-    const [roles, setRoles] = useState<Role[] |undefined>(undefined);
 
+    const [colleges, setColleges] = useState<College[] | undefined>(undefined);
+    const [roles, setRoles] = useState<Role[] | undefined>(undefined);
 
-      useEffect(() => {
-            const fetchColleges = async () => {
-                const options = await createAuthFetchOptions();
-                const res = await fetch(GET_COLLEGE, options);
-                const data = await res.json();
-                setColleges(data);
-            };
-            fetchColleges();
-        }, [createAuthFetchOptions]);
-    
-        useEffect(() => {
-            const fetchRoles = async () => {
-                const options = await createAuthFetchOptions();
-                const res = await fetch(GET_ROLE, options);
-                const data = await res.json();
-                setRoles(data);
-            };
-            fetchRoles();
-        }, [createAuthFetchOptions]);
+    useEffect(() => {
+        const fetchColleges = async () => {
+            const options = await createAuthFetchOptions();
+            const res = await fetch(GET_COLLEGE, options);
+            const data = await res.json();
+            setColleges(data);
+        };
+        fetchColleges();
+    }, [createAuthFetchOptions]);
+
+    useEffect(() => {
+        const fetchRoles = async () => {
+            const options = await createAuthFetchOptions();
+            const res = await fetch(GET_ROLE, options);
+            const data = await res.json();
+            setRoles(data);
+        };
+        fetchRoles();
+    }, [createAuthFetchOptions]);
 
     if (!colleges || !roles) {
         return <div>Loading...</div>;
     }
 
     return (
-        <CreateForm colleges={colleges} roles={roles}/>
+        <CreateForm colleges={colleges} roles={roles} />
     )
 }
 

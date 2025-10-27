@@ -103,6 +103,7 @@ export default function OfferCreateForm() {
 					<DatePickerField
 						name="closeDate"
 						label="Fecha de cierre"
+						data-testid="closeDate"
 						rules={{ required: 'La fecha de cierre es obligatoria' }}
 					/>
 

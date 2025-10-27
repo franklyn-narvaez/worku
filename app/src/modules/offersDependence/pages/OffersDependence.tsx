@@ -18,7 +18,7 @@ export default function OffersDependence() {
 	useEffect(() => {
 		const fetchUsers = async () => {
 			const fetchOptions = await createAuthFetchOptions();
-			const res = await fetch(`${API_BASE_URL}/offer`, fetchOptions);
+			const res = await fetch(`${API_BASE_URL}/offers-dependence`, fetchOptions);
 			const data = await res.json();
 			setOffers(data);
 		};

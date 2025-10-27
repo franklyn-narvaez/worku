@@ -18,6 +18,8 @@
     "zod": "^4.0.8"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2"
+    "@biomejs/biome": "2.2.2",
+    "@faker-js/faker": "^10.1.0",
+    "cypress": "^15.5.0"
   }
 }

@@ -136,7 +136,7 @@ export default function UpdateForm({ offer, college, faculty }: UpdateFormProps)
 						>
 							Cancelar
 						</button>
-						<button type="submit" className="w-1/2 button-create p-3 rounded-lg" disabled={isSubmitting && !isValid}>
+						<button type="submit" className="w-1/2 button-update p-3 rounded-lg" disabled={isSubmitting && !isValid}>
 							Actualziar oferta
 						</button>
 					</div>

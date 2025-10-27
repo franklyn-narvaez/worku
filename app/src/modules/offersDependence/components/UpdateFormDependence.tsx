@@ -136,7 +136,7 @@ export default function UpdateFormDependence({ offer, college, faculty }: Update
 						>
 							Cancelar
 						</button>
-						<button type="submit" className="w-1/2 button-create p-3 rounded-lg" disabled={isSubmitting && !isValid}>
+						<button type="submit" className="w-1/2 button-update p-3 rounded-lg" disabled={isSubmitting && !isValid}>
 							Actualizar oferta
 						</button>
 					</div>
