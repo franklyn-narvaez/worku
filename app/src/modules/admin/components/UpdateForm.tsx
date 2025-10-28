@@ -67,9 +67,9 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
 	};
 
 	return (
-		<div className="h-full flex items-center justify-center">
+		<div className="h-full flex items-center justify-center bg-background">
 			<FormProvider {...methods}>
-				<form onSubmit={handleSubmit(onSubmit)} className="w-1/2">
+				<form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-3xl flex-col items-center">
 					<h1 className="text-text-title font-bold text-4xl mb-4">Actualizar Usuario</h1>
 					<FormField name="name" label="Nombre" type="text" placeholder="Ingrese su nombre" />
 					<FormField name="lastName" label="Apellido" type="text" placeholder="Ingrese su apellido" />
