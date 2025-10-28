@@ -28,20 +28,30 @@ export default function OfferCreateFormDependence() {
 
 	useEffect(() => {
 		const fetchColleges = async () => {
-			const options = await createAuthFetchOptions();
-			const res = await fetch(GET_COLLEGE, options);
-			const data = await res.json();
-			setColleges(data);
+			try {
+				const options = await createAuthFetchOptions();
+				const res = await fetch(GET_COLLEGE, options);
+				const data = await res.json();
+				setColleges(Array.isArray(data) ? data : []);
+			} catch (err) {
+				console.error("Error al cargar colegios:", err);
+				setColleges([]);
+			}
 		};
 		fetchColleges();
 	}, [createAuthFetchOptions]);
 
 	useEffect(() => {
 		const fetchFaculties = async () => {
-			const options = await createAuthFetchOptions();
-			const res = await fetch(GET_FACULTY, options);
-			const data = await res.json();
-			setFaculties(data);
+			try {
+				const options = await createAuthFetchOptions();
+				const res = await fetch(GET_FACULTY, options);
+				const data = await res.json();
+				setFaculties(Array.isArray(data) ? data : []);
+			} catch (err) {
+				console.error("Error al cargar facultades:", err);
+				setFaculties([]);
+			}
 		};
 		fetchFaculties();
 	}, [createAuthFetchOptions]);

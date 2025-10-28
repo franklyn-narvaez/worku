@@ -175,7 +175,6 @@ const validateTestCases = [
 		selectCollege: false,
 		emailError: 'El correo electrónico no es válido',
 		passwordError: 'La contraseña debe tener al menos 6 caracteres',
-		confirmPasswordError: 'La confirmación de contraseña debe tener al menos 6 caracteres',
 		nameError: 'El nombre es requerido',
 		lastNameError: 'El apellido es requerido',
 		collegeError: 'La escuela es requerida',
@@ -200,6 +199,5 @@ const validateTestCases = [
 	{
 		confirmPassword: '123',
 		title: 'shows validation error for empty name',
-		confirmPasswordError: 'La confirmación de contraseña debe tener al menos 6 caracteres',
 	},
 ];

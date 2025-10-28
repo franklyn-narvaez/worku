@@ -45,7 +45,7 @@ const OfferTable = (props: { offers: ExtendedOffer[] }) => {
 						<TableCell className="p-4">{new Date(offer.createdAt).toLocaleDateString()}</TableCell>
 						<TableCell className="p-4">{new Date(offer.updatedAt).toLocaleDateString()}</TableCell>
 						<TableCell className="p-4">{new Date(offer.closeDate).toLocaleDateString()}</TableCell>
-						<TableCell className="p-4">{offer.count.Application ?? 0}</TableCell>
+						<TableCell className="p-4">{offer._count.Application ?? 0}</TableCell>
 						<TableCell className="p-4">
 							{offer.status ? <Badge variant="success">Activa</Badge> : <Badge variant="destructive">Inactiva</Badge>}
 						</TableCell>

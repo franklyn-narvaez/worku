@@ -12,7 +12,12 @@ export const UpdateSchema = z.object({
     email: z.email("El correo electrónico no es válido"),
     collegeId: z.string().min(1, "La escuela es requerida"),
     roleId: z.string().min(1, "El rol es requerido"),
-    status: statusEnum,
+    status: z
+        .string()
+        .refine(val => ["ACTIVE", "INACTIVE"].includes(val), {
+            message: "Selecciona un estado válido",
+        }),
+
 })
 
-export type UpdateType= z.infer<typeof UpdateSchema>;
+export type UpdateType = z.infer<typeof UpdateSchema>;
