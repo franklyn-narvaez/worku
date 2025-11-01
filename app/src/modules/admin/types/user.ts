@@ -5,4 +5,8 @@ export type ExtendedUser = User & {
 		id: string;
 		name: string;
 	} | null;
+	role: {
+		id: string;
+		name: string;
+	}
 };

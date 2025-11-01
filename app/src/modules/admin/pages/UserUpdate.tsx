@@ -1,20 +1,14 @@
-import type { College, Role, User } from '@prisma/client';
+import type { College, Role } from '@prisma/client';
+import type { ExtendedUser } from '../types/user';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import UpdateForm from '../components/UpdateForm';
 import { GET_COLLEGE, GET_ROLE } from '@/constants/path';
 
-type UserWithCollege = User & {
-	college: {
-		id: string;
-		name: string;
-	} | null;
-};
-
 export default function UserUpdate() {
 	const { id } = useParams();
 
-	const [user, setUser] = useState<UserWithCollege>();
+	const [user, setUser] = useState<ExtendedUser>();
 	const [college, setColleges] = useState<College[]>([]);
 	const [role, setRoles] = useState<Role[]>([]);
 
@@ -35,5 +29,5 @@ export default function UserUpdate() {
 			.then(data => setUser(data));
 	}, [id]);
 
-	return <div className="p-6 gap-4">{user && <UpdateForm user={user} college={college} role={role} />}</div>;
+	return (user && <UpdateForm user={user} college={college} role={role} />)
 }

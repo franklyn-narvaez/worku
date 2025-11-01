@@ -34,7 +34,7 @@ export default function Offers() {
 				<button
 					type="button"
 					onClick={handleNavigate}
-					className="bg-black text-white px-2 py-1.5 rounded-md hover:bg-gray-800 transition"
+					className="bg-button-create text-white px-2 py-1.5 rounded-md hover:bg-gray-800 transition"
 				>
 					Crear oferta
 				</button>

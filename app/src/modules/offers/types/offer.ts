@@ -5,4 +5,8 @@ export type ExtendedOffer = Offer & {
 		id: string;
 		name: string;
 	} | null;
+	faculty: {
+		id: string;
+		name: string;
+	} | null;
 };

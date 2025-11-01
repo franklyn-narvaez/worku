@@ -55,78 +55,82 @@ const ReviewProfilesLists = () => {
 	if (profiles.length === 0) return <p className="text-center py-6 text-gray-600">No hay perfiles para revisión.</p>;
 
 	return (
-		<Table>
-			<TableCaption>Lista de estudiantes con perfil en revisión</TableCaption>
-			<TableHeader className="bg-slate-100 border-b">
-				<TableRow>
-					<TableHead>Foto</TableHead>
-					<TableHead>Nombre</TableHead>
-					<TableHead>Código</TableHead>
-					<TableHead>Programa</TableHead>
-					<TableHead>Correo</TableHead>
-					<TableHead>Fecha de envío</TableHead>
-					<TableHead>Estado</TableHead>
-					<TableHead>Acciones</TableHead>
-				</TableRow>
-			</TableHeader>
+		<div className='pt-8 pr-8'>
+			<div className="bg-white shadow-md rounded-lg overflow-hidden">
+				<Table>
+					<TableCaption>Lista de estudiantes con perfil en revisión</TableCaption>
+					<TableHeader className="bg-table-header">
+						<TableRow>
+							<TableHead>Foto</TableHead>
+							<TableHead>Nombre</TableHead>
+							<TableHead>Código</TableHead>
+							<TableHead>Programa</TableHead>
+							<TableHead>Correo</TableHead>
+							<TableHead>Fecha de envío</TableHead>
+							<TableHead>Estado</TableHead>
+							<TableHead>Acciones</TableHead>
+						</TableRow>
+					</TableHeader>
 
-			<TableBody>
-				{profiles.map(profile => (
-					<TableRow key={profile.id} className="hover:bg-slate-50">
-						<TableCell>
-							{profile.Photo ? (
-								<img src={profile.Photo} alt="Foto estudiante" className="w-12 h-12 object-cover rounded-full border" />
-							) : (
-								<div className="w-12 h-12 bg-gray-200 rounded-full" />
-							)}
-						</TableCell>
+					<TableBody>
+						{profiles.map(profile => (
+							<TableRow key={profile.id} className="hover:bg-slate-50">
+								<TableCell>
+									{profile.Photo ? (
+										<img src={profile.Photo} alt="Foto estudiante" className="w-12 h-12 object-cover rounded-full border" />
+									) : (
+										<div className="w-12 h-12 bg-gray-200 rounded-full" />
+									)}
+								</TableCell>
 
-						<TableCell className="font-medium">{profile.fullName}</TableCell>
-						<TableCell>{profile.studentCode}</TableCell>
-						<TableCell>{profile.planName}</TableCell>
-						<TableCell>{profile.user.email}</TableCell>
-						<TableCell>
-							{profile.submittedAt
-								? new Date(profile.submittedAt).toLocaleDateString('es-CO', {
-										year: 'numeric',
-										month: 'short',
-										day: 'numeric',
-									})
-								: 'Sin fecha de envío'}
-						</TableCell>
+								<TableCell className="font-medium">{profile.fullName}</TableCell>
+								<TableCell>{profile.studentCode}</TableCell>
+								<TableCell>{profile.planName}</TableCell>
+								<TableCell>{profile.user.email}</TableCell>
+								<TableCell>
+									{profile.submittedAt
+										? new Date(profile.submittedAt).toLocaleDateString('es-CO', {
+											year: 'numeric',
+											month: 'short',
+											day: 'numeric',
+										})
+										: 'Sin fecha de envío'}
+								</TableCell>
 
-						<TableCell>
-							<span
-								className={`px-2 py-1 rounded text-white text-xs font-medium ${
-									profile.status === 'SUBMITTED'
-										? 'bg-yellow-500'
-										: profile.status === 'APPROVED'
-											? 'bg-green-500'
-											: 'bg-red-500'
-								}`}
-							>
-								{profile.status === 'SUBMITTED'
-									? 'Pendiente de revisión'
-									: profile.status === 'APPROVED'
-										? 'Aprobado'
-										: 'Rechazado'}
-							</span>
-						</TableCell>
+								<TableCell>
+									<span
+										className={`px-2 py-1 rounded text-white text-xs font-medium ${profile.status === 'SUBMITTED'
+											? 'bg-yellow-500'
+											: profile.status === 'APPROVED'
+												? 'bg-green-500'
+												: 'bg-red-500'
+											}`}
+									>
+										{profile.status === 'SUBMITTED'
+											? 'Pendiente de revisión'
+											: profile.status === 'APPROVED'
+												? 'Aprobado'
+												: 'Rechazado'}
+									</span>
+								</TableCell>
 
-						<TableCell className="space-x-2">
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={() => handleViewProfile(profile.id)}
-								className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-							>
-								Ver perfil
-							</Button>
-						</TableCell>
-					</TableRow>
-				))}
-			</TableBody>
-		</Table>
+								<TableCell className="space-x-2">
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() => handleViewProfile(profile.id)}
+										className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+									>
+										Ver perfil
+									</Button>
+								</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+
+			</div>
+		</div >
 	);
 };
 

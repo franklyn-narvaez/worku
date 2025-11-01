@@ -251,7 +251,7 @@ export default function StudentReviewProfileView() {
 			setProfile(prev => (prev ? { ...prev, status: updated.status } : prev));
 			localStorage.removeItem(`reviewed_grades_${id}`);
 
-			toast.success(newStatus === 'APPROVED' ? '✅ Perfil aprobado con éxito' : '❌ Perfil rechazado correctamente');
+			toast.success(newStatus === 'APPROVED' ? 'Perfil aprobado con éxito' : 'Perfil rechazado correctamente');
 
 			setShowConfirmModal(false);
 			setShowRejectModal(false);
@@ -375,7 +375,7 @@ export default function StudentReviewProfileView() {
 								size="sm"
 								className={hasViewedGrades ? 'bg-green-500 hover:bg-green-600 text-white' : ''}
 							>
-								{hasViewedGrades ? 'Certificado revisado ✅' : 'Ver certificado'}
+								{hasViewedGrades ? 'Certificado revisado' : 'Ver certificado'}
 							</Button>
 						</a>
 					)}
@@ -387,11 +387,11 @@ export default function StudentReviewProfileView() {
 								className="bg-green-600 hover:bg-green-700 text-white"
 								onClick={() => openStatusModal('APPROVED')}
 							>
-								✅ Aprobar
+								Aprobar
 							</Button>
 
 							<Button variant="destructive" size="sm" onClick={() => openStatusModal('REJECTED')}>
-								❌ Rechazar
+								Rechazar
 							</Button>
 						</div>
 					)}

@@ -82,8 +82,8 @@ export default function UpdateForm({ offer, college, faculty }: UpdateFormProps)
 	return (
 		<div className="h-full flex items-center justify-center">
 			<FormProvider {...methods}>
-				<form onSubmit={handleSubmit(onSubmit)} className="w-1/2">
-					<h1 className="text-text-title font-bold text-4xl mb-4">Actualizar Oferta</h1>
+				<form onSubmit={handleSubmit(onSubmit)} className="bg-white/95 p-10 rounded-2xl shadow-2xl w-full max-w-4xl flex-col items-center">
+					<h1 className="text-text-title text-center font-bold text-4xl mb-4">Actualizar Oferta</h1>
 					<FormField name="title" label="Titulo" type="text" placeholder="Ingrese el titulo" />
 					<TextAreaField name="description" label="Descripción" placeholder="Ingrese la descripción" rows={3} />
 					<TextAreaField name="requirements" label="Requisitos" placeholder="Ingrese los requisitos" rows={3} />
