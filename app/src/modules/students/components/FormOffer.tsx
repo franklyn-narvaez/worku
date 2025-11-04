@@ -7,6 +7,9 @@ import type { Offer } from '@prisma/client';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import StudentOfferDetails from './OfferModal';
+import { useState } from 'react';
+import { Eye } from 'lucide-react';
 
 type ExtendedOffer = Offer & {
 	college: {
@@ -66,9 +69,9 @@ const getStatusLabel = (status: ExtendedOffer['userApplicationStatus'], attended
 
 const getStatusColor = (status: ExtendedOffer['userApplicationStatus'], attendedInterview?: boolean | null) => {
 	if (status === 'CALLED_FOR_INTERVIEW') {
-		if (attendedInterview === true) return 'bg-blue-500'; // asistió
-		if (attendedInterview === false) return 'bg-orange-400'; // no asistió
-		return 'bg-indigo-500'; // citado
+		if (attendedInterview === true) return 'bg-blue-500';
+		if (attendedInterview === false) return 'bg-orange-400';
+		return 'bg-indigo-500';
 	}
 
 	switch (status) {
@@ -89,22 +92,38 @@ const getStatusColor = (status: ExtendedOffer['userApplicationStatus'], attended
 
 export function FormOffer({ offer }: { offer: ExtendedOffer }) {
 	const { createAuthFetchOptions } = useAuth();
-
 	const navigate = useNavigate();
-
 	const { register, handleSubmit, reset } = useForm<ApplyOfferType>();
 
-	const alreadyApplied = !!offer.userApplicationStatus;
+	const [currentOffer, setCurrentOffer] = useState(offer);
+	const [openDetails, setOpenDetails] = useState(false);
+
+	const alreadyApplied = !!currentOffer.userApplicationStatus;
 
 	const onSubmit: SubmitHandler<ApplyOfferType> = async data => {
 		try {
 			const authOptions = await createAuthFetchOptions();
 
-			const studentProfile = await fetch(VIEW_PROFILE, authOptions);
+			const studentProfileRes = await fetch(VIEW_PROFILE, authOptions);
 
-			if (!studentProfile.ok) {
-				toast.warn('Debes completar tu perfil antes de aplicar a una oferta.');
+			if (!studentProfileRes.ok) {
+				toast.warn('Debes crear y completar tu perfil antes de aplicar a una oferta.');
 				navigate(STUDENT_PROFILES);
+				return;
+			}
+
+			const studentProfile = await studentProfileRes.json();
+
+			if (studentProfile.status !== 'APPROVED') {
+				let message = 'Tu perfil debe estar aprobado para aplicar a ofertas.';
+
+				if (studentProfile.status === 'SUBMITTED') {
+					message = 'Tu perfil está en revisión. Espera la aprobación para aplicar.';
+				} else if (studentProfile.status === 'REJECTED') {
+					message = 'Tu perfil fue rechazado. Debes corregirlo antes de aplicar.';
+				}
+
+				toast.warn(message);
 				return;
 			}
 
@@ -120,6 +139,10 @@ export function FormOffer({ offer }: { offer: ExtendedOffer }) {
 
 			if (response.ok) {
 				toast.success('¡Aplicaste correctamente a esta oferta!');
+				setCurrentOffer(prev => ({
+					...prev,
+					userApplicationStatus: 'SENT',
+				}));
 				reset();
 			} else {
 				const errorData = await response.json();
@@ -135,95 +158,133 @@ export function FormOffer({ offer }: { offer: ExtendedOffer }) {
 		<div>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200">
-					{/* Header */}
-					<CardHeader>
+					<CardHeader className="flex flex-col gap-2">
 						<div className="flex justify-between items-center">
-							<div className="flex items-center gap-2">
-								<CardTitle className="text-xl font-semibold">{offer.title}</CardTitle>
-								<Badge className={`${getStatusColor(offer.userApplicationStatus, offer.attendedInterview)} text-white`}>
-									{getStatusLabel(offer.userApplicationStatus, offer.attendedInterview)}
-								</Badge>
+							<div className="flex flex-col">
+								<div className="flex items-center gap-2 flex-wrap">
+									<CardTitle className="text-lg font-semibold break-words">
+										{currentOffer.title}
+									</CardTitle>
+
+									<Badge
+										className={`${getStatusColor(
+											currentOffer.userApplicationStatus,
+											currentOffer.attendedInterview
+										)} text-white whitespace-nowrap`}
+									>
+										{getStatusLabel(
+											currentOffer.userApplicationStatus,
+											currentOffer.attendedInterview
+										)}
+									</Badge>
+								</div>
+
+								<p className="text-sm text-slate-500 mt-1">
+									Publicada: {formatDate(currentOffer.createdAt)}
+								</p>
 							</div>
 
-							<Badge
-								variant={offer.status ? 'default' : 'secondary'}
-								className={offer.status ? 'bg-green-500' : 'bg-red-400'}
-							>
-								{offer.status ? 'Activa' : 'Inactiva'}
-							</Badge>
+							<div className="flex items-center gap-2 shrink-0">
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon"
+									onClick={() => setOpenDetails(true)}
+								>
+									<Eye className="w-5 h-5" />
+								</Button>
+
+								<Badge
+									variant={currentOffer.status ? 'default' : 'secondary'}
+									className={`${currentOffer.status ? 'bg-green-500' : 'bg-red-400'
+										} text-white whitespace-nowrap`}
+								>
+									{currentOffer.status ? 'Activa' : 'Inactiva'}
+								</Badge>
+							</div>
 						</div>
-						{offer.interviewDate && (
-							<p className="text-sm mt-2">
-								{offer.userApplicationStatus === 'CALLED_FOR_INTERVIEW' && offer.attendedInterview === null && (
-									<span className="text-indigo-600 font-medium">
-										📅 Programada para: {formatTime(offer.interviewDate)}
-									</span>
-								)}
 
-								{offer.userApplicationStatus === 'CALLED_FOR_INTERVIEW' && offer.attendedInterview === true && (
-									<span className="text-blue-600 font-medium">
-										✅ Entrevista realizada el {formatTime(offer.interviewDate)}
-									</span>
-								)}
+						{currentOffer.interviewDate && (
+							<p className="text-sm mt-1 leading-snug">
+								{currentOffer.userApplicationStatus === 'CALLED_FOR_INTERVIEW' &&
+									currentOffer.attendedInterview === null && (
+										<span className="text-indigo-600 font-medium">
+											📅 Programada para: {formatTime(currentOffer.interviewDate)}
+										</span>
+									)}
 
-								{offer.userApplicationStatus === 'CALLED_FOR_INTERVIEW' && offer.attendedInterview === false && (
-									<span className="text-orange-600 font-medium">
-										❌ No asististe a la entrevista programada el {formatTime(offer.interviewDate)}
-									</span>
-								)}
+								{currentOffer.userApplicationStatus === 'CALLED_FOR_INTERVIEW' &&
+									currentOffer.attendedInterview === true && (
+										<span className="text-blue-600 font-medium">
+											✅ Entrevista realizada el {formatTime(currentOffer.interviewDate)}
+										</span>
+									)}
 
-								{offer.userApplicationStatus === 'APPROVED' && (
+								{currentOffer.userApplicationStatus === 'CALLED_FOR_INTERVIEW' &&
+									currentOffer.attendedInterview === false && (
+										<span className="text-orange-600 font-medium">
+											❌ No asististe a la entrevista programada el {formatTime(currentOffer.interviewDate)}
+										</span>
+									)}
+
+								{currentOffer.userApplicationStatus === 'APPROVED' && (
 									<span className="text-green-600 font-medium">
-										✅ Aplicación aprobada tras entrevista el {formatTime(offer.interviewDate)}
+										✅ Aplicación aprobada tras entrevista el {formatTime(currentOffer.interviewDate)}
 									</span>
 								)}
 
-								{offer.userApplicationStatus === 'REJECTED' && (
+								{currentOffer.userApplicationStatus === 'REJECTED' && (
 									<span className="text-red-600 font-medium">
-										❌ Aplicación rechazada tras entrevista el {formatTime(offer.interviewDate)}
+										❌ Aplicación rechazada tras entrevista el {formatTime(currentOffer.interviewDate)}
 									</span>
 								)}
 							</p>
 						)}
-
-						<p className="text-sm text-slate-500">Publicada: {formatDate(offer.createdAt)}</p>
 					</CardHeader>
 
-					{/* Content */}
 					<CardContent className="space-y-4">
-						<p className="text-slate-700 line-clamp-3">{offer.description || 'Sin descripción'}</p>
+						<p className="text-slate-700 line-clamp-3">{currentOffer.description || 'Sin descripción'}</p>
 
-						{offer.requirements && (
+						{currentOffer.requirements && (
 							<div>
 								<h4 className="text-sm font-semibold text-slate-600 mb-1">Requisitos:</h4>
-								<p className="text-sm text-slate-700 line-clamp-2">{offer.requirements}</p>
+								<p className="text-sm text-slate-700 line-clamp-2">{currentOffer.requirements}</p>
 							</div>
 						)}
 
 						<div className="flex flex-col gap-1 text-sm text-slate-600">
 							<p>
 								<span className="font-medium">Escuela: </span>
-								{offer.college?.name ?? 'No especificada'}
+								{currentOffer.college?.name ?? 'No especificada'}
 							</p>
 							<p>
 								<span className="font-medium">Facultad: </span>
-								{offer.faculty?.name ?? 'No especificada'}
+								{currentOffer.faculty?.name ?? 'No especificada'}
 							</p>
 						</div>
 
-						<p className="text-xs text-slate-500">Fecha de cierre: {formatDate(offer.closeDate)}</p>
+						<p className="text-xs text-slate-500">Fecha de cierre: {formatDate(currentOffer.closeDate)}</p>
 
-						{/* Campo oculto para enviar el ID */}
-						<input type="hidden" value={offer.id} {...register('offerId')} />
+						<input type="hidden" value={currentOffer.id} {...register('offerId')} />
 
 						<div className="pt-2">
-							<Button type="submit" variant="outline" className="w-full" disabled={!offer.status || alreadyApplied}>
-								{alreadyApplied ? 'Ya has aplicado' : offer.status ? 'Aplicar a la oferta' : 'Oferta cerrada'}
+							<Button
+								type="submit"
+								variant="outline"
+								className="w-full"
+								disabled={!currentOffer.status || alreadyApplied}
+							>
+								{alreadyApplied
+									? 'Ya has aplicado'
+									: currentOffer.status
+										? 'Aplicar a la oferta'
+										: 'Oferta cerrada'}
 							</Button>
 						</div>
 					</CardContent>
 				</Card>
 			</form>
+			<StudentOfferDetails open={openDetails} onClose={() => setOpenDetails(false)} offer={currentOffer} />
 		</div>
 	);
 }

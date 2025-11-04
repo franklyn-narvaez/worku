@@ -1,14 +1,22 @@
-'use client';
-
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Offer } from '@prisma/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { API_BASE_URL, DEPENDENCE_APPLICANTS, DEPENDENCE_OFFERS } from '@/constants/path';
 import { toast } from 'react-toastify';
+import {
+	CalendarDays,
+	Clock,
+	RefreshCcw,
+	GraduationCap,
+	Users,
+	User2,
+	Mail,
+	BookOpen,
+	FileCheck,
+} from 'lucide-react';
 
 type OfferDetail = Offer & {
 	college: {
@@ -104,68 +112,112 @@ export default function ViewOfferDetails() {
 	}
 
 	return (
-		<div className="space-y-4 mt-6">
-			<Button variant="outline" onClick={handleBack} className="border-slate-300 hover:bg-slate-100">
+		<div className="space-y-6 mt-6 pr-6">
+			<button type='button' onClick={handleBack} className="bg-button-create text-white px-2 py-1.5 rounded-md hover:bg-gray-800 transition">
 				← Volver a ofertas
-			</Button>
+			</button>
 
-			<Card className="border border-slate-200 shadow-sm">
-				<CardHeader>
-					<div className="flex justify-between items-center">
-						<CardTitle className="text-xl font-semibold">{offer.title}</CardTitle>
-						<Badge variant={offer.status ? 'success' : 'destructive'} className="text-sm px-3">
-							{offer.status ? 'Activa' : 'Inactiva'}
-						</Badge>
-					</div>
-					<p className="text-sm text-slate-500 mt-1">
-						{offer.college?.faculty?.name ?? 'Sin facultad asignada'} - {offer.college?.name ?? 'Sin escuela asignada'}
-					</p>
-				</CardHeader>
-
-				<CardContent className="space-y-3">
+			<div className="bg-white rounded-2xl shadow-md p-8 border border-slate-200">
+				<div className="flex justify-between items-start mb-4">
 					<div>
-						<p className="text-sm text-slate-600 font-medium">Descripción:</p>
-						<p className="text-slate-700 whitespace-pre-line">{offer.description}</p>
+						<h1 className="text-2xl font-bold text-gray-900">{offer.title}</h1>
+						<div className="flex items-center text-gray-600 mt-1 text-sm">
+							<GraduationCap className="w-4 h-4 mr-2" />
+							<span>
+								{offer.college?.faculty?.name ?? 'Sin facultad'} - {offer.college?.name ?? 'Sin escuela'}
+							</span>
+						</div>
+					</div>
+					{offer.status ? (
+						<Badge variant="success" className="text-xs px-3 py-1">Abierta</Badge>
+					) : (
+						<Badge variant="destructive" className="text-xs px-3 py-1">Cerrada</Badge>
+					)}
+				</div>
+
+				<div className="space-y-6 mt-4">
+					<div>
+						<h3 className="text-sm font-semibold text-gray-800 mb-1 flex items-center">
+							<BookOpen className="w-4 h-4 mr-2 text-gray-700" /> DESCRIPCIÓN
+						</h3>
+						<p className="text-gray-700 leading-relaxed whitespace-pre-line">
+							{offer.description || 'Sin descripción disponible.'}
+						</p>
 					</div>
 
 					<div>
-						<p className="text-sm text-slate-600 font-medium">Requisitos:</p>
-						<p className="text-slate-700 whitespace-pre-line">{offer.requirements}</p>
+						<h3 className="text-sm font-semibold text-gray-800 mb-1 flex items-center">
+							<FileCheck className="w-4 h-4 mr-2 text-gray-700" /> REQUISITOS
+						</h3>
+						<p className="text-gray-700 whitespace-pre-line">
+							{offer.requirements || 'Sin requisitos especificados.'}
+						</p>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-slate-600">
-						<p>📅 Creada: {formatDate(offer.createdAt)}</p>
-						<p>🕓 Actualizada: {formatDate(offer.updatedAt)}</p>
-						<p>⏳ Cierra: {formatDate(offer.closeDate)}</p>
+					<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-gray-100">
+						<div className="flex items-start gap-2">
+							<CalendarDays className="w-5 h-5 text-red-500 mt-0.5" />
+							<div>
+								<p className="text-xs text-gray-500">Fecha de cierre</p>
+								<p className="font-medium text-gray-800">{formatDate(offer.closeDate)}</p>
+							</div>
+						</div>
+
+						<div className="flex items-start gap-2">
+							<Clock className="w-5 h-5 text-blue-500 mt-0.5" />
+							<div>
+								<p className="text-xs text-gray-500">Creación</p>
+								<p className="font-medium text-gray-800">{formatDate(offer.createdAt)}</p>
+							</div>
+						</div>
+
+						<div className="flex items-start gap-2">
+							<RefreshCcw className="w-5 h-5 text-purple-500 mt-0.5" />
+							<div>
+								<p className="text-xs text-gray-500">Actualización</p>
+								<p className="font-medium text-gray-800">{formatDate(offer.updatedAt)}</p>
+							</div>
+						</div>
 					</div>
 
-					{/* Aplicantes */}
-					<div className="mt-4 pt-3 border-t">
-						<Badge variant="secondary" className="mb-2">
-							{offer._count.Application} aplicante
-							{offer._count.Application !== 1 && 's'}
-						</Badge>
+					<div className="mt-6 pt-5 border-t border-gray-100">
+						<div className="flex items-center justify-between mb-3">
+							<div className="flex items-center gap-2">
+								<Users className="w-5 h-5 text-gray-700" />
+								<h3 className="text-sm font-semibold text-gray-800">APLICANTES</h3>
+							</div>
+							<Badge variant="secondary" className="text-sm">
+								{offer._count.Application} aplicante{offer._count.Application !== 1 && 's'}
+							</Badge>
+						</div>
 
-						{offer.Application && offer.Application.length > 0 ? (
+						{offer.Application.length > 0 ? (
 							<div className="space-y-3">
 								{offer.Application.map(app => {
-									const statusInfo = STATUS_MAP[app.status] || { label: 'Desconocido', color: 'bg-gray-400' };
+									const statusInfo =
+										STATUS_MAP[app.status] || { label: 'Desconocido', color: 'bg-gray-400' };
 
 									return (
-										<div key={app.id} className="border border-slate-200 bg-white shadow-md rounded-xl p-4">
-											<div className="grid grid-cols-5 items-center gap-2 text-sm w-full">
-												<p className="font-semibold text-slate-800 flex items-center gap-1 truncate">
-													👤 {app.user.name} {app.user.lastName}
+										<div
+											key={app.id}
+											className="border border-slate-200 bg-slate-50 rounded-xl p-4 shadow-sm hover:shadow-md transition"
+										>
+											<div className="grid grid-cols-1 sm:grid-cols-5 items-center gap-3 text-sm">
+												<p className="font-semibold text-gray-800 flex items-center gap-1 truncate">
+													<User2 className="w-4 h-4 text-gray-600" /> {app.user.name} {app.user.lastName}
 												</p>
-												<p className="flex items-center gap-1 text-slate-600 text-sm truncate">
-													🎓 Programa {app.user.StudentProfile?.planName ?? 'No registrado'}
+												<p className="text-gray-600 truncate">
+													🎓 {app.user.StudentProfile?.planName ?? 'No registrado'}
 												</p>
-												<p className="flex items-center gap-1 text-slate-600 text-sm truncate">
-													📚 Semestre {app.user.StudentProfile?.semester ?? 'No registrado'}
+												<p className="text-gray-600 truncate">
+													📚 Semestre {app.user.StudentProfile?.semester ?? 'N/A'}
 												</p>
-												<p className="flex items-center gap-1 text-slate-500 text-sm truncate">✉️ {app.user.email}</p>
-
-												<Badge className={`${statusInfo.color} text-white justify-self-end`}>{statusInfo.label}</Badge>
+												<p className="flex items-center gap-1 text-gray-600 truncate">
+													<Mail className="w-4 h-4 text-gray-500" /> {app.user.email}
+												</p>
+												<Badge className={`${statusInfo.color} text-white justify-self-end`}>
+													{statusInfo.label}
+												</Badge>
 											</div>
 										</div>
 									);
@@ -174,21 +226,22 @@ export default function ViewOfferDetails() {
 						) : (
 							<p className="text-sm text-slate-500 mt-2">No hay aplicantes registrados aún.</p>
 						)}
-					</div>
 
-					{/* Botón ver todos */}
-					<div className="flex justify-end mt-4">
-						<Button
-							variant="outline"
-							size="sm"
-							className="border-blue-400 text-blue-600 hover:bg-blue-50"
-							onClick={handleViewApplicants}
-						>
-							Ver todos los aplicantes
-						</Button>
+						{offer._count.Application > 0 && (
+							<div className="flex justify-end mt-5">
+								<Button
+									variant="outline"
+									size="sm"
+									className="border-blue-400 text-blue-600 hover:bg-blue-50"
+									onClick={handleViewApplicants}
+								>
+									Ver todos los aplicantes
+								</Button>
+							</div>
+						)}
 					</div>
-				</CardContent>
-			</Card>
+				</div>
+			</div>
 		</div>
 	);
 }

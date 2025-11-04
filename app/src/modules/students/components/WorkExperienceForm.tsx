@@ -11,8 +11,6 @@ export default function WorkExperienceForm() {
 		name: 'workExperiences',
 	});
 
-	console.log(fields);
-
 	return (
 		<div className="mt-6">
 			<h1 className="text-3xl font-bold mb-4">Experiencia Laboral</h1>

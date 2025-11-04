@@ -19,11 +19,11 @@ export function AppSidebar() {
 	const sidebarRoutes = useSidebarRoutes();
 
 	return (
-		<Sidebar>
+		<Sidebar className="bg-sidebar">
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarGroupLabel>
-						<div className="mt-2 flex justify-center">
+						<div className="mt-10 flex justify-center">
 							<img
 								src={LogInUnivalle}
 								alt="Worku Logo"
@@ -31,7 +31,7 @@ export function AppSidebar() {
 							/>
 						</div>
 					</SidebarGroupLabel>
-					<SidebarGroupContent className='mt-6'>
+					<SidebarGroupContent className='mt-15'>
 						<SidebarMenu>
 							{sidebarRoutes.map(route => {
 								const Icon = route.icon; // 👈 Componente del icono pasado en routeConfig

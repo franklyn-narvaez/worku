@@ -40,6 +40,6 @@ export default function OfferUpdate() {
 	}, [id]);
 
 	return (
-		<div className="p-6 gap-4">{offer && <UpdateForm offer={offer} college={colleges} faculty={faculties} />}</div>
+		offer && <UpdateForm offer={offer} college={colleges} faculty={faculties} />
 	);
 }

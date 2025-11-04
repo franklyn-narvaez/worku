@@ -7,7 +7,7 @@
   --background: oklch(0.9373 0.007 264.74);
   --foreground: oklch(0.145 0 0);
   --button-color-create: #cd1f32;
-  --button-color-update: #2C2C2C;
+  --button-color-update: #cd1f32;
   --text-color-title: #2C2C2C;
   --radius: 0.625rem;
   --card: oklch(1 0 0);
@@ -40,7 +40,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --table-header: oklch(0.5303 0.036 257.29);
+  --table-header: #808285;
   --table-row: oklch(0.985 0 0);
 }
 
@@ -102,14 +102,24 @@ body {
   color: white;
 }
 
+.button-update {
+  background-color: var(--button-color-update);
+  color: white;
+}
+
+.button-continue {
+  background-color: var(--button-color-create);
+  color: white;
+}
+
 .bg-login-image {
   background-image: url('/LogInBackGround.webp');
   background-size: cover;
   background-position: center;
 }
 
-.button-update {
-  background-color: var(--button-color-update);
+.bg-header-table {
+  background-color: var(--table-header);
   color: white;
 }
 

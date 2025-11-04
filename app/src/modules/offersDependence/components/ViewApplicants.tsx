@@ -142,14 +142,13 @@ export function ViewApplicants() {
 				);
 			} else {
 				toast.success(
-					`Estado actualizado a ${
-						newStatus === 'UNDER_REVIEW'
-							? 'En revisión'
-							: newStatus === 'CALLED_FOR_INTERVIEW'
-								? 'Citado a entrevista'
-								: newStatus === 'APPROVED'
-									? 'Aprobado'
-									: 'Rechazado'
+					`Estado actualizado a ${newStatus === 'UNDER_REVIEW'
+						? 'En revisión'
+						: newStatus === 'CALLED_FOR_INTERVIEW'
+							? 'Citado a entrevista'
+							: newStatus === 'APPROVED'
+								? 'Aprobado'
+								: 'Rechazado'
 					}`,
 				);
 			}
@@ -157,18 +156,18 @@ export function ViewApplicants() {
 			setData(prev =>
 				prev
 					? {
-							...prev,
-							applicants: prev.applicants.map(app =>
-								app.applicationId === updatedApp.id
-									? {
-											...app,
-											status: updatedApp.status,
-											interviewDate: updatedApp.interviewDate,
-											attendedInterview: updatedApp.attendedInterview ?? undefined,
-										}
-									: app,
-							),
-						}
+						...prev,
+						applicants: prev.applicants.map(app =>
+							app.applicationId === updatedApp.id
+								? {
+									...app,
+									status: updatedApp.status,
+									interviewDate: updatedApp.interviewDate,
+									attendedInterview: updatedApp.attendedInterview ?? undefined,
+								}
+								: app,
+						),
+					}
 					: prev,
 			);
 		} catch (error) {
@@ -227,10 +226,10 @@ export function ViewApplicants() {
 
 	if (!data || !data.applicants || data.applicants.length === 0) {
 		return (
-			<div className="mt-6 space-y-4">
-				<Button variant="outline" onClick={handleBack} className="border-slate-300 hover:bg-slate-100">
+			<div className="mt-6 space-y-4 pr-6">
+				<button type='button' onClick={handleBack} className="bg-button-create text-white px-2 py-1.5 rounded-md hover:bg-gray-800 transition">
 					← Volver a ofertas
-				</Button>
+				</button>
 
 				<Card className="shadow-sm border border-slate-200">
 					<CardHeader>
@@ -247,10 +246,10 @@ export function ViewApplicants() {
 	}
 
 	return (
-		<div className="space-y-4 mt-6 pr-6">
-			<Button variant="outline" onClick={handleBack} className="border-slate-300 hover:bg-slate-100">
+		<div className="space-y-6 mt-6 pr-6">
+			<button type='button' onClick={handleBack} className="bg-button-create text-white px-2 py-1.5 rounded-md hover:bg-gray-800 transition">
 				← Volver
-			</Button>
+			</button>
 			<Card className="border border-slate-200 shadow-sm">
 				<CardHeader>
 					<div className="flex justify-between items-center">
@@ -344,11 +343,10 @@ export function ViewApplicants() {
 													setSelectedAttendanceApplicant(applicant);
 													setShowAttendanceModal(true);
 												}}
-												className={`border-blue-500 text-blue-600 hover:bg-blue-50 ${
-													applicant.attendedInterview !== null && applicant.attendedInterview !== undefined
-														? 'opacity-50 cursor-not-allowed'
-														: ''
-												}`}
+												className={`border-blue-500 text-blue-600 hover:bg-blue-50 ${applicant.attendedInterview !== null && applicant.attendedInterview !== undefined
+													? 'opacity-50 cursor-not-allowed'
+													: ''
+													}`}
 											>
 												Registrar asistencia
 											</Button>

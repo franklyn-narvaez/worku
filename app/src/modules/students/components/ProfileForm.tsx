@@ -85,7 +85,7 @@ export default function ProfileForm() {
 			workExperiences: [],
 			availabilities: initialAvailability,
 		},
-		mode: 'onSubmit',
+		mode: 'onChange',
 	});
 
 	const totalSteps = steps.length;
@@ -309,11 +309,29 @@ export default function ProfileForm() {
 			'occupationalProfile',
 		];
 
+
 		let fieldsToValidate: (keyof ProfileType)[] = [];
 
-		if (step === 0) fieldsToValidate = basicFields;
-		if (step === 7) fieldsToValidate = ['photo'];
-		if (step === 8) fieldsToValidate = ['grades'];
+		switch (step) {
+			case 0:
+				fieldsToValidate = basicFields;
+				break;
+			case 1:
+				fieldsToValidate = ['educations'];
+				break;
+			case 4:
+				fieldsToValidate = ['systems'];
+				break;
+			case 6:
+				fieldsToValidate = ['availabilities'];
+				break;
+			case 7:
+				fieldsToValidate = ['photo'];
+				break;
+			case 8:
+				fieldsToValidate = ['grades'];
+				break;
+		}
 
 		if (fieldsToValidate.length > 0) {
 			const valid = await methods.trigger(fieldsToValidate, { shouldFocus: true });
@@ -357,23 +375,21 @@ export default function ProfileForm() {
 
 				<FormProvider {...methods}>
 					<form onSubmit={methods.handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow-lg space-y-8">
-						{/* Barra de progreso */}
 						<div className="w-full bg-gray-200 rounded-full h-3 mb-6">
 							<div
-								className="bg-green-500 h-3 rounded-full transition-all duration-300"
+								className="bg-red-500 h-3 rounded-full transition-all duration-300"
 								style={{
 									width: `${((step + 1) / totalSteps) * 100}%`,
 								}}
 							></div>
 						</div>
 
-						{/* Header de pasos */}
 						<div className="flex justify-between mb-6">
 							{steps.map((s, index) => (
 								<div
 									key={s.title}
 									className={`flex-1 text-center text-sm font-medium transition-colors duration-200
-                                        ${index === step ? 'text-green-600 font-bold' : 'text-gray-400'}
+                                        ${index === step ? 'text-red-600 font-bold' : 'text-gray-400'}
                                     `}
 								>
 									{s.title}
@@ -381,10 +397,8 @@ export default function ProfileForm() {
 							))}
 						</div>
 
-						{/* Contenido dinámico del paso actual */}
-						<div className="p-4 border rounded-lg shadow-sm bg-gray-50">{steps[step].component}</div>
+						<div className="p-4 border rounded-lg shadow-lg bg-gray-50">{steps[step].component}</div>
 
-						{/* Botones de navegación */}
 						<div className="flex justify-between gap-x-10 mt-6">
 							{step > 0 && (
 								<button
@@ -400,34 +414,27 @@ export default function ProfileForm() {
 								<button
 									type="button"
 									onClick={handleNext}
-									className="w-1/2 bg-[#2c2c2c] text-white p-3 rounded-lg hover:bg-gray-700 transition"
+									className="w-1/2 bg-[#023047] text-white p-3 rounded-lg hover:bg-gray-700 transition"
 								>
 									Siguiente
 								</button>
 							)}
 
-							{step === totalSteps - 1 && (
+							{step === totalSteps - 1 && !isLocked && (
 								<button
 									type="submit"
-									onClick={() => {
-										console.log('Submit button clicked');
-										console.log('Form valid:', methods.formState.isValid);
-										console.log('Form errors:', methods.formState.errors);
-										console.log('Current photo value:', methods.getValues('photo'));
-									}}
-									className="w-2/3 bg-[#2c2c2c] text-white p-3 rounded-lg hover:bg-green-600 transition"
+									className="w-2/3 bg-[#99d98c] text-black p-3 rounded-lg hover:bg-[#76c893] transition"
 									disabled={methods.formState.isSubmitting}
 								>
 									{profileId ? 'Actualizar Datos' : 'Crear Perfil'}
 								</button>
 							)}
 
-							{/* Enviar a revisión */}
 							{profileId && !['SUBMITTED', 'APPROVED'].includes(status || '') && (
 								<button
 									type="button"
 									onClick={handleSubmitForReview}
-									className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+									className="w-1/2 bg-[#219ebc] text-white p-3 rounded-lg hover:bg-[#0096c7] transition"
 									disabled={isLocked}
 								>
 									Enviar a Revisión
@@ -435,7 +442,7 @@ export default function ProfileForm() {
 							)}
 
 							{status === 'SUBMITTED' && (
-								<p className="text-center text-yellow-600 font-semibold">
+								<p className="text-center text-[#f2542d] font-semibold">
 									Tu perfil está en revisión. No puedes editarlo.
 								</p>
 							)}

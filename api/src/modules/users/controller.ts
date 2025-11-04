@@ -23,8 +23,15 @@ router.get(
 					lastName: true,
 					email: true,
 					createdDate: true,
+					updatedDate: true,
 					status: true,
 					college: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					role: {
 						select: {
 							id: true,
 							name: true,
@@ -193,7 +200,6 @@ router.patch(
 				});
 			}
 
-			// Buscar al usuario que se va a actualizar
 			const currentUser = await prisma.user.findUnique({
 				where: { id: parseData.data.id },
 			});
@@ -202,7 +208,6 @@ router.patch(
 				return res.status(404).json({ error: "Usuario no encontrado" });
 			}
 
-			// Si el email cambió, comprobar que no exista en otro usuario
 			if (currentUser.email !== parseData.data.email) {
 				const emailExists = await prisma.user.findUnique({
 					where: { email: parseData.data.email },
@@ -223,7 +228,7 @@ router.patch(
 					email: parseData.data.email,
 					collegeId: parseData.data.collegeId,
 					roleId: parseData.data.roleId,
-					status: parseData.data.status, // Agregado para manejar el estado del usuario
+					status: parseData.data.status,
 				},
 			});
 			return res.status(200).json(updatedUser);

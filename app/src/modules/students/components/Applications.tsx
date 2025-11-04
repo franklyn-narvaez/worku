@@ -1,5 +1,3 @@
-'use client';
-
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
@@ -89,46 +87,56 @@ const MyApplications = () => {
 	};
 
 	return (
-		<Table>
-			<TableCaption>Lista de aplicaciones realizadas</TableCaption>
-			<TableHeader className="bg-slate-100 border-b">
-				<TableRow>
-					<TableHead>Título</TableHead>
-					<TableHead>Descripción</TableHead>
-					<TableHead>Fecha de aplicación</TableHead>
-					<TableHead>Fecha de cierre</TableHead>
-					<TableHead>Entrevista</TableHead>
-					<TableHead>Asistencia</TableHead>
-					<TableHead>Estado</TableHead>
-				</TableRow>
-			</TableHeader>
+		<div className='pt-8 pr-8'>
+			<div className="bg-white shadow-md rounded-lg overflow-hidden">
+				<Table>
+					<TableCaption>Lista de aplicaciones realizadas</TableCaption>
+					<TableHeader className="bg-table-header">
+						<TableRow>
+							<TableHead>Título</TableHead>
+							<TableHead>Descripción</TableHead>
+							<TableHead>Fecha de aplicación</TableHead>
+							<TableHead>Fecha de cierre</TableHead>
+							<TableHead>Entrevista</TableHead>
+							<TableHead>Asistencia</TableHead>
+							<TableHead>Estado</TableHead>
+						</TableRow>
+					</TableHeader>
 
-			<TableBody>
-				{applications.map(application => (
-					<TableRow key={application.id} className="border-b hover:bg-slate-50">
-						<TableCell className="p-4">{application.offer.title}</TableCell>
-						<TableCell className="p-4 line-clamp-2">{application.offer.description || 'Sin descripción'}</TableCell>
-						<TableCell className="p-4">{new Date(application.appliedAt).toLocaleDateString('es-CO')}</TableCell>
-						<TableCell className="p-4">{new Date(application.offer.closeDate).toLocaleDateString('es-CO')}</TableCell>
-						<TableCell className="p-4">
-							{application.interviewDate ? (
-								<span>{formatInterviewDate(application.interviewDate)}</span>
-							) : (
-								'No programada'
-							)}
-						</TableCell>
-						<TableCell className="p-4">{formatAttendance(application.attendedInterview)}</TableCell>
-						<TableCell className="p-4">
-							<span
-								className={`px-2 py-1 rounded text-white text-xs font-medium ${getStatusColor(application.status)}`}
-							>
-								{formatStatus(application.status)}
-							</span>
-						</TableCell>
-					</TableRow>
-				))}
-			</TableBody>
-		</Table>
+					<TableBody>
+						{applications.map(application => (
+							<TableRow key={application.id} className="bg-white border-b hover:bg-gray-100">
+								<TableCell className="p-4">{application.offer.title}</TableCell>
+								<TableCell className="p-4 line-clamp-2">
+									{application.offer.description || 'Sin descripción'}
+								</TableCell>
+								<TableCell className="p-4">
+									{new Date(application.appliedAt).toLocaleDateString('es-CO')}
+								</TableCell>
+								<TableCell className="p-4">
+									{new Date(application.offer.closeDate).toLocaleDateString('es-CO')}
+								</TableCell>
+								<TableCell className="p-4">
+									{application.interviewDate ? (
+										<span>{formatInterviewDate(application.interviewDate)}</span>
+									) : (
+										'No programada'
+									)}
+								</TableCell>
+								<TableCell className="p-4">{formatAttendance(application.attendedInterview)}</TableCell>
+								<TableCell className="p-4">
+									<span
+										className={`px-2 py-1 rounded text-white text-xs font-medium ${getStatusColor(application.status)}`}
+									>
+										{formatStatus(application.status)}
+									</span>
+								</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</div>
+		</div>
 	);
 };
 

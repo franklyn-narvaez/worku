@@ -74,8 +74,8 @@ export default function OfferCreateForm() {
 	return (
 		<div className="h-full flex items-center justify-center">
 			<FormProvider {...methods}>
-				<form onSubmit={handleSubmit(onSubmit)} className="w-1/2">
-					<h1 className="text-text-title font-bold text-4xl mb-4">Crear Oferta</h1>
+				<form onSubmit={handleSubmit(onSubmit)} className="bg-white/95 p-10 rounded-2xl shadow-2xl w-full max-w-4xl flex-col items-center">
+					<h1 className="text-text-title text-center font-bold text-4xl mb-4">Crear Oferta</h1>
 					<FormField name="title" label="Titulo" type="text" placeholder="Ingrese el titulo" />
 					<TextAreaField name="description" label="Descripción" placeholder="Ingrese la descripción" rows={3} />
 					<TextAreaField name="requirements" label="Requisitos" placeholder="Ingrese los requisitos" rows={3} />
@@ -108,9 +108,6 @@ export default function OfferCreateForm() {
 					/>
 
 					<div className="flex justify-between gap-x-2 mt-4">
-						<button type="submit" className="w-1/2 button-create p-3 rounded-lg" disabled={isSubmitting && !isValid}>
-							Crear oferta
-						</button>
 						<button
 							type="button"
 							className="w-1/2 bg-slate-300 text-black p-3 rounded-lg hover:bg-slate-400 transition"
@@ -118,6 +115,10 @@ export default function OfferCreateForm() {
 						>
 							Cancelar
 						</button>
+						<button type="submit" className="w-1/2 button-create p-3 rounded-lg" disabled={isSubmitting && !isValid}>
+							Crear oferta
+						</button>
+
 					</div>
 				</form>
 			</FormProvider>
