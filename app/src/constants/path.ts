@@ -1,17 +1,17 @@
 // app
-export const REGISTER = "register";
-export const CREATE = "create";
-export const LOGIN = "login";
-export const LOGOUT = "logout";
+export const REGISTER = 'register';
+export const CREATE = 'create';
+export const LOGIN = 'login';
+export const LOGOUT = 'logout';
 
-const ADMIN = "/admin";
-export const BASE_DEPENDENCE = "/dependence";
-export const BASE_DIRECTOR_APP = "/director";
-export const BASE_USER = "users";
-export const BASE_STUDENT = "/student";
-export const BASE_OFFER = "offers";
-export const BASE_APPLICATION = "applications";
-export const BASE_PROFILE = "profile";
+const ADMIN = '/admin';
+export const BASE_DEPENDENCE = '/dependence';
+export const BASE_DIRECTOR_APP = '/director';
+export const BASE_USER = 'users';
+export const BASE_STUDENT = '/student';
+export const BASE_OFFER = 'offers';
+export const BASE_APPLICATION = 'applications';
+export const BASE_PROFILE = 'profile';
 export const ADMIN_USER = `${ADMIN}/${BASE_USER}`;
 export const ADMIN_OFFER = `${ADMIN}/${BASE_OFFER}`;
 export const STUDENT_OFFERS = `${BASE_STUDENT}/${BASE_OFFER}`;
@@ -31,21 +31,25 @@ export const DEPENDENCE_OFFER_UPDATE = `${DEPENDENCE_OFFERS}/update/:id`;
 export const DEPENDENCE_APPLICANTS = `${DEPENDENCE_OFFERS}/:id/applicants`;
 export const DEPENDENCE_OFFER_DETAILS = `${DEPENDENCE_OFFERS}/:id/details`;
 export const DEPENDENCE_APPLICANTS_DETAILS = `${DEPENDENCE_OFFERS}/applicants/:id/profile`;
+export const DEPENDENCE_REPORT = `${BASE_DEPENDENCE}/reports`;
+
 export const DIRECTOR_REVIEW_PROFILES = `${BASE_DIRECTOR_APP}/review-profiles`;
 export const DIRECTOR_REVIEW_PROFILE = `${DIRECTOR_REVIEW_PROFILES}/:id/profile`;
 export const DIRECTOR_REVIEW_PROFILE_HISTORY = `${DIRECTOR_REVIEW_PROFILES}/history`;
 export const DIRECTOR_HISTORY_PROFILE = `${DIRECTOR_REVIEW_PROFILES}/:id/profile/history`;
 
+export const DIRECTOR_REPORT_STATS = `${BASE_DIRECTOR_APP}/reports`;
+
 //api
-export const HOST_API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+export const HOST_API = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 export const API_BASE_URL = `${HOST_API}/api`;
-export const BASE_COLLEGE = "/college";
-export const BASE_ROLE = "/role";
-export const BASE_OFFER_API = "/offer";
-export const BASE_USER_API = "/user";
-export const BASE_STUDENT_OFFER = "/student-offers";
-export const BASE_OFFER_DEPENDENCE = "/offers-dependence";
-export const BASE_DIRECTOR = "/director";
+export const BASE_COLLEGE = '/college';
+export const BASE_ROLE = '/role';
+export const BASE_OFFER_API = '/offer';
+export const BASE_USER_API = '/user';
+export const BASE_STUDENT_OFFER = '/student-offers';
+export const BASE_OFFER_DEPENDENCE = '/offers-dependence';
+export const BASE_DIRECTOR = '/director';
 
 export const GET_COLLEGE = API_BASE_URL + BASE_COLLEGE;
 export const GET_FACULTY = `${API_BASE_URL + BASE_COLLEGE}/faculty`;
@@ -56,6 +60,11 @@ export const CREATE_OFFER = `${API_BASE_URL}/offer/create`;
 export const UPDATE_OFFER = `${API_BASE_URL}/offer/update`;
 export const CREATE_OFFER_DEPENDENCE = `${API_BASE_URL}/offers-dependence/create`;
 export const UPDATE_OFFER_DEPENDENCE = `${API_BASE_URL}/offers-dependence/update`;
+
+export const REPORT_DEPENDENCE_STATS = `${API_BASE_URL}/offers-dependence/offers/applicants-stats`;
+export const REPORT_DEPENDENCE_RESULTS = `${API_BASE_URL}/offers-dependence/offers/results`;
+export const REPORT_DEPENDENCE_FACULTY = `${API_BASE_URL}/offers-dependence/offers/faculty-distribution`;
+export const REPORT_DEPENDENCE_SKILLS = `${API_BASE_URL}/offers-dependence/offers/common-skills`;
 
 export const GET_ME = `${API_BASE_URL}/user/me`;
 
@@ -69,3 +78,7 @@ export const UPDATE_PROFILE = `${STUDENT_OFFER}/update-profile`;
 export const REVIEW_PROFILE = `${API_BASE_URL}${BASE_DIRECTOR}`;
 
 export const REVIEW_PROFILE_HISTORY = `${REVIEW_PROFILE}/profiles/history`;
+
+export const REPORT_STATS = `${REVIEW_PROFILE}/profiles/stats`;
+export const REPORT_TRENDS = `${REVIEW_PROFILE}/profiles/trends`;
+export const REPORT_PROFILES_BY_SEMESTER = `${REVIEW_PROFILE}/profiles/stats/by-semester`;

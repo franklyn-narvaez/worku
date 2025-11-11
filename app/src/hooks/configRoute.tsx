@@ -1,9 +1,10 @@
+import { BarChartIcon, BookOpen, Home, Users as UsersIcon } from 'lucide-react';
+import type { ComponentType, ReactElement } from 'react';
 import AuthLayout from '@/components/AuthLayout';
 import NavWrapper from '@/components/NavWrapper';
 import NoPermission from '@/components/NoPermission';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import ProtectedWrapper from '@/components/ProtectedWrapper';
-
 import {
 	ADMIN_OFFER,
 	ADMIN_USER,
@@ -13,7 +14,9 @@ import {
 	DEPENDENCE_OFFER_DETAILS,
 	DEPENDENCE_OFFER_UPDATE,
 	DEPENDENCE_OFFERS,
+	DEPENDENCE_REPORT,
 	DIRECTOR_HISTORY_PROFILE,
+	DIRECTOR_REPORT_STATS,
 	DIRECTOR_REVIEW_PROFILE,
 	DIRECTOR_REVIEW_PROFILE_HISTORY,
 	DIRECTOR_REVIEW_PROFILES,
@@ -30,6 +33,8 @@ import Users from '@/modules/admin/pages/Users';
 import UserUpdate from '@/modules/admin/pages/UserUpdate';
 import Login from '@/modules/auth/pages/Login';
 import RegisterPage from '@/modules/auth/pages/Register';
+import OffersReportsView from '@/modules/director/components/OffersReportsView';
+import ProfilesStatsView from '@/modules/director/components/ProfilesReportsView';
 import ReviewProfileHistory from '@/modules/director/components/ReviewProfileHistory';
 import ReviewProfilesLists from '@/modules/director/components/ReviewProfilesLists';
 import StudentReviewProfileHistory from '@/modules/director/components/StudentReviewProfileHistory';
@@ -46,8 +51,6 @@ import OfferUpdateDependence from '@/modules/offersDependence/pages/OfferUpdateD
 import MyApplications from '@/modules/students/components/Applications';
 import ProfileForm from '@/modules/students/components/ProfileForm';
 import StudentOffers from '@/modules/students/pages/StudentsOffers';
-import { BookOpen, Home, Users as UsersIcon } from 'lucide-react';
-import type { ComponentType, ReactElement } from 'react';
 
 export type AppRoute = {
 	path?: string;
@@ -178,6 +181,14 @@ export const routeConfig: AppRoute[] = [
 						element: <StudentProfileView />,
 						requiredPermission: 'view_applications_dependence',
 					},
+					{
+						path: DEPENDENCE_REPORT,
+						element: <OffersReportsView />,
+						requiredPermission: 'view_applications_dependence',
+						title: 'Reportes de Ofertas',
+						showInSidebar: true,
+						icon: BarChartIcon,
+					},
 
 					{
 						path: DIRECTOR_REVIEW_PROFILES,
@@ -204,6 +215,15 @@ export const routeConfig: AppRoute[] = [
 						path: DIRECTOR_HISTORY_PROFILE,
 						element: <StudentReviewProfileHistory />,
 						requiredPermission: 'review_profiles',
+					},
+
+					{
+						path: DIRECTOR_REPORT_STATS,
+						element: <ProfilesStatsView />,
+						requiredPermission: 'review_profiles',
+						title: 'Estadísticas de Perfiles',
+						showInSidebar: true,
+						icon: BarChartIcon,
 					},
 					{
 						path: STUDENT_OFFERS,
