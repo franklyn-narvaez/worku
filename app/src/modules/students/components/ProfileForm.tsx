@@ -309,7 +309,6 @@ export default function ProfileForm() {
 			'occupationalProfile',
 		];
 
-
 		let fieldsToValidate: (keyof ProfileType)[] = [];
 
 		switch (step) {

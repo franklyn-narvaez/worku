@@ -1,6 +1,12 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
+type AuthUser = {
+	id: string;
+	role: { id: string; name: string };
+};
+
 const AuthContext = createContext<AuthContext>({
+	user: null,
 	login: async () => ({ status: 500 }),
 	logout: async () => {},
 	refresh: async () => ({}),
@@ -9,6 +15,7 @@ const AuthContext = createContext<AuthContext>({
 });
 
 type AuthContext = {
+	user: AuthUser | null;
 	login: (email: string, password: string) => Promise<{ status: number; data?: any }>;
 	logout: () => Promise<void>;
 	refresh: () => Promise<any>;
@@ -99,6 +106,7 @@ async function refreshRequest(options: RequestInit) {
 const storage: AuthenticationStorage = memoryStorage();
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+	const [user, setUser] = useState<AuthUser | null>(null);
 	const [status, setStatus] = useState<Status>('unresolved');
 	let refreshPromise: Promise<AccessTokenData> | null = null;
 	let refreshTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -143,6 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 			if (response.status !== 200) {
 				setStatus('unauthenticated');
+				setUser(null);
 				resetStorage();
 				refreshPromise = null; // Limpiar la promesa
 				throw response.data;
@@ -170,6 +179,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		if (response.status === 200) {
 			setStatus('authenticated');
 			setCredentials(response.data);
+			setUser({
+				id: response.data.role.id,
+				role: {
+					id: response.data.role.id,
+					name: response.data.role.name,
+				},
+			});
 		}
 
 		return response;
@@ -185,6 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		}
 
 		setStatus('unauthenticated');
+		setUser(null);
 		if (refreshTimeout) clearTimeout(refreshTimeout);
 		resetStorage();
 	};
@@ -217,7 +234,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	}, []);
 
 	return (
-		<AuthContext.Provider value={{ login, logout, refresh, status, createAuthFetchOptions }}>
+		<AuthContext.Provider value={{ user, login, logout, refresh, status, createAuthFetchOptions }}>
 			{children}
 		</AuthContext.Provider>
 	);

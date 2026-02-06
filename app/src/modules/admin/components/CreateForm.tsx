@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { ADMIN_USER } from '@/constants/path';
 import { useAuth } from '@/hooks/useAuth';
 import { createUser } from '../requests/create';
+import { toast } from 'react-toastify';
+
 
 export default function CreateForm(props: { colleges: College[]; roles: Role[] }) {
 	const { createAuthFetchOptions } = useAuth();
@@ -26,18 +28,24 @@ export default function CreateForm(props: { colleges: College[]; roles: Role[] }
 		navigate(ADMIN_USER);
 	};
 
-	const onSubmit: SubmitHandler<CreateType> = async data => {
+const onSubmit: SubmitHandler<CreateType> = async data => {
+	try {
 		const authOptions = await createAuthFetchOptions();
-
 		const response = await createUser(data, authOptions);
 
 		if (response.ok) {
+			toast.success('Usuario creado exitosamente');
 			navigate(ADMIN_USER);
 		} else {
 			const errorData = await response.json();
+			toast.error(errorData.message ?? 'Error al crear el usuario');
 			console.error('Error creating user:', errorData);
 		}
-	};
+	} catch (error) {
+		toast.error('Error inesperado al crear el usuario');
+		console.error(error);
+	}
+};
 
 	return (
 		<div className="h-full flex items-center justify-center bg-background">

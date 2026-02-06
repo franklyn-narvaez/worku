@@ -1,5 +1,5 @@
+import type { Permission, User } from '@prisma/client';
 import { createContext, useContext, useEffect, useState } from 'react';
-import type { User, Permission } from '@prisma/client';
 import { GET_ME } from '@/constants/path';
 import { useAuth } from './useAuth';
 

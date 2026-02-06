@@ -14,7 +14,7 @@ services:
       - db-net
     attach: false
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U test -d test"]
       interval: 3s
       timeout: 3s
       retries: 5

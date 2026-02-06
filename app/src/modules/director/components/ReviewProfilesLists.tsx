@@ -1,11 +1,12 @@
 'use client';
 
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
-import { DIRECTOR_REVIEW_PROFILE, REVIEW_PROFILE } from '@/constants/path';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DIRECTOR_REVIEW_PROFILE, REVIEW_PROFILE } from '@/constants/path';
+import { useAuth } from '@/hooks/useAuth';
 
 type StudentProfile = {
 	id: string;
@@ -50,12 +51,12 @@ const ReviewProfilesLists = () => {
 		navigate(DIRECTOR_REVIEW_PROFILE.replace(':id', id));
 	};
 
-	if (loading) return <p className="text-center py-6">Cargando perfiles...</p>;
+	if (loading) return <LoadingSpinner text="Cargando perfiles..." />;
 
 	if (profiles.length === 0) return <p className="text-center py-6 text-gray-600">No hay perfiles para revisión.</p>;
 
 	return (
-		<div className='pt-8 pr-8'>
+		<div className="pt-8 pr-8">
 			<div className="bg-white shadow-md rounded-lg overflow-hidden">
 				<Table>
 					<TableCaption>Lista de estudiantes con perfil en revisión</TableCaption>
@@ -77,7 +78,11 @@ const ReviewProfilesLists = () => {
 							<TableRow key={profile.id} className="hover:bg-slate-50">
 								<TableCell>
 									{profile.Photo ? (
-										<img src={profile.Photo} alt="Foto estudiante" className="w-12 h-12 object-cover rounded-full border" />
+										<img
+											src={profile.Photo}
+											alt="Foto estudiante"
+											className="w-12 h-12 object-cover rounded-full border"
+										/>
 									) : (
 										<div className="w-12 h-12 bg-gray-200 rounded-full" />
 									)}
@@ -90,21 +95,22 @@ const ReviewProfilesLists = () => {
 								<TableCell>
 									{profile.submittedAt
 										? new Date(profile.submittedAt).toLocaleDateString('es-CO', {
-											year: 'numeric',
-											month: 'short',
-											day: 'numeric',
-										})
+												year: 'numeric',
+												month: 'short',
+												day: 'numeric',
+											})
 										: 'Sin fecha de envío'}
 								</TableCell>
 
 								<TableCell>
 									<span
-										className={`px-2 py-1 rounded text-white text-xs font-medium ${profile.status === 'SUBMITTED'
-											? 'bg-yellow-500'
-											: profile.status === 'APPROVED'
-												? 'bg-green-500'
-												: 'bg-red-500'
-											}`}
+										className={`px-2 py-1 rounded text-white text-xs font-medium ${
+											profile.status === 'SUBMITTED'
+												? 'bg-yellow-500'
+												: profile.status === 'APPROVED'
+													? 'bg-green-500'
+													: 'bg-red-500'
+										}`}
 									>
 										{profile.status === 'SUBMITTED'
 											? 'Pendiente de revisión'
@@ -128,9 +134,8 @@ const ReviewProfilesLists = () => {
 						))}
 					</TableBody>
 				</Table>
-
 			</div>
-		</div >
+		</div>
 	);
 };
 

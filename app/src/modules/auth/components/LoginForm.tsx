@@ -1,16 +1,14 @@
-import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../hooks/useAuth';
-import { toast } from 'react-toastify';
-import { LoginSchema, type LoginType } from '../schemas/login';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { FormField } from '@/components/FormField';
+import { useAuth } from '../../../hooks/useAuth';
 import LogInUnivalle from '../../../public/LogInUnivalle.png';
+import { LoginSchema, type LoginType } from '../schemas/login';
 
 function LoginForm() {
 	const methods = useForm<LoginType>({ resolver: zodResolver(LoginSchema) });
-
-	const navigate = useNavigate();
 
 	const { login } = useAuth();
 
@@ -22,22 +20,18 @@ function LoginForm() {
 		if (res.status === 500) return toast.error('Error del servidor, intenta nuevamente.');
 		if (res.status === 200) {
 			toast.success('¡Inicio de sesión exitoso!');
-			setTimeout(() => {
-				navigate('/dashboard');
-			}, 1000);
 		}
 	};
 
 	return (
 		<div className="h-screen flex items-center justify-center bg-login-image">
 			<FormProvider {...methods}>
-				<form onSubmit={methods.handleSubmit(onSubmit)} className="bg-white/95 p-8 rounded-2xl shadow-2xl border border-gray-400 w-full max-w-xl flex-col items-center">
+				<form
+					onSubmit={methods.handleSubmit(onSubmit)}
+					className="bg-white/95 p-8 rounded-2xl shadow-2xl border border-gray-400 w-full max-w-xl flex-col items-center"
+				>
 					<div className="mb-6 flex justify-center">
-						<img
-							src={LogInUnivalle}
-							alt="Worku Logo"
-							className="h-32 w-auto object-contain"
-						/>
+						<img src={LogInUnivalle} alt="Worku Logo" className="h-32 w-auto object-contain" />
 					</div>
 					<FormField name="email" label="Correo electrónico" placeholder="Ingresa tu correo electrónico" />
 
@@ -49,10 +43,7 @@ function LoginForm() {
 
 					<p className="text-center text-md mt-2 text-gray-600">
 						¿No tienes cuenta?{' '}
-						<Link
-							to="/auth/register"
-							className="text-primary-red hover:underline font-medium"
-						>
+						<Link to="/auth/register" className="text-primary-red hover:underline font-medium">
 							Regístrate aquí
 						</Link>
 					</p>

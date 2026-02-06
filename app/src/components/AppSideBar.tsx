@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom';
-
 import {
 	Sidebar,
 	SidebarContent,
@@ -7,13 +6,12 @@ import {
 	SidebarGroupContent,
 	SidebarGroupLabel,
 	SidebarMenu,
-	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
 import { useSidebarRoutes } from '@/hooks/sideBarRoutes';
-import LogOutButton from './LogOutButton';
 import LogInUnivalle from '../public/LogInUnivalle.png';
+import LogOutButton from './LogOutButton';
 
 export function AppSidebar() {
 	const sidebarRoutes = useSidebarRoutes();
@@ -24,33 +22,31 @@ export function AppSidebar() {
 				<SidebarGroup>
 					<SidebarGroupLabel>
 						<div className="mt-10 flex justify-center">
-							<img
-								src={LogInUnivalle}
-								alt="Worku Logo"
-								className="h-12 w-auto object-contain"
-							/>
+							<img src={LogInUnivalle} alt="Worku Logo" className="h-12 w-auto object-contain" />
 						</div>
 					</SidebarGroupLabel>
-					<SidebarGroupContent className='mt-15'>
+
+					<SidebarGroupContent className="mt-15">
 						<SidebarMenu>
 							{sidebarRoutes.map(route => {
-								const Icon = route.icon; // 👈 Componente del icono pasado en routeConfig
+								const Icon = route.icon;
 								return (
 									<SidebarMenuItem key={route.path}>
-										<SidebarMenuButton asChild>
-											<NavLink
-												to={route.path || '#'}
-												className={({ isActive }) =>
-													`flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${isActive
-														? 'bg-slate-200 text-slate-900'
-														: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+										<NavLink
+											end
+											to={route.path || '#'}
+											className={({ isActive }) =>
+												`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors
+                         ${
+														isActive
+															? 'bg-[var(--sidebar-active)] text-[var(--sidebar-active-text)]'
+															: 'text-slate-600 hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-hover-text)]'
 													}`
-												}
-											>
-												{Icon && <Icon />}
-												<span>{route.title}</span>
-											</NavLink>
-										</SidebarMenuButton>
+											}
+										>
+											{Icon && <Icon />}
+											<span>{route.title}</span>
+										</NavLink>
 									</SidebarMenuItem>
 								);
 							})}
@@ -58,6 +54,7 @@ export function AppSidebar() {
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
+
 			<LogOutButton />
 		</Sidebar>
 	);

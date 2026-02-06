@@ -1,11 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
-import { useEffect, useState, useCallback } from 'react';
-import { toast } from 'react-toastify';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { API_BASE_URL, DEPENDENCE_APPLICANTS_DETAILS, DEPENDENCE_OFFERS } from '@/constants/path';
+import { useAuth } from '@/hooks/useAuth';
 
 type ApplicationStatus = 'SENT' | 'UNDER_REVIEW' | 'CALLED_FOR_INTERVIEW' | 'APPROVED' | 'REJECTED';
 
@@ -104,7 +104,6 @@ export function ViewApplicants() {
 			toast.error('No se pudo abrir el perfil del aplicante');
 		}
 	};
-
 	const handleStatusChange = async (
 		applicationId: string,
 		newStatus: ApplicationStatus,
@@ -134,6 +133,27 @@ export function ViewApplicants() {
 			}
 
 			const updatedApp = await response.json();
+
+			// 🔹 Actualizamos el estado local correctamente
+			setData(prev =>
+				prev
+					? {
+							...prev,
+							applicants: prev.applicants.map(app =>
+								app.applicationId === updatedApp.id
+									? {
+											...app,
+											status: updatedApp.status,
+											interviewDate: updatedApp.interviewDate, // se asegura que sea la actual
+											attendedInterview: updatedApp.attendedInterview ?? undefined,
+										}
+									: app,
+							),
+						}
+					: prev,
+			);
+
+			// Mensajes toast
 			if (attendedInterview !== undefined && newStatus === updatedApp.status) {
 				toast.success(
 					attendedInterview
@@ -142,34 +162,17 @@ export function ViewApplicants() {
 				);
 			} else {
 				toast.success(
-					`Estado actualizado a ${newStatus === 'UNDER_REVIEW'
-						? 'En revisión'
-						: newStatus === 'CALLED_FOR_INTERVIEW'
-							? 'Citado a entrevista'
-							: newStatus === 'APPROVED'
-								? 'Aprobado'
-								: 'Rechazado'
+					`Estado actualizado a ${
+						newStatus === 'UNDER_REVIEW'
+							? 'En revisión'
+							: newStatus === 'CALLED_FOR_INTERVIEW'
+								? 'Citado a entrevista'
+								: newStatus === 'APPROVED'
+									? 'Aprobado'
+									: 'Rechazado'
 					}`,
 				);
 			}
-
-			setData(prev =>
-				prev
-					? {
-						...prev,
-						applicants: prev.applicants.map(app =>
-							app.applicationId === updatedApp.id
-								? {
-									...app,
-									status: updatedApp.status,
-									interviewDate: updatedApp.interviewDate,
-									attendedInterview: updatedApp.attendedInterview ?? undefined,
-								}
-								: app,
-						),
-					}
-					: prev,
-			);
 		} catch (error) {
 			console.error(error);
 			toast.error('Error de conexión al actualizar estado');
@@ -227,7 +230,11 @@ export function ViewApplicants() {
 	if (!data || !data.applicants || data.applicants.length === 0) {
 		return (
 			<div className="mt-6 space-y-4 pr-6">
-				<button type='button' onClick={handleBack} className="bg-button-create text-white px-2 py-1.5 rounded-md hover:bg-gray-800 transition">
+				<button
+					type="button"
+					onClick={handleBack}
+					className="bg-button-create text-white px-2 py-1.5 rounded-md hover:bg-gray-800 transition"
+				>
 					← Volver a ofertas
 				</button>
 
@@ -247,7 +254,11 @@ export function ViewApplicants() {
 
 	return (
 		<div className="space-y-6 mt-6 pr-6">
-			<button type='button' onClick={handleBack} className="bg-button-create text-white px-2 py-1.5 rounded-md hover:bg-gray-800 transition">
+			<button
+				type="button"
+				onClick={handleBack}
+				className="bg-button-create text-white px-2 py-1.5 rounded-md hover:bg-gray-800 transition"
+			>
 				← Volver
 			</button>
 			<Card className="border border-slate-200 shadow-sm">
@@ -343,10 +354,11 @@ export function ViewApplicants() {
 													setSelectedAttendanceApplicant(applicant);
 													setShowAttendanceModal(true);
 												}}
-												className={`border-blue-500 text-blue-600 hover:bg-blue-50 ${applicant.attendedInterview !== null && applicant.attendedInterview !== undefined
-													? 'opacity-50 cursor-not-allowed'
-													: ''
-													}`}
+												className={`border-blue-500 text-blue-600 hover:bg-blue-50 ${
+													applicant.attendedInterview !== null && applicant.attendedInterview !== undefined
+														? 'opacity-50 cursor-not-allowed'
+														: ''
+												}`}
 											>
 												Registrar asistencia
 											</Button>
@@ -380,19 +392,14 @@ export function ViewApplicants() {
 											variant="outline"
 											size="sm"
 											disabled={
-												applicant.status !== 'CALLED_FOR_INTERVIEW' ||
-												!applicant.interviewDate ||
-												applicant.attendedInterview !== false
+												(applicant.status === 'CALLED_FOR_INTERVIEW' && applicant.attendedInterview === null) ||
+												(applicant.status !== 'UNDER_REVIEW' && applicant.status !== 'CALLED_FOR_INTERVIEW')
 											}
 											onClick={async () => {
-												const interviewDate = new Date(applicant.interviewDate!);
-												const now = new Date();
-
-												if (interviewDate > now) {
-													toast.warning('No puedes rechazar antes de que se realice la entrevista.');
+												if (applicant.interviewDate && applicant.attendedInterview === null) {
+													toast.warning('No puedes rechazar antes de que el estudiante asista a la entrevista.');
 													return;
 												}
-
 												await handleStatusChange(applicant.applicationId, 'REJECTED');
 											}}
 											className="border-red-500 text-red-600 hover:bg-red-50"
@@ -443,7 +450,11 @@ export function ViewApplicants() {
 										return;
 									}
 									if (selectedApplicant) {
-										await handleStatusChange(selectedApplicant.applicationId, 'CALLED_FOR_INTERVIEW', interviewDate);
+										await handleStatusChange(
+											selectedApplicant.applicationId,
+											'CALLED_FOR_INTERVIEW',
+											interviewDate, // enviamos la fecha directamente
+										);
 									}
 									setShowInterviewModal(false);
 									setInterviewDate('');

@@ -217,8 +217,47 @@ export async function seedTest(prisma: PrismaClient) {
 			],
 		},
 		{
-			faculty: "Facultad de Ciencias Naturales",
-			colleges: ["Escuela de Biología", "Escuela de Química"],
+			faculty: "Facultad de Ciencias Naturales y Exactas",
+			colleges: [
+				"Escuela de Biología",
+				"Escuela de Química",
+				"Escuela de Matemáticas",
+				"Escuela de Física",
+				"Tecnologia en Analisis y Laboratorio Quimico",
+				"Tecnologia en Manejo de la Producción Agroforestal",
+			],
+		},
+		{
+			faculty: "Facultad de Ciencias Sociales y Económicas",
+			colleges: ["Sociologia", "Economía"],
+		},
+		{
+			faculty: "Facultad de Humanidades",
+			colleges: [
+				"Filosofía",
+				"Licenciatura en Filosofía",
+				"Licenciatura en Español y Filologia",
+				"Licenciatura en Lenguas Extranjeras",
+				"Programa Interpretación para sordociegos",
+				"Licenciatura en Literatura",
+				"Licenciatura en Ciencias Sociales",
+				"Geografía",
+				"Licenciatura en Historia",
+				"Historia",
+				"Trabajo Social",
+			],
+		},
+		{
+			faculty: "Facultad Artes Integradas",
+			colleges: [
+				"Arquitectura",
+				"Comunicación Social",
+				"Música",
+				"Licenciaturas",
+				"Diseño Gráfico",
+				"Diseño Industrial",
+				"Oferta de Asignaturas Electivas",
+			],
 		},
 	];
 
@@ -232,7 +271,9 @@ export async function seedTest(prisma: PrismaClient) {
 		for (const collegeName of item.colleges) {
 			await prisma.college.upsert({
 				where: { name: collegeName },
-				update: {},
+				update: {
+					facultyId: faculty.id,
+				},
 				create: {
 					name: collegeName,
 					facultyId: faculty.id,
@@ -245,12 +286,12 @@ export async function seedTest(prisma: PrismaClient) {
 	const hashedPassword = await bcrypt.hash("admin123", 10);
 
 	await prisma.user.upsert({
-		where: { email: "admin01@gmail.com" },
+		where: { email: "admin@example.com" },
 		update: {},
 		create: {
 			name: "Admin",
-			lastName: "01",
-			email: "admin01@gmail.com",
+			lastName: "System",
+			email: "admin@example.com",
 			roleId: admin.id,
 			password: hashedPassword,
 		},
@@ -261,7 +302,7 @@ export async function seedTest(prisma: PrismaClient) {
 		update: {},
 		create: {
 			name: "Director",
-			lastName: "01",
+			lastName: "System",
 			email: "director@example.com",
 			roleId: director.id,
 			password: hashedPassword,
@@ -273,7 +314,7 @@ export async function seedTest(prisma: PrismaClient) {
 		update: {},
 		create: {
 			name: "Dependencia",
-			lastName: "01",
+			lastName: "System",
 			email: "dependencia@example.com",
 			roleId: dependence.id,
 			password: hashedPassword,
@@ -285,7 +326,7 @@ export async function seedTest(prisma: PrismaClient) {
 		update: {},
 		create: {
 			name: "Estudiante",
-			lastName: "01",
+			lastName: "System",
 			email: "estudiante@example.com",
 			roleId: student.id,
 			password: hashedPassword,
@@ -298,6 +339,8 @@ export async function seedTest(prisma: PrismaClient) {
 			description: "Apoyar en proyectos y prácticas de SQL y modelado de datos",
 			requirements: "Conocimientos en SQL, PostgreSQL o MySQL",
 			daysToClose: 15,
+			faculty: "Facultad de Ingeniería",
+			college: "Escuela de Sistemas",
 		},
 		{
 			title: "Monitoría en Inteligencia Artificial",
@@ -305,30 +348,40 @@ export async function seedTest(prisma: PrismaClient) {
 				"Asistir en la creación de modelos de IA y análisis de datos",
 			requirements: "Conocimientos en Python, machine learning y estadística",
 			daysToClose: 20,
+			faculty: "Facultad de Ingeniería",
+			college: "Escuela de Sistemas",
 		},
 		{
 			title: "Monitoría en Diseño UX/UI",
 			description: "Apoyar en el diseño de interfaces y experiencia de usuario",
 			requirements: "Manejo de Figma, Adobe XD o Sketch",
 			daysToClose: 12,
+			faculty: "Facultad de Ingeniería",
+			college: "Escuela de Sistemas",
 		},
 		{
 			title: "Monitoría en Redes de Computadores",
 			description: "Asistir en prácticas de configuración y seguridad de redes",
 			requirements: "Conocimientos en TCP/IP, routers y switches",
 			daysToClose: 18,
+			faculty: "Facultad de Ingeniería",
+			college: "Escuela de Sistemas",
 		},
 		{
 			title: "Monitoría en Matemáticas Aplicadas",
 			description: "Apoyo en ejercicios y tutorías de álgebra y cálculo",
 			requirements: "Sólidos conocimientos en álgebra, cálculo y estadística",
 			daysToClose: 14,
+			faculty: "Facultad de Ingeniería",
+			college: "Escuela de Sistemas",
 		},
 		{
 			title: "Monitoría en Desarrollo de Aplicaciones Móviles",
 			description: "Apoyo en proyectos con Flutter y React Native",
 			requirements: "Conocimientos en Dart, JavaScript y control de versiones",
 			daysToClose: 16,
+			faculty: "Facultad de Ingeniería",
+			college: "Escuela de Sistemas",
 		},
 		{
 			title: "Monitoría en Ciberseguridad",
@@ -336,12 +389,16 @@ export async function seedTest(prisma: PrismaClient) {
 				"Asistir en prácticas de análisis de vulnerabilidades y protección de sistemas",
 			requirements: "Conocimientos en seguridad informática y redes",
 			daysToClose: 22,
+			faculty: "Facultad de Ingeniería",
+			college: "Escuela de Sistemas",
 		},
 		{
 			title: "Monitoría en Análisis de Datos",
 			description: "Apoyo en la limpieza, análisis y visualización de datos",
 			requirements: "Manejo de Python, Excel, Pandas y Power BI",
 			daysToClose: 13,
+			faculty: "Facultad de Ingeniería",
+			college: "Escuela de Sistemas",
 		},
 	];
 
@@ -482,7 +539,7 @@ export async function seedTest(prisma: PrismaClient) {
 				name: studentData.name,
 				lastName: studentData.lastName,
 				email: studentData.email,
-				roleId: student.id, // rol de estudiante
+				roleId: student.id,
 				password: hashedStudentPassword,
 			},
 		});
@@ -527,30 +584,123 @@ export async function seedTest(prisma: PrismaClient) {
 				isComplete: true,
 				Photo: "default_photo.png",
 				Grades: "grades_default.pdf",
-				status: "APPROVED",
+				status: "SUBMITTED",
 				submittedAt: new Date(),
 				reviewedAt: new Date(),
 			},
 		});
 
-		// 👉 Agregar SystemSkill al perfil
+		// ✅ Agregar SystemSkill
 		const skills = ["React", "Node.js", "PostgreSQL", "Git", "Docker"];
-		const randomSkills = skills.sort(() => 0.5 - Math.random()).slice(0, 3); // 3 habilidades aleatorias
-
+		const randomSkills = skills.sort(() => 0.5 - Math.random()).slice(0, 3);
 		for (const skill of randomSkills) {
 			await prisma.systemSkill.upsert({
-				where: {
-					// combinamos el studentId y el nombre del programa para evitar duplicados
-					id: `${profile.id}-${skill}`,
-				},
+				where: { id: `${profile.id}-${skill}` },
 				update: {},
 				create: {
-					id: `${profile.id}-${skill}`, // clave única artificial
+					id: `${profile.id}-${skill}`,
 					studentId: profile.id,
 					programName: skill,
 				},
 			});
 		}
+
+		// ✅ Agregar educación
+		await prisma.education.createMany({
+			data: [
+				{
+					studentId: profile.id,
+					level: "UNIVERSITY",
+					degreeTitle: "Ingeniería de Sistemas",
+					endYear: 2026,
+					institution: "Universidad del Valle",
+					city: studentData.city,
+					semesters: studentData.semester,
+				},
+				{
+					studentId: profile.id,
+					level: "HIGH_SCHOOL",
+					degreeTitle: "Bachiller Académico",
+					endYear: 2021,
+					institution: "Colegio Nacional",
+					city: studentData.city,
+				},
+			],
+		});
+
+		// ✅ Agregar cursos de capacitación
+		await prisma.training.createMany({
+			data: [
+				{
+					studentId: profile.id,
+					institution: "Platzi",
+					courseName: "Curso de React",
+					duration: "30 horas",
+					endDate: new Date("2024-12-01"),
+				},
+				{
+					studentId: profile.id,
+					institution: "Udemy",
+					courseName: "Curso de Node.js",
+					duration: "25 horas",
+					endDate: new Date("2024-11-01"),
+				},
+			],
+		});
+
+		// ✅ Agregar idiomas
+		await prisma.languageSkill.createMany({
+			data: [
+				{
+					studentId: profile.id,
+					language: "Inglés",
+					speakLevel: "GOOD",
+					writeLevel: "GOOD",
+					readLevel: "GOOD",
+				},
+				{
+					studentId: profile.id,
+					language: "Español",
+					speakLevel: "EXCELLENT",
+					writeLevel: "EXCELLENT",
+					readLevel: "EXCELLENT",
+				},
+			],
+		});
+
+		// ✅ Agregar disponibilidad
+		await prisma.availability.createMany({
+			data: [
+				{
+					studentId: profile.id,
+					dayOfWeek: "MONDAY",
+					startTime1: "08:00",
+					endTime1: "12:00",
+				},
+				{
+					studentId: profile.id,
+					dayOfWeek: "WEDNESDAY",
+					startTime1: "14:00",
+					endTime1: "18:00",
+				},
+			],
+		});
+
+		// ✅ (Opcional) agregar experiencia laboral
+		await prisma.workExperience.create({
+			data: {
+				studentId: profile.id,
+				companyName: "Tech Solutions",
+				role: "Intern",
+				functions: "Desarrollo de módulos en Node.js",
+				bossName: "Juan Pérez",
+				bossRole: "Project Manager",
+				bossPhone: "3105555555",
+				startDate: new Date("2024-01-01"),
+				endDate: new Date("2024-06-30"),
+				achievements: "Desarrollo de API funcional",
+			},
+		});
 	}
 
 	// Obtener todas las ofertas disponibles

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Bar, BarChart, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import {
 	REPORT_DEPENDENCE_FACULTY,
 	REPORT_DEPENDENCE_RESULTS,
@@ -60,7 +61,7 @@ const OffersReportsView = () => {
 		fetchData();
 	}, []);
 
-	if (loading) return <p className="text-center py-6">Cargando reportes...</p>;
+	if (loading) return <LoadingSpinner text="Cargando estadísticas..." />;
 
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-8">

@@ -39,6 +39,10 @@
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
+  --sidebar-hover: #fca5a5;        /* rojo claro al pasar el mouse */
+  --sidebar-hover-text: #7f1d1d;   /* texto más oscuro en hover */
+  --sidebar-active: #ef4444;       /* rojo intenso cuando está activo */
+  --sidebar-active-text: white; 
   --sidebar-ring: oklch(0.708 0 0);
   --table-header: #808285;
   --table-row: oklch(0.985 0 0);
@@ -163,5 +167,11 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

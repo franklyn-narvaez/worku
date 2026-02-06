@@ -8,6 +8,7 @@ import { ADMIN_USER, UPDATE_USER } from '@/constants/path';
 import { UpdateSchema, statusEnum, statusLabels, type UpdateType } from '../schemas/Update';
 import { useAuth } from '@/hooks/useAuth';
 import type { ExtendedUser } from '../types/user';
+import { toast } from 'react-toastify';
 
 type UpdateFormProps = {
 	user: ExtendedUser;
@@ -59,10 +60,12 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
 		const response = await fetch(UPDATE_USER, fetchOptions);
 
 		if (response.ok) {
+			toast.success('Usuario actualizado exitosamente');
 			navigate(ADMIN_USER);
 		} else {
 			const errorData = await response.json();
-			console.error('Error creating user:', errorData);
+			toast.error(errorData.message ?? 'Error al actualizar el usuario');
+			console.error('Error updating user:', errorData);
 		}
 	};
 

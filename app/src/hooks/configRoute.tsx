@@ -1,4 +1,4 @@
-import { BarChartIcon, BookOpen, Home, Users as UsersIcon } from 'lucide-react';
+import { BarChartIcon, BookOpen, Users as UsersIcon } from 'lucide-react';
 import type { ComponentType, ReactElement } from 'react';
 import AuthLayout from '@/components/AuthLayout';
 import NavWrapper from '@/components/NavWrapper';
@@ -102,14 +102,6 @@ export const routeConfig: AppRoute[] = [
 			{
 				element: <NavWrapper />,
 				children: [
-					{
-						path: '/dashboard',
-						element: <div>dashboard</div>,
-						title: 'Dashboard',
-						showInSidebar: true,
-						icon: Home,
-					},
-
 					{
 						path: ADMIN_USER,
 						element: <Users />,

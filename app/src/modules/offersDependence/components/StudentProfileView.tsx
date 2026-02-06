@@ -1,13 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { API_BASE_URL, DEPENDENCE_OFFERS } from '@/constants/path';
-import { toast } from 'react-toastify';
+import { useAuth } from '@/hooks/useAuth';
 
 type Education = {
 	id: string;
@@ -237,7 +237,7 @@ export default function StudentProfileView() {
 			{/* Header: foto + título + acciones */}
 			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 				<div className="flex items-center gap-4">
-					<div className="w-20 h-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
+					<div className="w-20 h-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-xl">
 						{profile.Photo ? (
 							<img src={profile.Photo} alt={profile.fullName} className="w-full h-full object-cover" />
 						) : (
@@ -248,28 +248,31 @@ export default function StudentProfileView() {
 					<div>
 						<h1 className="text-2xl font-semibold text-slate-800">{profile.fullName ?? 'Nombre no registrado'}</h1>
 						<div className="flex items-center gap-2 mt-1">
-							<Badge variant="secondary" className="text-md">
+							<Badge variant="secondary" className="text-md shadow-sm">
 								{profile.planName ?? 'Programa no registrado'} -- {profile.planCode ?? 'Código no registrado'}
 							</Badge>
-							<Badge variant="secondary" className="text-md">
+							<Badge variant="secondary" className="text-md shadow-sm">
 								Semestre: {profile.semester ?? 'Semestre no registrado'}
 							</Badge>
 						</div>
-						<p className="text-sm text-slate-500 mt-1">
-							{profile.studentCode ? `Código: ${profile.studentCode}` : null}
-						</p>
+
+						<div className="flex items-center gap-2 mt-2">
+							<Badge variant="secondary" className="text-md shadow-sm">
+								Codigo: {profile.studentCode ?? 'No registrado'}
+							</Badge>
+						</div>
 					</div>
 				</div>
 
 				<div className="flex items-center gap-2">
 					{profile.Grades && (
 						<a href={profile.Grades} target="_blank" rel="noreferrer" className="no-underline">
-							<Button variant="outline" size="sm">
+							<Button className="bg-white shadow-sm" variant="outline" size="sm">
 								Ver certificado
 							</Button>
 						</a>
 					)}
-					<Button variant="outline" size="sm" onClick={handleBack}>
+					<Button className="bg-white shadow-sm" variant="outline" size="sm" onClick={handleBack}>
 						← Volver
 					</Button>
 				</div>
@@ -277,34 +280,34 @@ export default function StudentProfileView() {
 
 			{/* Quick stats */}
 			<div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
-				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center">
+				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center shadow-sm">
 					<div className="text-xs text-slate-400">Formación</div>
 					<div className="text-lg font-semibold">{sectionCounts.educations}</div>
 				</div>
-				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center">
+				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center shadow-sm">
 					<div className="text-xs text-slate-400">Capacitaciones</div>
 					<div className="text-lg font-semibold">{sectionCounts.trainings}</div>
 				</div>
-				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center">
+				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center shadow-sm">
 					<div className="text-xs text-slate-400">Idiomas</div>
 					<div className="text-lg font-semibold">{sectionCounts.languages}</div>
 				</div>
-				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center">
+				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center shadow-sm">
 					<div className="text-xs text-slate-400">Sistemas</div>
 					<div className="text-lg font-semibold">{sectionCounts.systems}</div>
 				</div>
-				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center">
+				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center shadow-sm">
 					<div className="text-xs text-slate-400">Experiencia</div>
 					<div className="text-lg font-semibold">{sectionCounts.experience}</div>
 				</div>
-				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center">
+				<div className="p-3 bg-white border border-slate-200 rounded-lg text-center shadow-sm">
 					<div className="text-xs text-slate-400">Disponibilidad</div>
 					<div className="text-lg font-semibold">{sectionCounts.availability}</div>
 				</div>
 			</div>
 
 			{/* Tabs */}
-			<div className="bg-white border border-slate-200 rounded-lg p-3">
+			<div className="bg-white border border-slate-200 rounded-lg p-3 shadow-xl">
 				<nav className="flex gap-2 overflow-x-auto pb-2">
 					{[
 						{ key: 'overview', label: 'Resumen' },
@@ -328,7 +331,7 @@ export default function StudentProfileView() {
 				<div className="pt-4">
 					{/* OVERVIEW */}
 					{activeTab === 'overview' && (
-						<div className="space-y-4">
+						<div className="space-y-4 shadow-sm">
 							<Card>
 								<CardHeader>
 									<CardTitle>Información personal</CardTitle>
@@ -393,7 +396,7 @@ export default function StudentProfileView() {
 								</CardContent>
 							</Card>
 
-							<Card>
+							<Card className="shadow-sm">
 								<CardHeader>
 									<CardTitle>Documentos</CardTitle>
 								</CardHeader>
