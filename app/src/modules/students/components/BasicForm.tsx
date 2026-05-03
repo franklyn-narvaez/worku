@@ -1,7 +1,8 @@
 // src/modules/student/components/BasicInfo.tsx
+
+import { DatePickerField } from '@/components/DatePicker';
 import { FormField } from '@/components/FormField';
 import { SelectField } from '@/components/SelectField';
-import { DatePickerField } from '@/components/DatePicker';
 import { TextAreaField } from '@/components/TextAreaField';
 
 export default function BasicForm() {
@@ -53,6 +54,7 @@ export default function BasicForm() {
 					options={[
 						{ value: 'MASCULINO', label: 'Masculino' },
 						{ value: 'FEMENINO', label: 'Femenino' },
+						{ value: 'OTRO', label: 'Otro' },
 					]}
 					placeholder="Seleccione un género"
 				/>

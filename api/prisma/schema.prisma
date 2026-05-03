@@ -132,7 +132,7 @@ model StudentProfile {
   lastName            String
   secondLastName      String?
   fullName            String
-  gender              String
+  gender              Gender
   birthDate           DateTime
   age                 Int
   birthPlace          String
@@ -176,6 +176,12 @@ model StudentProfile {
   submittedAt DateTime?
   reviewedAt DateTime?
   rejectComment String?
+}
+
+enum Gender {
+  MASCULINO
+  FEMENINO
+  OTRO
 }
 
 enum ProfileStatus {
