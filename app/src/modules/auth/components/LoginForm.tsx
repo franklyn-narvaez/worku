@@ -24,11 +24,11 @@ function LoginForm() {
 	};
 
 	return (
-		<div className="h-screen flex items-center justify-center bg-login-image">
+		<div className="min-h-screen w-full overflow-y-auto flex items-center justify-center bg-login-image pt-8 pb-7">
 			<FormProvider {...methods}>
 				<form
 					onSubmit={methods.handleSubmit(onSubmit)}
-					className="bg-white/95 p-8 rounded-2xl shadow-2xl border border-gray-400 w-full max-w-xl flex-col items-center"
+					className="bg-white/95 p-8 rounded-2xl shadow-2xl border border-gray-400 w-full max-w-xl flex-col items-center my-auto"
 				>
 					<div className="mb-6 flex justify-center">
 						<img src={LogInUnivalle} alt="Worku Logo" className="h-32 w-auto object-contain" />

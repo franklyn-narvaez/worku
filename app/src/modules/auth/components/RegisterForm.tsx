@@ -1,14 +1,14 @@
 'use client';
 
-import { useForm, FormProvider } from 'react-hook-form';
-import type { College } from '@prisma/client';
-import { toast } from 'react-toastify';
-import { registerRequets } from '../requests/register';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { FormField } from '@components/FormField';
-import { RegisterSchema, type RegisterType } from '../schemas/register';
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { College } from '@prisma/client';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import LogInUnivalle from '../../../public/LogInUnivalle.png';
+import { registerRequets } from '../requests/register';
+import { RegisterSchema, type RegisterType } from '../schemas/register';
 
 function RegisterForm(props: { colleges: College[] }) {
 	const methods = useForm<RegisterType>({
@@ -33,16 +33,14 @@ function RegisterForm(props: { colleges: College[] }) {
 	});
 
 	return (
-		<div className="h-full flex items-center justify-center bg-login-image">
+		<div className="min-h-screen w-full overflow-y-auto flex items-center justify-center bg-login-image pt-8 pb-7">
 			<FormProvider {...methods}>
-				<form onSubmit={onSubmit} className="bg-white/95 p-8 rounded-2xl shadow-2xl border border-gray-400 w-full max-w-2xl flex-col items-center">
-
+				<form
+					onSubmit={onSubmit}
+					className="bg-white/95 p-8 rounded-2xl shadow-2xl border border-gray-400 w-full max-w-2xl flex-col items-center my-auto"
+				>
 					<div className="mb-6 flex justify-center">
-						<img
-							src={LogInUnivalle}
-							alt="Worku Logo"
-							className="h-25 w-auto object-contain"
-						/>
+						<img src={LogInUnivalle} alt="Worku Logo" className="h-25 w-auto object-contain" />
 					</div>
 					<FormField name="name" label="Nombre" placeholder="Ingresa tu nombre" />
 					<FormField name="lastName" label="Apellido" placeholder="Ingresa tu apellido" />
@@ -83,12 +81,13 @@ function RegisterForm(props: { colleges: College[] }) {
 
 					<p className="text-center text-sm text-gray-600 mt-4">
 						¿Ya tienes una cuenta?{' '}
-						<span
+						<button
+							type="button"
 							onClick={() => navigate('/auth/login')}
 							className="text-primary-red hover:underline cursor-pointer"
 						>
 							Inicia sesión
-						</span>
+						</button>
 					</p>
 				</form>
 			</FormProvider>
