@@ -1,307 +1,296 @@
-import request from "supertest";
-import express from "express";
-import { vi, describe, it, expect, beforeEach } from "vitest";
-import router from "../controller";
-import { prisma } from "@/libs/db";
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
+import express from 'express';
+import request from 'supertest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { prisma } from '@/libs/db';
+import router from '../controller';
 
-vi.mock("@/libs/db", () => ({
-    prisma: {
-        user: {
-            findMany: vi.fn(),
-            findUnique: vi.fn(),
-            findFirst: vi.fn(),
-            create: vi.fn(),
-            update: vi.fn(),
-        },
-        role: {
-            findFirst: vi.fn(),
-        },
-    },
+vi.mock('@/libs/db', () => ({
+	prisma: {
+		user: {
+			findMany: vi.fn(),
+			findUnique: vi.fn(),
+			findFirst: vi.fn(),
+			create: vi.fn(),
+			update: vi.fn(),
+		},
+		role: {
+			findFirst: vi.fn(),
+		},
+	},
 }));
 
-vi.mock("bcrypt", () => ({
-    default: { hash: vi.fn().mockResolvedValue("hashed_password") },
+vi.mock('bcrypt', () => ({
+	default: { hash: vi.fn().mockResolvedValue('hashed_password') },
 }));
 
-vi.mock("@/middlewares/authenticate", () => ({
-    authenticate: vi.fn((req: any, _res: any, next: any) => {
-        req.user = { id: "user123", role: "admin" };
-        next();
-    }),
+vi.mock('@/middlewares/authenticate', () => ({
+	authenticate: vi.fn((req: any, _res: any, next: any) => {
+		req.user = { id: 'user123', role: 'admin' };
+		next();
+	}),
 }));
 
-vi.mock("@/middlewares/authorize", () => ({
-    authorize: vi.fn(() => (req: any, _res: any, next: any) => next()),
+vi.mock('@/middlewares/authorize', () => ({
+	authorize: vi.fn(() => (req: any, _res: any, next: any) => next()),
 }));
 
 const app = express();
 app.use(express.json());
-app.use("/", router);
+app.use('/', router);
 
-describe("User Controller", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+describe('User Controller', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    // 🔹 GET /
-    it("retorna 200 con la lista de usuarios", async () => {
-        (prisma.user.findMany as any).mockResolvedValue([
-            { id: "1", name: "John", email: "john@test.com" },
-        ]);
+	const userFindManyMock = vi.mocked(prisma.user.findMany);
+	const userFindUniqueMock = vi.mocked(prisma.user.findUnique);
+	const userCreateMock = vi.mocked(prisma.user.create);
+	const userUpdateMock = vi.mocked(prisma.user.update);
+	const roleFindFirstMock = vi.mocked(prisma.role.findFirst);
 
-        const res = await request(app).get("/");
+	// 🔹 GET /
+	it('retorna 200 con la lista de usuarios', async () => {
+		userFindManyMock.mockResolvedValue([{ id: '1', name: 'John', email: 'john@test.com' } as never]);
 
-        expect(res.status).toBe(200);
-        expect(res.body).toEqual([{ id: "1", name: "John", email: "john@test.com" }]);
-    });
+		const res = await request(app).get('/');
 
-    it("retorna 500 si ocurre un error en GET /", async () => {
-        (prisma.user.findMany as any).mockRejectedValue(new Error("DB Error"));
+		expect(res.status).toBe(200);
+		expect(res.body).toEqual([{ id: '1', name: 'John', email: 'john@test.com' }]);
+	});
 
-        const res = await request(app).get("/");
-        expect(res.status).toBe(500);
-        expect(res.body).toHaveProperty("error", "Failed to fetch users");
-    });
+	it('retorna 500 si ocurre un error en GET /', async () => {
+		userFindManyMock.mockRejectedValue(new Error('DB Error'));
 
-    // 🔹 POST /register
-    it("registra un usuario nuevo correctamente", async () => {
-        const mockData = {
-            name: "Franklin",
-            lastName: "Narvaez",
-            email: "franklin@test.com",
-            password: "123456",
-            collegeId: "1",
-        };
+		const res = await request(app).get('/');
+		expect(res.status).toBe(500);
+		expect(res.body).toHaveProperty('error', 'Failed to fetch users');
+	});
 
-        (prisma.user.findUnique as any).mockResolvedValue(null);
-        (prisma.role.findFirst as any).mockResolvedValue({ id: "r1", code: "student" });
-        (prisma.user.create as any).mockResolvedValue({
-            id: "1",
-            ...mockData,
-            password: "hashed_password",
-            roleId: "r1",
-        });
+	// 🔹 POST /register
+	it('registra un usuario nuevo correctamente', async () => {
+		const mockData = {
+			name: 'Franklin',
+			lastName: 'Narvaez',
+			email: 'franklin@test.com',
+			password: '123456',
+			collegeId: '1',
+		};
 
-        const res = await request(app).post("/register").send(mockData);
+		userFindUniqueMock.mockResolvedValue(null);
+		roleFindFirstMock.mockResolvedValue({ id: 'r1', code: 'student' } as never);
+		userCreateMock.mockResolvedValue({
+			id: '1',
+			...mockData,
+			password: 'hashed_password',
+			roleId: 'r1',
+		} as never);
 
-        expect(res.status).toBe(201);
-        expect(res.body).toHaveProperty("id");
-        expect(bcrypt.hash).toHaveBeenCalledWith(mockData.password, 10);
-    });
+		const res = await request(app).post('/register').send(mockData);
 
-    it("retorna 400 si los datos son inválidos", async () => {
-        const res = await request(app)
-            .post("/register")
-            .send({ name: "", email: "bad", password: "" });
+		expect(res.status).toBe(201);
+		expect(res.body).toHaveProperty('id');
+		expect(bcrypt.hash).toHaveBeenCalledWith(mockData.password, 10);
+	});
 
-        expect(res.status).toBe(400);
-        expect(res.body).toHaveProperty("message", "Datos inválidos");
-    });
+	it('retorna 400 si los datos son inválidos', async () => {
+		const res = await request(app).post('/register').send({ name: '', email: 'bad', password: '' });
 
-    it("retorna 400 si el email ya existe en POST /register", async () => {
-        (prisma.user.findUnique as any).mockResolvedValue({ id: "1", email: "test@test.com" });
+		expect(res.status).toBe(400);
+		expect(res.body).toHaveProperty('message', 'Datos inválidos');
+	});
 
-        const res = await request(app)
-            .post("/register")
-            .send({
-                name: "X",
-                lastName: "Test",
-                email: "test@test.com",
-                password: "123456",
-                collegeId: "1",
-            });
+	it('retorna 400 si el email ya existe en POST /register', async () => {
+		userFindUniqueMock.mockResolvedValue({ id: '1', email: 'test@test.com' } as never);
 
-        expect(res.status).toBe(400);
-        expect(res.body).toHaveProperty("error", "El usuario ya existe");
-    });
+		const res = await request(app).post('/register').send({
+			name: 'X',
+			lastName: 'Test',
+			email: 'test@test.com',
+			password: '123456',
+			collegeId: '1',
+		});
 
-    it("retorna 404 si no encuentra el rol 'student' en POST /register", async () => {
-        (prisma.user.findUnique as any).mockResolvedValue(null);
-        (prisma.role.findFirst as any).mockResolvedValue(null);
+		expect(res.status).toBe(400);
+		expect(res.body).toHaveProperty('error', 'El usuario ya existe');
+	});
 
-        const res = await request(app)
-            .post("/register")
-            .send({
-                name: "X",
-                lastName: "Test",
-                email: "x@test.com",
-                password: "123456",
-                collegeId: "1",
-            });
+	it("retorna 404 si no encuentra el rol 'student' en POST /register", async () => {
+		userFindUniqueMock.mockResolvedValue(null);
+		roleFindFirstMock.mockResolvedValue(null);
 
-        expect(res.status).toBe(404);
-        expect(res.body).toHaveProperty("error", "Rol no encontrado");
-    });
+		const res = await request(app).post('/register').send({
+			name: 'X',
+			lastName: 'Test',
+			email: 'x@test.com',
+			password: '123456',
+			collegeId: '1',
+		});
 
-    it("retorna 500 si ocurre un error al registrar el usuario", async () => {
-        (prisma.user.findUnique as any).mockRejectedValue(new Error("DB Error"));
+		expect(res.status).toBe(404);
+		expect(res.body).toHaveProperty('error', 'Rol no encontrado');
+	});
 
-        const res = await request(app)
-            .post("/register")
-            .send({
-                name: "X",
-                lastName: "Test",
-                email: "x@test.com",
-                password: "123456",
-                collegeId: "1",
-            });
+	it('retorna 500 si ocurre un error al registrar el usuario', async () => {
+		userFindUniqueMock.mockRejectedValue(new Error('DB Error'));
 
-        expect(res.status).toBe(500);
-        expect(res.body).toHaveProperty("error", "Error al registrar el usuario");
-    });
+		const res = await request(app).post('/register').send({
+			name: 'X',
+			lastName: 'Test',
+			email: 'x@test.com',
+			password: '123456',
+			collegeId: '1',
+		});
 
-    // 🔹 POST /create
-    it("crea un usuario con permisos correctamente", async () => {
-        const mockData = {
-            name: "Admin",
-            lastName: "User",
-            email: "admin@test.com",
-            collegeId: "1",
-            roleId: "2",
-        };
+		expect(res.status).toBe(500);
+		expect(res.body).toHaveProperty('error', 'Error al registrar el usuario');
+	});
 
-        (prisma.user.findUnique as any).mockResolvedValue(null);
-        (prisma.user.create as any).mockResolvedValue({
-            id: "2",
-            ...mockData,
-            password: "hashed_password",
-        });
+	// 🔹 POST /create
+	it('crea un usuario con permisos correctamente', async () => {
+		const mockData = {
+			name: 'Admin',
+			lastName: 'User',
+			email: 'admin@test.com',
+			password: '123456',
+			collegeId: '1',
+			roleId: '2',
+		};
 
-        const res = await request(app).post("/create").send(mockData);
+		userFindUniqueMock.mockResolvedValue(null);
+		userCreateMock.mockResolvedValue({
+			id: '2',
+			...mockData,
+			password: 'hashed_password',
+		} as never);
 
-        expect(res.status).toBe(201);
-        expect(res.body).toHaveProperty("id", "2");
-    });
+		const res = await request(app).post('/create').send(mockData);
 
-    it("retorna 400 si el usuario ya existe en POST /create", async () => {
-        (prisma.user.findUnique as any).mockResolvedValue({ id: "2", email: "admin@test.com" });
+		expect(res.status).toBe(201);
+		expect(res.body).toHaveProperty('id', '2');
+	});
 
-        const res = await request(app)
-            .post("/create")
-            .send({
-                name: "Admin",
-                lastName: "User",
-                email: "admin@test.com",
-                collegeId: "1",
-                roleId: "2",
-            });
+	it('retorna 400 si el usuario ya existe en POST /create', async () => {
+		userFindUniqueMock.mockResolvedValue({ id: '2', email: 'admin@test.com' } as never);
 
-        expect(res.status).toBe(400);
-        expect(res.body).toHaveProperty("error", "El usuario ya existe");
-    });
+		const res = await request(app).post('/create').send({
+			name: 'Admin',
+			lastName: 'User',
+			email: 'admin@test.com',
+			password: '123456',
+			collegeId: '1',
+			roleId: '2',
+		});
 
-    it("retorna 500 si ocurre un error en POST /create", async () => {
-        (prisma.user.findUnique as any).mockResolvedValue(null);
-        (prisma.user.create as any).mockRejectedValue(new Error("DB Error"));
+		expect(res.status).toBe(400);
+		expect(res.body).toHaveProperty('error', 'El usuario ya existe');
+	});
 
-        const res = await request(app)
-            .post("/create")
-            .send({
-                name: "Admin",
-                lastName: "User",
-                email: "admin@test.com",
-                collegeId: "1",
-                roleId: "2",
-            });
+	it('retorna 500 si ocurre un error en POST /create', async () => {
+		userFindUniqueMock.mockResolvedValue(null);
+		userCreateMock.mockRejectedValue(new Error('DB Error'));
 
-        expect(res.status).toBe(500);
-        expect(res.body).toHaveProperty("error", "Error al registrar el usuario");
-    });
+		const res = await request(app).post('/create').send({
+			name: 'Admin',
+			lastName: 'User',
+			email: 'admin@test.com',
+			password: '123456',
+			collegeId: '1',
+			roleId: '2',
+		});
 
-    // 🔹 GET /:id
-    it("retorna 200 con un usuario por id", async () => {
-        (prisma.user.findUnique as any).mockResolvedValue({ id: "1", name: "User" });
+		expect(res.status).toBe(500);
+		expect(res.body).toHaveProperty('error', 'Error al registrar el usuario');
+	});
 
-        const res = await request(app).get("/1");
-        expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty("id", "1");
-    });
+	// 🔹 GET /:id
+	it('retorna 200 con un usuario por id', async () => {
+		userFindUniqueMock.mockResolvedValue({ id: '1', name: 'User' } as never);
 
-    it("retorna 404 si no encuentra al usuario", async () => {
-        (prisma.user.findUnique as any).mockResolvedValue(null);
+		const res = await request(app).get('/1');
+		expect(res.status).toBe(200);
+		expect(res.body).toHaveProperty('id', '1');
+	});
 
-        const res = await request(app).get("/999");
-        expect(res.status).toBe(404);
-        expect(res.body).toHaveProperty("error", "Usuario no encontrado");
-    });
+	it('retorna 404 si no encuentra al usuario', async () => {
+		userFindUniqueMock.mockResolvedValue(null);
 
-    it("retorna 500 si ocurre un error al obtener el usuario", async () => {
-        (prisma.user.findUnique as any).mockRejectedValue(new Error("DB Error"));
+		const res = await request(app).get('/999');
+		expect(res.status).toBe(404);
+		expect(res.body).toHaveProperty('error', 'Usuario no encontrado');
+	});
 
-        const res = await request(app).get("/1");
-        expect(res.status).toBe(500);
-        expect(res.body).toHaveProperty("error", "Error al obtener el usuario");
-    });
+	it('retorna 500 si ocurre un error al obtener el usuario', async () => {
+		userFindUniqueMock.mockRejectedValue(new Error('DB Error'));
 
-    // 🔹 PATCH /update
-    it("actualiza un usuario correctamente", async () => {
-        const mockUpdate = {
-            id: "user123",
-            name: "NuevoNombre",
-            lastName: "Actualizado",
-            email: "nuevo@test.com",
-            collegeId: "1",
-            roleId: "2",
-            status: "ACTIVE",
-        };
+		const res = await request(app).get('/1');
+		expect(res.status).toBe(500);
+		expect(res.body).toHaveProperty('error', 'Error al obtener el usuario');
+	});
 
-        (prisma.user.findUnique as any)
-            .mockResolvedValueOnce({ id: "user123", email: "viejo@test.com" })
-            .mockResolvedValueOnce(null);
+	// 🔹 PATCH /update
+	it('actualiza un usuario correctamente', async () => {
+		const mockUpdate = {
+			id: 'user123',
+			name: 'NuevoNombre',
+			lastName: 'Actualizado',
+			email: 'nuevo@test.com',
+			collegeId: '1',
+			roleId: '2',
+			status: 'ACTIVE',
+		};
 
-        (prisma.user.update as any).mockResolvedValue(mockUpdate);
+		userFindUniqueMock
+			.mockResolvedValueOnce({ id: 'user123', email: 'viejo@test.com' } as never)
+			.mockResolvedValueOnce(null);
 
-        const res = await request(app).patch("/update").send(mockUpdate);
+		userUpdateMock.mockResolvedValue(mockUpdate as never);
 
-        expect(res.status).toBe(200);
-        expect(res.body).toEqual(mockUpdate);
-    });
+		const res = await request(app).patch('/update').send(mockUpdate);
 
-    it("retorna 404 si el usuario a actualizar no existe", async () => {
-        (prisma.user.findUnique as any).mockResolvedValue(null);
+		expect(res.status).toBe(200);
+		expect(res.body).toEqual(mockUpdate);
+	});
 
-        const res = await request(app)
-            .patch("/update")
-            .send({
-                id: "user123",
-                name: "NuevoNombre",
-                lastName: "Actualizado",
-                email: "nuevo@test.com",
-                collegeId: "1",
-                roleId: "2",
-                status: "ACTIVE",
-            });
+	it('retorna 404 si el usuario a actualizar no existe', async () => {
+		userFindUniqueMock.mockResolvedValue(null);
 
-        expect(res.status).toBe(404);
-        expect(res.body).toHaveProperty("error", "Usuario no encontrado");
-    });
+		const res = await request(app).patch('/update').send({
+			id: 'user123',
+			name: 'NuevoNombre',
+			lastName: 'Actualizado',
+			email: 'nuevo@test.com',
+			collegeId: '1',
+			roleId: '2',
+			status: 'ACTIVE',
+		});
 
-    it("retorna 400 si los datos son inválidos en PATCH /update", async () => {
-        const res = await request(app).patch("/update").send({ id: "" });
+		expect(res.status).toBe(404);
+		expect(res.body).toHaveProperty('error', 'Usuario no encontrado');
+	});
 
-        expect(res.status).toBe(400);
-        expect(res.body).toHaveProperty("message", "Datos inválidos");
-    });
+	it('retorna 400 si los datos son inválidos en PATCH /update', async () => {
+		const res = await request(app).patch('/update').send({ id: '' });
 
-    it("retorna 500 si ocurre un error al actualizar el usuario", async () => {
-        (prisma.user.findUnique as any)
-            .mockResolvedValueOnce({ id: "1", email: "old@test.com" })
-            .mockResolvedValueOnce(null);
-        (prisma.user.update as any).mockRejectedValue(new Error("DB Error"));
+		expect(res.status).toBe(400);
+		expect(res.body).toHaveProperty('message', 'Datos inválidos');
+	});
 
-        const res = await request(app)
-            .patch("/update")
-            .send({
-                id: "user123",
-                name: "NuevoNombre",
-                lastName: "Actualizado",
-                email: "nuevo@test.com",
-                collegeId: "1",
-                roleId: "2",
-                status: "ACTIVE",
-            });
-        expect(res.status).toBe(500);
-        expect(res.body).toHaveProperty("error", "Error al registrar el usuario");
-    });
+	it('retorna 500 si ocurre un error al actualizar el usuario', async () => {
+		userFindUniqueMock.mockResolvedValueOnce({ id: '1', email: 'old@test.com' } as never).mockResolvedValueOnce(null);
+		userUpdateMock.mockRejectedValue(new Error('DB Error'));
+
+		const res = await request(app).patch('/update').send({
+			id: 'user123',
+			name: 'NuevoNombre',
+			lastName: 'Actualizado',
+			email: 'nuevo@test.com',
+			collegeId: '1',
+			roleId: '2',
+			status: 'ACTIVE',
+		});
+		expect(res.status).toBe(500);
+		expect(res.body).toHaveProperty('error', 'Error al registrar el usuario');
+	});
 });

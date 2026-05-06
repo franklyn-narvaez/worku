@@ -1,8 +1,9 @@
-import type { RegisterType } from "../schemas/register";
+import { API_BASE_URL } from '@/constants/path';
+import type { RegisterType } from '../schemas/register';
 
 export async function registerRequets(data: RegisterType) {
-	return await fetch("http://localhost:3000/api/user/register", {
-		method: "POST",
+	return await fetch(`${API_BASE_URL}/user/register`, {
+		method: 'POST',
 		body: JSON.stringify({
 			name: data.name,
 			lastName: data.lastName,
@@ -11,16 +12,16 @@ export async function registerRequets(data: RegisterType) {
 			password: data.password,
 		}),
 		headers: {
-			"Content-Type": "application/json",
+			'Content-Type': 'application/json',
 		},
 	});
 }
 
 export async function requestColleges() {
-	return await fetch("http://localhost:3000/api/college", {
-		method: "GET",
+	return await fetch(`${API_BASE_URL}/college`, {
+		method: 'GET',
 		headers: {
-			"Content-Type": "application/json",
+			'Content-Type': 'application/json',
 		},
 	});
 }

@@ -48,13 +48,23 @@ router.post('/login', async (req, res) => {
 		});
 
 		const permissions = userPermissions.map(rp => rp.permission.code);
+		const role =
+			userFound.role ??
+			(await prisma.role.findUnique({
+				where: { id: userFound.roleId },
+				select: { id: true, name: true },
+			}));
+
+		if (!role) {
+			return res.status(500).json({ message: 'Rol del usuario no encontrado' });
+		}
 
 		const accessToken = jwt.sign({ id: userFound.id, role: userFound.roleId, permissions }, JWT_SECRET, {
 			expiresIn: '30m',
 		});
 		const refreshToken = jwt.sign({ id: userFound.id }, JWT_REFRESH_SECRET, { expiresIn: '1d' });
 
-		const refreshExpires = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000); // 7 días
+		const refreshExpires = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000); // 1 día
 
 		await prisma.sessions.create({
 			data: {
@@ -66,7 +76,7 @@ router.post('/login', async (req, res) => {
 
 		res.cookie('refreshToken', refreshToken, {
 			httpOnly: true,
-			secure: true,
+			secure: process.env.NODE_ENV === 'production',
 			sameSite: 'lax',
 			expires: refreshExpires,
 		});
@@ -76,8 +86,8 @@ router.post('/login', async (req, res) => {
 			access_token: accessToken,
 			permissions,
 			role: {
-				id: userFound.role!.id,
-				name: userFound.role!.name,
+				id: role.id,
+				name: role.name,
 			},
 		});
 	} catch (error) {
@@ -154,7 +164,7 @@ router.post('/refresh', async (req, res) => {
 			access_token: newAccessToken,
 			expires: 30 * 60 * 1000,
 		});
-	} catch (error) {
+	} catch (_error) {
 		return res.status(403).json({ message: 'Token inválido' });
 	}
 });
@@ -170,7 +180,7 @@ router.post('/logout', async (req, res) => {
 		await prisma.sessions.deleteMany({
 			where: { refreshToken: { equals: token } },
 		});
-	} catch (error) {
+	} catch (_error) {
 		console.warn('Token ya eliminado o inválido');
 	}
 

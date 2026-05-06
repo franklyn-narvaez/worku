@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { API_BASE_URL } from '@/constants/path';
 
 type AuthUser = {
 	id: string;
@@ -16,9 +17,9 @@ const AuthContext = createContext<AuthContext>({
 
 type AuthContext = {
 	user: AuthUser | null;
-	login: (email: string, password: string) => Promise<{ status: number; data?: any }>;
+	login: (email: string, password: string) => Promise<{ status: number; data?: unknown }>;
 	logout: () => Promise<void>;
-	refresh: () => Promise<any>;
+	refresh: () => Promise<unknown>;
 	status: Status;
 	createAuthFetchOptions: () => Promise<RequestInit>;
 };
@@ -56,7 +57,7 @@ const memoryStorage = () => {
 };
 
 async function loginRequest(data: { email: string; password: string }, options: RequestInit) {
-	const response = await fetch('http://localhost:3000/api/auth/login', {
+	const response = await fetch(`${API_BASE_URL}/auth/login`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -81,7 +82,7 @@ async function loginRequest(data: { email: string; password: string }, options: 
 
 async function logOutRequest(options: RequestInit) {
 	try {
-		const response = await fetch('http://localhost:3000/api/auth/logout', {
+		const response = await fetch(`${API_BASE_URL}/auth/logout`, {
 			method: 'POST',
 			...options,
 		});
@@ -93,7 +94,7 @@ async function logOutRequest(options: RequestInit) {
 
 async function refreshRequest(options: RequestInit) {
 	try {
-		const response = await fetch('http://localhost:3000/api/auth/refresh', {
+		const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
 			method: 'POST',
 			...options,
 		});

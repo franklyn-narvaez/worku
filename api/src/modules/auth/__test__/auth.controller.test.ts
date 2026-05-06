@@ -1,181 +1,187 @@
-import request from "supertest";
-import express from "express";
-import cookieParser from "cookie-parser";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { vi, describe, it, expect, beforeEach } from "vitest";
-import router from "../controller";
-import { prisma } from "@/libs/db";
+import bcrypt from 'bcrypt';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import request from 'supertest';
+import { vi, describe, it, expect, beforeEach, type MockedFunction } from 'vitest';
+import { prisma } from '@/libs/db';
+import router from '../controller';
 
-vi.mock("@/libs/db", () => ({
-  prisma: {
-    user: {
-      findUnique: vi.fn(),
-    },
-    rolePermission: {
-      findMany: vi.fn(),
-    },
-    sessions: {
-      create: vi.fn(),
-      delete: vi.fn(),
-      deleteMany: vi.fn(),
-      findFirst: vi.fn(),
-    },
-  },
+vi.mock('@/libs/db', () => ({
+	prisma: {
+		user: {
+			findUnique: vi.fn(),
+		},
+		role: {
+			findUnique: vi.fn(),
+		},
+		rolePermission: {
+			findMany: vi.fn(),
+		},
+		sessions: {
+			create: vi.fn(),
+			delete: vi.fn(),
+			deleteMany: vi.fn(),
+			findFirst: vi.fn(),
+		},
+	},
 }));
 
-vi.mock("bcrypt", () => ({
-  default: {
-    compare: vi.fn(),
-  },
-}));
+vi.mock('bcrypt', () => {
+	const compareMock = vi.fn() as unknown as MockedFunction<(a: string, b: string) => Promise<boolean>>;
+	return {
+		default: {
+			compare: compareMock,
+		},
+	};
+});
 
-vi.mock("jsonwebtoken", () => ({
-  default: {
-    sign: vi.fn(),
-    verify: vi.fn(),
-  },
-}));
+vi.mock('jsonwebtoken', () => {
+	const signMock = vi.fn() as unknown as MockedFunction<(payload: any, secret: string, options?: any) => string>;
+	const verifyMock = vi.fn() as unknown as MockedFunction<(token: string, secret: string, options?: any) => any>;
+	return {
+		default: {
+			sign: signMock,
+			verify: verifyMock,
+		},
+	};
+});
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use("/", router);
+app.use('/', router);
 
-describe("Auth Controller", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+const userFindUniqueMock = vi.mocked(prisma.user.findUnique);
+const rolePermissionFindManyMock = vi.mocked(prisma.rolePermission.findMany);
+const roleFindUniqueMock = vi.mocked(prisma.role.findUnique);
+const sessionsCreateMock = vi.mocked(prisma.sessions.create);
+const sessionsFindFirstMock = vi.mocked(prisma.sessions.findFirst);
+const sessionsDeleteManyMock = vi.mocked(prisma.sessions.deleteMany);
+// Cast the mocked functions to the same signature as the real implementations
+const bcryptCompareMock = bcrypt.compare as unknown as MockedFunction<typeof bcrypt.compare>;
+const jwtSignMock = jwt.sign as unknown as MockedFunction<typeof jwt.sign>;
+const jwtVerifyMock = jwt.verify as unknown as MockedFunction<typeof jwt.verify>;
 
-  // --- LOGIN TESTS ---
-  it("retorna 400 si los datos son inválidos", async () => {
-    const res = await request(app)
-      .post("/login")
-      .send({ email: "not-an-email", password: "123" });
+describe('Auth Controller', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty("message", "Datos inválidos");
-  });
+	// --- LOGIN TESTS ---
+	it('retorna 400 si los datos son inválidos', async () => {
+		const res = await request(app).post('/login').send({ email: 'not-an-email', password: '123' });
 
-  it("retorna 401 si el usuario no existe", async () => {
-    (prisma.user.findUnique as any).mockResolvedValue(null);
+		expect(res.status).toBe(400);
+		expect(res.body).toHaveProperty('message', 'Datos inválidos');
+	});
 
-    const res = await request(app)
-      .post("/login")
-      .send({ email: "test@email.com", password: "123456" });
+	it('retorna 401 si el usuario no existe', async () => {
+		userFindUniqueMock.mockResolvedValue(null);
 
-    expect(res.status).toBe(401);
-    expect(res.body.message).toBe("Usuario o contraseña no válidos");
-  });
+		const res = await request(app).post('/login').send({ email: 'test@email.com', password: '123456' });
 
-  it("retorna 401 si la contraseña no coincide", async () => {
-    (prisma.user.findUnique as any).mockResolvedValue({
-      id: "1",
-      email: "test@email.com",
-      password: "hashed",
-      roleId: "student",
-    });
+		expect(res.status).toBe(401);
+		expect(res.body.message).toBe('Usuario o contraseña no válidos');
+	});
 
-    (bcrypt.compare as any).mockResolvedValue(false);
+	it('retorna 401 si la contraseña no coincide', async () => {
+		userFindUniqueMock.mockResolvedValue({
+			id: '1',
+			email: 'test@email.com',
+			password: 'hashed',
+			roleId: 'student',
+		} as never);
 
-    const res = await request(app)
-      .post("/login")
-      .send({ email: "test@email.com", password: "wrongpass" });
+		(bcryptCompareMock as any).mockResolvedValue(false);
 
-    expect(res.status).toBe(401);
-    expect(res.body.message).toBe("Usuario o contraseña no válidos");
-  });
+		const res = await request(app).post('/login').send({ email: 'test@email.com', password: 'wrongpass' });
 
-  it("retorna tokens y permisos válidos si el login es exitoso", async () => {
-    (prisma.user.findUnique as any).mockResolvedValue({
-      id: "1",
-      email: "test@email.com",
-      password: "hashed",
-      roleId: "admin",
-    });
+		expect(res.status).toBe(401);
+		expect(res.body.message).toBe('Usuario o contraseña no válidos');
+	});
 
-    (bcrypt.compare as any).mockResolvedValue(true);
-    (prisma.rolePermission.findMany as any).mockResolvedValue([
-      { permission: { code: "READ" } },
-      { permission: { code: "WRITE" } },
-    ]);
+	it('retorna tokens y permisos válidos si el login es exitoso', async () => {
+		userFindUniqueMock.mockResolvedValue({
+			id: '1',
+			email: 'test@email.com',
+			password: 'hashed',
+			roleId: 'admin',
+		} as never);
 
-    (jwt.sign as any).mockReturnValue("token123");
-    (prisma.sessions.create as any).mockResolvedValue({});
+		(bcryptCompareMock as any).mockResolvedValue(true);
+		roleFindUniqueMock.mockResolvedValue({ id: 'admin', name: 'Administrador' } as never);
+		rolePermissionFindManyMock.mockResolvedValue([
+			{ permission: { code: 'READ' } },
+			{ permission: { code: 'WRITE' } },
+		] as never);
 
-    const res = await request(app)
-      .post("/login")
-      .send({ email: "test@email.com", password: "123456" });
+		(jwtSignMock as any).mockReturnValue('token123');
+		sessionsCreateMock.mockResolvedValue({} as never);
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty("access_token", "token123");
-    expect(res.body.permissions).toContain("READ");
-  });
+		const res = await request(app).post('/login').send({ email: 'test@email.com', password: '123456' });
 
-  // --- REFRESH TESTS ---
-  it("retorna 401 si no hay refreshToken", async () => {
-    const res = await request(app).post("/refresh");
-    expect(res.status).toBe(401);
-    expect(res.body.message).toBe("No hay refresh token");
-  });
+		expect(res.status).toBe(200);
+		expect(res.body).toHaveProperty('access_token', 'token123');
+		expect(res.body.permissions).toContain('READ');
+	});
 
-  it("retorna 403 si el token no es válido", async () => {
-    (jwt.verify as any).mockImplementation(() => {
-      throw new Error("Invalid token");
-    });
+	// --- REFRESH TESTS ---
+	it('retorna 401 si no hay refreshToken', async () => {
+		const res = await request(app).post('/refresh');
+		expect(res.status).toBe(401);
+		expect(res.body.message).toBe('No hay refresh token');
+	});
 
-    const res = await request(app)
-      .post("/refresh")
-      .set("Cookie", "refreshToken=invalidToken");
+	it('retorna 403 si el token no es válido', async () => {
+		jwtVerifyMock.mockImplementation(() => {
+			throw new Error('Invalid token');
+		});
 
-    expect(res.status).toBe(403);
-    expect(res.body.message).toBe("Token inválido");
-  });
+		const res = await request(app).post('/refresh').set('Cookie', 'refreshToken=invalidToken');
 
-  it("genera nuevos tokens si el refresh es exitoso", async () => {
-    (jwt.verify as any).mockReturnValue({ id: "1" });
+		expect(res.status).toBe(403);
+		expect(res.body.message).toBe('Token inválido');
+	});
 
-    (prisma.sessions.findFirst as any).mockResolvedValue({
-      id: "10",
-      refreshToken: "oldToken",
-      expiresAt: new Date(Date.now() + 10000),
-    });
+	it('genera nuevos tokens si el refresh es exitoso', async () => {
+		jwtVerifyMock.mockReturnValue({ id: '1' } as never);
 
-    (prisma.user.findUnique as any).mockResolvedValue({
-      id: "1",
-      roleId: "admin",
-    });
+		sessionsFindFirstMock.mockResolvedValue({
+			id: '10',
+			refreshToken: 'oldToken',
+			expiresAt: new Date(Date.now() + 10000),
+		} as never);
 
-    (prisma.rolePermission.findMany as any).mockResolvedValue([
-      { permission: { code: "READ" } },
-    ]);
+		userFindUniqueMock.mockResolvedValue({
+			id: '1',
+			roleId: 'admin',
+		} as never);
 
-    (jwt.sign as any).mockReturnValue("newAccessToken");
-    (prisma.sessions.create as any).mockResolvedValue({});
+		rolePermissionFindManyMock.mockResolvedValue([{ permission: { code: 'READ' } }] as never);
 
-    const res = await request(app)
-      .post("/refresh")
-      .set("Cookie", "refreshToken=validToken");
+		(jwtSignMock as any).mockReturnValue('newAccessToken');
+		sessionsCreateMock.mockResolvedValue({} as never);
 
-    expect(res.status).toBe(200);
-    expect(res.body.access_token).toBe("newAccessToken");
-  });
+		const res = await request(app).post('/refresh').set('Cookie', 'refreshToken=validToken');
 
-  // --- LOGOUT TESTS ---
-  it("devuelve 200 aunque no haya token", async () => {
-    const res = await request(app).post("/logout");
-    expect(res.status).toBe(200);
-    expect(res.body.message).toBe("No token to revoke");
-  });
+		expect(res.status).toBe(200);
+		expect(res.body.access_token).toBe('newAccessToken');
+	});
 
-  it("borra el token y devuelve 200", async () => {
-    (prisma.sessions.deleteMany as any).mockResolvedValue({ count: 1 });
+	// --- LOGOUT TESTS ---
+	it('devuelve 200 aunque no haya token', async () => {
+		const res = await request(app).post('/logout');
+		expect(res.status).toBe(200);
+		expect(res.body.message).toBe('No token to revoke');
+	});
 
-    const res = await request(app)
-      .post("/logout")
-      .set("Cookie", "refreshToken=someToken");
+	it('borra el token y devuelve 200', async () => {
+		sessionsDeleteManyMock.mockResolvedValue({ count: 1 } as never);
 
-    expect(res.status).toBe(200);
-    expect(res.body.message).toBe("Logout successful");
-  });
+		const res = await request(app).post('/logout').set('Cookie', 'refreshToken=someToken');
+
+		expect(res.status).toBe(200);
+		expect(res.body.message).toBe('Logout successful');
+	});
 });

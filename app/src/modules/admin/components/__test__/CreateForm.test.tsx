@@ -1,7 +1,7 @@
-import userEvent from '@testing-library/user-event';
-import CreateForm from '../CreateForm';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import * as request from '../../requests/create';
+import CreateForm from '../CreateForm';
 
 const collegesMock = [{ id: '1', name: 'Escuela 1', facultyId: '1' }];
 const rolesMock = [{ id: '1', name: 'Role 1', code: 'ROLE1' }];
@@ -26,6 +26,7 @@ describe('create form', () => {
 		const nameInput = getByPlaceholderText('Ingrese su nombre');
 		const lastNameInput = getByPlaceholderText('Ingrese su apellido');
 		const emailInput = getByPlaceholderText('Ingrese su correo electrónico');
+		const passwordInput = getByPlaceholderText('Ingrese su contraseña');
 		const collegeSelect = getByText('Selecciona una escuela');
 		const roleSelect = getByText('Selecciona un rol');
 		const submitButton = getByText('Crear');
@@ -34,6 +35,7 @@ describe('create form', () => {
 		expect(nameInput).toBeInTheDocument();
 		expect(lastNameInput).toBeInTheDocument();
 		expect(emailInput).toBeInTheDocument();
+		expect(passwordInput).toBeInTheDocument();
 		expect(collegeSelect).toBeInTheDocument();
 		expect(roleSelect).toBeInTheDocument();
 		expect(submitButton).toBeInTheDocument();
@@ -48,6 +50,7 @@ describe('create form', () => {
 			const nameInput = getByPlaceholderText('Ingrese su nombre');
 			const lastNameInput = getByPlaceholderText('Ingrese su apellido');
 			const emailInput = getByPlaceholderText('Ingrese su correo electrónico');
+			const passwordInput = getByPlaceholderText('Ingrese su contraseña');
 			const selects = getAllByRole('combobox');
 			const submitButton = getByText('Crear');
 
@@ -59,6 +62,9 @@ describe('create form', () => {
 			}
 			if (testCase.email) {
 				await user.type(emailInput, testCase.email);
+			}
+			if (testCase.password) {
+				await user.type(passwordInput, testCase.password);
 			}
 			if (testCase.collegeId) {
 				await user.selectOptions(selects[0], '1');
@@ -107,12 +113,14 @@ describe('create form', () => {
 		const nameInput = getByPlaceholderText('Ingrese su nombre');
 		const lastNameInput = getByPlaceholderText('Ingrese su apellido');
 		const emailInput = getByPlaceholderText('Ingrese su correo electrónico');
+		const passwordInput = getByPlaceholderText('Ingrese su contraseña');
 		const selects = getAllByRole('combobox');
 		const submitButton = getByText('Crear');
 
 		await user.type(nameInput, 'John');
 		await user.type(lastNameInput, 'Doe');
 		await user.type(emailInput, 'johndoe@email.com');
+		await user.type(passwordInput, 'password123');
 		await user.selectOptions(selects[0], '1');
 		await user.selectOptions(selects[1], '1');
 		await user.click(submitButton);
@@ -132,12 +140,14 @@ describe('create form', () => {
 		const nameInput = getByPlaceholderText('Ingrese su nombre');
 		const lastNameInput = getByPlaceholderText('Ingrese su apellido');
 		const emailInput = getByPlaceholderText('Ingrese su correo electrónico');
+		const passwordInput = getByPlaceholderText('Ingrese su contraseña');
 		const selects = getAllByRole('combobox');
 		const submitButton = getByText('Crear');
 
 		await user.type(nameInput, 'John');
 		await user.type(lastNameInput, 'Doe');
 		await user.type(emailInput, 'johndoe@email.com');
+		await user.type(passwordInput, 'password123');
 		await user.selectOptions(selects[0], '1');
 		await user.selectOptions(selects[1], '1');
 		await user.click(submitButton);
@@ -152,11 +162,13 @@ describe('create form', () => {
 const validateTestCases = [
 	{
 		email: '',
+		password: '',
 		name: '',
 		lastName: '',
 		collegeId: false,
 		roleId: false,
 		emailError: 'El correo electrónico no es válido',
+		passwordError: 'La contraseña debe tener al menos 6 caracteres',
 		nameError: 'El nombre es requerido',
 		lastNameError: 'El apellido es requerido',
 		collegeIdError: 'La escuela es requerida',
@@ -166,6 +178,7 @@ const validateTestCases = [
 	{
 		title: 'should show email error when email is invalid',
 		email: 'invalid-email',
+		password: 'password123',
 		emailError: 'El correo electrónico no es válido',
 	},
 ];
