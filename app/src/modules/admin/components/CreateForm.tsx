@@ -1,14 +1,13 @@
-import { FormField } from '@/components/FormField';
+import { zodResolver } from '@hookform/resolvers/zod';
 import type { College, Role } from '@prisma/client';
 import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateSchema, type CreateType } from '../schemas/Create';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { FormField } from '@/components/FormField';
 import { ADMIN_USER } from '@/constants/path';
 import { useAuth } from '@/hooks/useAuth';
 import { createUser } from '../requests/create';
-import { toast } from 'react-toastify';
-
+import { CreateSchema, type CreateType } from '../schemas/Create';
 
 export default function CreateForm(props: { colleges: College[]; roles: Role[] }) {
 	const { createAuthFetchOptions } = useAuth();
@@ -19,7 +18,7 @@ export default function CreateForm(props: { colleges: College[]; roles: Role[] }
 
 	const {
 		handleSubmit,
-		formState: { isSubmitting, isValid },
+		formState: { isSubmitting },
 	} = methods;
 
 	const navigate = useNavigate();
@@ -28,33 +27,37 @@ export default function CreateForm(props: { colleges: College[]; roles: Role[] }
 		navigate(ADMIN_USER);
 	};
 
-const onSubmit: SubmitHandler<CreateType> = async data => {
-	try {
-		const authOptions = await createAuthFetchOptions();
-		const response = await createUser(data, authOptions);
+	const onSubmit: SubmitHandler<CreateType> = async data => {
+		try {
+			const authOptions = await createAuthFetchOptions();
+			const response = await createUser(data, authOptions);
 
-		if (response.ok) {
-			toast.success('Usuario creado exitosamente');
-			navigate(ADMIN_USER);
-		} else {
-			const errorData = await response.json();
-			toast.error(errorData.message ?? 'Error al crear el usuario');
-			console.error('Error creating user:', errorData);
+			if (response.ok) {
+				toast.success('Usuario creado exitosamente');
+				navigate(ADMIN_USER);
+			} else {
+				const errorData = await response.json();
+				toast.error(errorData.message ?? 'Error al crear el usuario');
+				console.error('Error creating user:', errorData);
+			}
+		} catch (error) {
+			toast.error('Error inesperado al crear el usuario');
+			console.error(error);
 		}
-	} catch (error) {
-		toast.error('Error inesperado al crear el usuario');
-		console.error(error);
-	}
-};
+	};
 
 	return (
-		<div className="h-full flex items-center justify-center bg-background">
+		<div className="min-h-screen w-full overflow-y-auto flex justify-center pt-6 pb-6">
 			<FormProvider {...methods}>
-				<form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-3xl flex-col items-center">
+				<form
+					onSubmit={handleSubmit(onSubmit)}
+					className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-3xl flex-col items-center my-auto"
+				>
 					<h1 className="text-text-title font-bold text-4xl mb-4">Crear Usuario</h1>
 					<FormField name="name" label="Nombre" type="text" placeholder="Ingrese su nombre" />
 					<FormField name="lastName" label="Apellido" type="text" placeholder="Ingrese su apellido" />
 					<FormField name="email" label="Correo Electrónico" placeholder="Ingrese su correo electrónico" />
+					<FormField name="password" label="Contraseña" type="password" placeholder="Ingrese su contraseña" />
 
 					<label htmlFor="collegeId" className="text-slate-900 mb-2 block text-sm">
 						Escuela
@@ -77,8 +80,7 @@ const onSubmit: SubmitHandler<CreateType> = async data => {
 					<label htmlFor="roleId" className="text-slate-900 mb-2 block text-sm">
 						Rol
 					</label>
-					<select
-						{...methods.register('roleId')} className="p-3 rounded block mb-2 bg-[#D9D9D9] text-slate-900 w-full">
+					<select {...methods.register('roleId')} className="p-3 rounded block mb-2 bg-[#D9D9D9] text-slate-900 w-full">
 						<option value="">Selecciona un rol</option>
 						{props.roles.map(role => (
 							<option key={role.id} value={role.id}>
@@ -91,7 +93,7 @@ const onSubmit: SubmitHandler<CreateType> = async data => {
 					)}
 
 					<div className="flex justify-between gap-x-2 mt-4">
-						<button type="submit" className="w-1/2 button-create p-3 rounded-lg" disabled={isSubmitting && !isValid}>
+						<button type="submit" className="w-1/2 button-create p-3 rounded-lg" disabled={isSubmitting}>
 							Crear
 						</button>
 						<button

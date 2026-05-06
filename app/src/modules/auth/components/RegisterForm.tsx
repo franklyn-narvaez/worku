@@ -17,7 +17,7 @@ function RegisterForm(props: { colleges: College[] }) {
 
 	const {
 		handleSubmit,
-		formState: { isSubmitting, isValid },
+		formState: { isSubmitting },
 	} = methods;
 	const navigate = useNavigate();
 
@@ -71,11 +71,7 @@ function RegisterForm(props: { colleges: College[] }) {
 						placeholder="Confirma tu contraseña"
 					/>
 
-					<button
-						type="submit"
-						className="w-full button-create p-3 rounded-lg mt-2"
-						disabled={isSubmitting && !isValid}
-					>
+					<button type="submit" className="w-full button-create p-3 rounded-lg mt-2" disabled={isSubmitting}>
 						Registrar
 					</button>
 

@@ -1,14 +1,13 @@
-import { FormField } from '@/components/FormField';
-import type { College, Role } from '@prisma/client';
-import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { College, Role } from '@prisma/client';
+import { FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-
-import { ADMIN_USER, UPDATE_USER } from '@/constants/path';
-import { UpdateSchema, statusEnum, statusLabels, type UpdateType } from '../schemas/Update';
-import { useAuth } from '@/hooks/useAuth';
-import type { ExtendedUser } from '../types/user';
 import { toast } from 'react-toastify';
+import { FormField } from '@/components/FormField';
+import { ADMIN_USER, UPDATE_USER } from '@/constants/path';
+import { useAuth } from '@/hooks/useAuth';
+import { statusEnum, statusLabels, UpdateSchema, type UpdateType } from '../schemas/Update';
+import type { ExtendedUser } from '../types/user';
 
 type UpdateFormProps = {
 	user: ExtendedUser;
@@ -70,9 +69,12 @@ export default function UpdateForm({ user, college, role }: UpdateFormProps) {
 	};
 
 	return (
-		<div className="h-full flex items-center justify-center bg-background">
+		<div className="min-h-screen w-full overflow-y-auto flex justify-center pt-6 pb-6">
 			<FormProvider {...methods}>
-				<form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-3xl flex-col items-center">
+				<form
+					onSubmit={handleSubmit(onSubmit)}
+					className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-3xl flex-col items-center my-auto"
+				>
 					<h1 className="text-text-title font-bold text-4xl mb-4">Actualizar Usuario</h1>
 					<FormField name="name" label="Nombre" type="text" placeholder="Ingrese su nombre" />
 					<FormField name="lastName" label="Apellido" type="text" placeholder="Ingrese su apellido" />

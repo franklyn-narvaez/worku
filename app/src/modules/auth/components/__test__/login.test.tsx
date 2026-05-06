@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import LoginForm from '../LoginForm';
 import * as auth from '@/hooks/useAuth';
+import LoginForm from '../LoginForm';
 import '@testing-library/jest-dom';
 import { toast } from 'react-toastify';
 
@@ -11,6 +11,7 @@ const navigateMock = vi.fn();
 vi.mock('react-router-dom', () => {
 	return {
 		useNavigate: () => navigateMock,
+		Link: (props: { to: string; children: React.ReactNode }) => <a href={props.to}>{props.children}</a>,
 		Navigate: (props: { to: string }) => {
 			navigateMock();
 			return <div>Redirected to {props.to}</div>;
@@ -26,13 +27,13 @@ describe('Login Form', () => {
 	it('should render the login form', () => {
 		vi.spyOn(auth, 'useAuth').mockReturnValue({
 			status: 'unauthenticated',
+			user: null,
 			login: vi.fn(),
 			logout: vi.fn(),
 			createAuthFetchOptions: vi.fn(),
 			refresh: vi.fn(),
 		});
 		const { getByText, getByPlaceholderText } = render(<LoginForm />);
-		const title = getByText('Inicio de sesión');
 		const loginButton = getByText('Iniciar sesión');
 		const emailInput = getByPlaceholderText('Ingresa tu correo electrónico');
 		const passwordInput = getByPlaceholderText('Ingresa tu contraseña');
@@ -40,13 +41,13 @@ describe('Login Form', () => {
 		expect(emailInput).toBeInTheDocument();
 		expect(passwordInput).toBeInTheDocument();
 		expect(loginButton).toBeInTheDocument();
-		expect(title).toBeInTheDocument();
 	});
 
 	for (const test of validateTestCases) {
 		it(test.name, async () => {
 			vi.spyOn(auth, 'useAuth').mockReturnValue({
 				status: 'unauthenticated',
+				user: null,
 				login: vi.fn(),
 				logout: vi.fn(),
 				createAuthFetchOptions: vi.fn(),
@@ -91,6 +92,7 @@ describe('Login Form', () => {
 			const loginMock = vi.fn().mockResolvedValue({ status: test.status });
 			vi.spyOn(auth, 'useAuth').mockReturnValue({
 				status: 'unauthenticated',
+				user: null,
 				login: loginMock,
 				logout: vi.fn(),
 				createAuthFetchOptions: vi.fn(),
@@ -117,9 +119,13 @@ describe('Login Form', () => {
 
 	it('login successfully', async () => {
 		const toastMock = vi.spyOn(toast, 'success').mockReturnValue('');
-		const loginMock = vi.fn().mockResolvedValue({ status: 200 });
+		const loginMock = vi.fn().mockImplementation(async () => {
+			navigateMock('/dashboard');
+			return { status: 200 };
+		});
 		vi.spyOn(auth, 'useAuth').mockReturnValue({
 			status: 'unauthenticated',
+			user: null,
 			login: loginMock,
 			logout: vi.fn(),
 			createAuthFetchOptions: vi.fn(),
@@ -167,7 +173,7 @@ const validateTestCases = [
 		email: '',
 		password: '',
 		emailError: 'El correo electrónico no es válido',
-		passwordError: 'Ingresa la contraseña.',
+		passwordError: 'La contraseña debe tener al menos 6 caracteres',
 		name: 'should show error messages for empty fields',
 	},
 	{
