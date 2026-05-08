@@ -9,6 +9,10 @@ import LogInUnivalle from '../../../public/LogInUnivalle.png';
 import { ResetPasswordSchema, type ResetPasswordType } from '../schemas/reset-password';
 import { resetPasswordRequest, validateResetToken } from '../requests/password-recovery';
 
+// Module-level guards to avoid duplicate validations (protects against React StrictMode double-mount)
+const validatingTokens = new Set<string>();
+const validatedTokens = new Set<string>();
+
 function ResetPasswordForm() {
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
@@ -16,6 +20,7 @@ function ResetPasswordForm() {
 	const [isTokenValid, setIsTokenValid] = useState(false);
 
 	const token = searchParams.get('token');
+
 
 	const methods = useForm<ResetPasswordType>({ resolver: zodResolver(ResetPasswordSchema) });
 	const { isSubmitting } = methods.formState;
@@ -28,12 +33,26 @@ function ResetPasswordForm() {
 			return;
 		}
 
+		// If already validated in this session, skip network call
+		if (validatedTokens.has(token)) {
+			setIsTokenValid(true);
+			setIsValidating(false);
+			return;
+		}
+
+		// If a validation for this token is already in-flight, skip duplicate call
+		if (validatingTokens.has(token)) {
+			return;
+		}
+
 		const validateToken = async () => {
+			validatingTokens.add(token);
 			try {
 				const res = await validateResetToken(token);
 				const data = await res.json();
 
 				if (data.isValid) {
+					validatedTokens.add(token);
 					setIsTokenValid(true);
 				} else {
 					toast.error(data.message || 'Token inválido o expirado');
@@ -44,6 +63,7 @@ function ResetPasswordForm() {
 				console.error(error);
 				navigate('/auth/forgot-password');
 			} finally {
+				validatingTokens.delete(token);
 				setIsValidating(false);
 			}
 		};
