@@ -2,7 +2,9 @@ import bcrypt from 'bcrypt';
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
+import { randomBytes } from 'crypto';
 import { prisma } from '@/libs/db';
+import { sendEmail, generatePasswordResetEmailHTML } from '@/libs/email';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'access_secret';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'refresh_secret';
@@ -13,6 +15,24 @@ const loginSchema = z.object({
 	email: z.email('El correo electrónico no es válido'),
 	password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
 });
+
+const forgotPasswordSchema = z.object({
+	email: z.email('El correo electrónico no es válido'),
+});
+
+const resetPasswordSchema = z.object({
+	token: z.string().min(1, 'Token requerido'),
+	password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+	passwordConfirm: z.string().min(6, 'La confirmación de contraseña es requerida'),
+}).refine(data => data.password === data.passwordConfirm, {
+	message: 'Las contraseñas no coinciden',
+	path: ['passwordConfirm'],
+});
+
+// Helper function to generate secure random token
+function generateResetToken(): string {
+	return randomBytes(32).toString('hex');
+}
 
 router.post('/login', async (req, res) => {
 	try {
@@ -191,6 +211,166 @@ router.post('/logout', async (req, res) => {
 	});
 
 	return res.status(200).json({ message: 'Logout successful' });
+});
+
+router.post('/forgot-password', async (req, res) => {
+	try {
+		const parseData = forgotPasswordSchema.safeParse(req.body);
+
+		if (!parseData.success) {
+			return res.status(400).json({
+				message: 'Datos inválidos',
+				errors: z.treeifyError(parseData.error).properties,
+			});
+		}
+
+		const { email } = parseData.data;
+
+		const user = await prisma.user.findUnique({
+			where: { email },
+		});
+
+		// For security: always return success even if user doesn't exist
+		if (!user) {
+			return res.status(200).json({
+				message: 'Si el correo existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña',
+			});
+		}
+
+		// Delete any existing valid reset tokens for this user
+		await prisma.passwordReset.deleteMany({
+			where: {
+				userId: user.id,
+				usedAt: null,
+				expiresAt: {
+					gt: new Date(),
+				},
+			},
+		});
+
+		// Generate new reset token (valid for 1 hour)
+		const resetToken = generateResetToken();
+		const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+		await prisma.passwordReset.create({
+			data: {
+				userId: user.id,
+				token: resetToken,
+				expiresAt,
+			},
+		});
+
+		// Send email with reset link
+		const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+		const resetLink = `${frontendUrl}/auth/reset-password?token=${resetToken}`;
+
+		const emailHTML = generatePasswordResetEmailHTML(resetLink, user.name);
+
+		await sendEmail({
+			to: user.email,
+			subject: 'Recupera tu contraseña - Worku',
+			html: emailHTML,
+			text: `Usa este enlace para restablecer tu contraseña: ${resetLink}`,
+		});
+
+		// For development: also log the reset link
+		if (process.env.NODE_ENV !== 'production') {
+			console.log(`[DEV] Password reset token for ${email}: ${resetToken}`);
+			console.log(`[DEV] Reset link: ${resetLink}`);
+		}
+
+		return res.status(200).json({
+			message: 'Si el correo existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña',
+		});
+	} catch (error) {
+		console.error('Error en forgot-password:', error);
+		return res.status(500).json({ message: 'Error interno del servidor' });
+	}
+});
+
+router.post('/reset-password', async (req, res) => {
+	try {
+		const parseData = resetPasswordSchema.safeParse(req.body);
+
+		if (!parseData.success) {
+			return res.status(400).json({
+				message: 'Datos inválidos',
+				errors: z.treeifyError(parseData.error).properties,
+			});
+		}
+
+		const { token, password } = parseData.data;
+
+		// Find the reset token
+		const resetRecord = await prisma.passwordReset.findUnique({
+			where: { token },
+			include: { user: true },
+		});
+
+		// Check if token exists, hasn't been used, and hasn't expired
+		if (!resetRecord || resetRecord.usedAt || resetRecord.expiresAt < new Date()) {
+			return res.status(400).json({
+				message: 'El enlace de restablecimiento de contraseña es inválido o ha expirado',
+			});
+		}
+
+		// Hash the new password
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		// Update user password in a transaction-like manner
+		await prisma.user.update({
+			where: { id: resetRecord.userId },
+			data: { password: hashedPassword },
+		});
+
+		// Mark token as used
+		await prisma.passwordReset.update({
+			where: { id: resetRecord.id },
+			data: { usedAt: new Date() },
+		});
+
+		// Delete all sessions for this user (force logout everywhere)
+		await prisma.sessions.deleteMany({
+			where: { userId: resetRecord.userId },
+		});
+
+		return res.status(200).json({
+			message: 'Contraseña actualizada exitosamente. Por favor inicia sesión con tu nueva contraseña',
+		});
+	} catch (error) {
+		console.error('Error en reset-password:', error);
+		return res.status(500).json({ message: 'Error interno del servidor' });
+	}
+});
+
+router.post('/validate-reset-token', async (req, res) => {
+	try {
+		const { token } = req.body;
+
+		if (!token) {
+			return res.status(400).json({ message: 'Token requerido' });
+		}
+
+		const resetRecord = await prisma.passwordReset.findUnique({
+			where: { token },
+		});
+
+		// Check if token is valid and not expired
+		if (!resetRecord || resetRecord.usedAt || resetRecord.expiresAt < new Date()) {
+			return res.status(400).json({
+				message: 'El enlace de restablecimiento de contraseña es inválido o ha expirado',
+				isValid: false,
+			});
+		}
+
+		return res.status(200).json({
+			message: 'Token válido',
+			isValid: true,
+		});
+	} catch (error) {
+		console.error('Error validating reset token:', error);
+		return res.status(500).json({ message: 'Error interno del servidor' });
+	}
 });
 
 export default router;
