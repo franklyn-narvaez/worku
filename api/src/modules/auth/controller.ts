@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
-import { randomBytes } from 'crypto';
+import { randomBytes, createHash, timingSafeEqual } from 'crypto';
 import { prisma } from '@/libs/db';
 import { sendEmail, generatePasswordResetEmailHTML } from '@/libs/email';
 
@@ -32,6 +32,11 @@ const resetPasswordSchema = z.object({
 // Helper function to generate secure random token
 function generateResetToken(): string {
 	return randomBytes(32).toString('hex');
+}
+
+// Hash token for secure storage (SHA-256)
+function hashResetToken(token: string): string {
+	return createHash('sha256').update(token).digest('hex');
 }
 
 router.post('/login', async (req, res) => {
@@ -255,7 +260,7 @@ router.post('/forgot-password', async (req, res) => {
 		await prisma.passwordReset.create({
 			data: {
 				userId: user.id,
-				token: resetToken,
+				token: hashResetToken(resetToken),
 				expiresAt,
 			},
 		});
@@ -301,14 +306,37 @@ router.post('/reset-password', async (req, res) => {
 
 		const { token, password } = parseData.data;
 
-		// Find the reset token
+		// Compute hash of provided token and find the record
+		const tokenHash = hashResetToken(token);
 		const resetRecord = await prisma.passwordReset.findUnique({
-			where: { token },
+			where: { token: tokenHash },
 			include: { user: true },
 		});
 
-		// Check if token exists, hasn't been used, and hasn't expired
-		if (!resetRecord || resetRecord.usedAt || resetRecord.expiresAt < new Date()) {
+		// Check if token exists
+		if (!resetRecord) {
+			return res.status(400).json({
+				message: 'El enlace de restablecimiento de contraseña es inválido o ha expirado',
+			});
+		}
+
+		// Timing-safe compare of hashes
+		try {
+			const a = Buffer.from(resetRecord.token, 'hex');
+			const b = Buffer.from(tokenHash, 'hex');
+			if (a.length !== b.length || !timingSafeEqual(a, b)) {
+				return res.status(400).json({
+					message: 'El enlace de restablecimiento de contraseña es inválido o ha expirado',
+				});
+			}
+		} catch (e) {
+			return res.status(400).json({
+				message: 'El enlace de restablecimiento de contraseña es inválido o ha expirado',
+			});
+		}
+
+		// Check used/expired
+		if (resetRecord.usedAt || resetRecord.expiresAt < new Date()) {
 			return res.status(400).json({
 				message: 'El enlace de restablecimiento de contraseña es inválido o ha expirado',
 			});
@@ -317,22 +345,37 @@ router.post('/reset-password', async (req, res) => {
 		// Hash the new password
 		const hashedPassword = await bcrypt.hash(password, 10);
 
-		// Update user password in a transaction-like manner
-		await prisma.user.update({
-			where: { id: resetRecord.userId },
-			data: { password: hashedPassword },
-		});
+		// Perform updates atomically inside a transaction
+		try {
+			await prisma.$transaction(async (tx) => {
+				// re-read the reset record inside the transaction to avoid race conditions
+				const rr = await tx.passwordReset.findUnique({ where: { id: resetRecord.id } });
+				if (!rr || rr.usedAt || rr.expiresAt < new Date()) {
+					const err: any = new Error('Token inválido o expirado');
+					err.code = 'TOKEN_INVALID';
+					throw err;
+				}
 
-		// Mark token as used
-		await prisma.passwordReset.update({
-			where: { id: resetRecord.id },
-			data: { usedAt: new Date() },
-		});
+				await tx.user.update({
+					where: { id: resetRecord.userId },
+					data: { password: hashedPassword },
+				});
 
-		// Delete all sessions for this user (force logout everywhere)
-		await prisma.sessions.deleteMany({
-			where: { userId: resetRecord.userId },
-		});
+				await tx.passwordReset.update({
+					where: { id: resetRecord.id },
+					data: { usedAt: new Date() },
+				});
+
+				await tx.sessions.deleteMany({
+					where: { userId: resetRecord.userId },
+				});
+			});
+		} catch (e: any) {
+			if (e?.code === 'TOKEN_INVALID') {
+				return res.status(400).json({ message: 'El enlace de restablecimiento de contraseña es inválido o ha expirado' });
+			}
+			throw e;
+		}
 
 		return res.status(200).json({
 			message: 'Contraseña actualizada exitosamente. Por favor inicia sesión con tu nueva contraseña',
@@ -351,8 +394,9 @@ router.post('/validate-reset-token', async (req, res) => {
 			return res.status(400).json({ message: 'Token requerido' });
 		}
 
+		const tokenHash = hashResetToken(token);
 		const resetRecord = await prisma.passwordReset.findUnique({
-			where: { token },
+			where: { token: tokenHash },
 		});
 
 		// Check if token is valid and not expired
