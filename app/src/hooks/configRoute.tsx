@@ -33,6 +33,8 @@ import Users from '@/modules/admin/pages/Users';
 import UserUpdate from '@/modules/admin/pages/UserUpdate';
 import Login from '@/modules/auth/pages/Login';
 import RegisterPage from '@/modules/auth/pages/Register';
+import ForgotPassword from '@/modules/auth/pages/ForgotPassword';
+import ResetPassword from '@/modules/auth/pages/ResetPassword';
 import OffersReportsView from '@/modules/director/components/OffersReportsView';
 import ProfilesStatsView from '@/modules/director/components/ProfilesReportsView';
 import ReviewProfileHistory from '@/modules/director/components/ReviewProfileHistory';
@@ -93,6 +95,8 @@ export const routeConfig: AppRoute[] = [
 			{ path: '', element: <div>Auth Home</div> },
 			{ path: 'login', element: <Login /> },
 			{ path: 'register', element: <RegisterPage /> },
+			{ path: 'forgot-password', element: <ForgotPassword /> },
+			{ path: 'reset-password', element: <ResetPassword /> },
 		],
 	},
 	{

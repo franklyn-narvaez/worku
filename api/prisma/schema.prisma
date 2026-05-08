@@ -26,6 +26,7 @@ model User {
   role           Role?           @relation(fields: [roleId], references: [id])
   status         UserStatus      @default(ACTIVE)
   Sessions       Sessions[]
+  PasswordResets PasswordReset[]
   Application    Application[]
   StudentProfile StudentProfile?
 }
@@ -68,6 +69,16 @@ model Sessions {
   user         User     @relation(fields: [userId], references: [id])
   expiresAt    DateTime
   refreshToken String
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  usedAt    DateTime?
 }
 
 model Role {

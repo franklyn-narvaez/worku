@@ -36,7 +36,9 @@ function LoginForm() {
 					<FormField name="email" label="Correo electrónico" placeholder="Ingresa tu correo electrónico" />
 
 					<FormField type="password" name="password" placeholder="Ingresa tu contraseña" label="Contraseña" />
-
+				<Link to="/auth/forgot-password" className="text-primary-red hover:underline font-medium text-sm mt-1 block text-right">
+					¿Olvidaste tu contraseña?
+				</Link>
 					<button type="submit" className="w-full button-create p-3 rounded-lg mt-2">
 						Iniciar sesión
 					</button>
