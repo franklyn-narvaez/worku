@@ -1,23 +1,23 @@
 'use client';
+
+import { useCallback, useEffect, useId, useMemo, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
 	Dialog,
 	DialogContent,
+	DialogDescription,
+	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogFooter,
-	DialogDescription,
 } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
+import { Textarea } from '@/components/ui/textarea';
 import { DIRECTOR_REVIEW_PROFILES, REVIEW_PROFILE } from '@/constants/path';
-import { toast } from 'react-toastify';
+import { useAuth } from '@/hooks/useAuth';
 
 type Education = {
 	id: string;
@@ -145,7 +145,7 @@ const languageLevels: Record<string, string> = {
 };
 
 type EmptyHintProps = {
-	value?: any;
+	value?: string | null | undefined;
 };
 
 export function EmptyHint({ value }: EmptyHintProps) {
@@ -159,6 +159,7 @@ export default function StudentReviewProfileView() {
 	const navigate = useNavigate();
 	const { createAuthFetchOptions } = useAuth();
 	const { state } = useLocation();
+	const rejectCommentId = useId();
 
 	const [profile, setProfile] = useState<StudentProfile | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -313,11 +314,11 @@ export default function StudentReviewProfileView() {
 	}
 
 	return (
-		<div className="space-y-6 mt-6 pr-6">
+		<div className="space-y-6 mt-6 pr-6 pb-6">
 			{/* Header: foto + título + acciones */}
 			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 				<div className="flex items-center gap-4">
-					<div className="w-20 h-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
+					<div className="w-20 h-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-xl">
 						{profile.Photo ? (
 							<img src={profile.Photo} alt={profile.fullName} className="w-full h-full object-cover" />
 						) : (
@@ -331,11 +332,11 @@ export default function StudentReviewProfileView() {
 							{profile.status && (
 								<Badge
 									className={`
-                        text-white text-sm
-                        ${profile.status === 'APPROVED' ? 'bg-green-600' : ''}
-                        ${profile.status === 'REJECTED' ? 'bg-red-600' : ''}
-                        ${profile.status === 'SUBMITTED' ? 'bg-yellow-500' : ''}
-                    `}
+										text-white text-sm shadow-sm
+										${profile.status === 'APPROVED' ? 'bg-green-600' : ''}
+										${profile.status === 'REJECTED' ? 'bg-red-600' : ''}
+										${profile.status === 'SUBMITTED' ? 'bg-yellow-500' : ''}
+									`}
 								>
 									{profile.status === 'APPROVED'
 										? 'Aprobado'
@@ -346,10 +347,10 @@ export default function StudentReviewProfileView() {
 												: 'Desconocido'}
 								</Badge>
 							)}
-							<Badge variant="secondary" className="text-md">
+							<Badge variant="secondary" className="text-md shadow-sm">
 								{profile.planName ?? 'Programa no registrado'} -- {profile.planCode ?? 'Código no registrado'}
 							</Badge>
-							<Badge variant="secondary" className="text-md">
+							<Badge variant="secondary" className="text-md shadow-sm">
 								Semestre: {profile.semester ?? 'Semestre no registrado'}
 							</Badge>
 						</div>
@@ -430,8 +431,8 @@ export default function StudentReviewProfileView() {
 			</div>
 
 			{/* Tabs */}
-			<div className="bg-white border border-slate-200 rounded-lg p-3">
-				<nav className="flex gap-2 overflow-x-auto pb-2">
+			<div className="bg-white border border-slate-200 rounded-lg p-3 shadow-2xl">
+				<nav className="flex gap-2 overflow-x-auto pb-2 pl-3">
 					{[
 						{ key: 'overview', label: 'Resumen' },
 						{ key: 'education', label: `Formación (${sectionCounts.educations})` },
@@ -442,8 +443,9 @@ export default function StudentReviewProfileView() {
 						{ key: 'availability', label: `Disponibilidad (${sectionCounts.availability})` },
 					].map(t => (
 						<button
+							type="button"
 							key={t.key}
-							onClick={() => setActiveTab(t.key as any)}
+							onClick={() => setActiveTab(t.key as typeof activeTab)}
 							className={`px-3 py-2 rounded-md text-md ${activeTab === t.key ? 'bg-slate-100 text-slate-900 font-medium' : 'text-slate-600'}`}
 						>
 							{t.label}
@@ -451,11 +453,11 @@ export default function StudentReviewProfileView() {
 					))}
 				</nav>
 
-				<div className="pt-4">
+				<div className="pt-4 pb-4 pr-3 pl-3">
 					{/* OVERVIEW */}
 					{activeTab === 'overview' && (
 						<div className="space-y-4">
-							<Card>
+							<Card className="shadow-sm">
 								<CardHeader>
 									<CardTitle>Información personal</CardTitle>
 								</CardHeader>
@@ -498,7 +500,7 @@ export default function StudentReviewProfileView() {
 											<strong>Código del programa:</strong> <EmptyHint value={profile.planCode} />
 										</div>
 										<div>
-											<strong>Semestre:</strong> <EmptyHint value={profile.semester} />
+											<strong>Semestre:</strong> <EmptyHint value={profile.semester?.toString()} />
 										</div>
 										<div>
 											<strong>Sede:</strong> <EmptyHint value={profile.campus} />
@@ -519,13 +521,13 @@ export default function StudentReviewProfileView() {
 								</CardContent>
 							</Card>
 
-							<Card>
+							<Card className="shadow-sm">
 								<CardHeader>
 									<CardTitle>Documentos</CardTitle>
 								</CardHeader>
 
 								<CardContent>
-									<div className="flex justify-left gap-10">
+									<div className="flex justify-start gap-10">
 										<div className="flex flex-col items-center text-center">
 											<div className="text-md font-medium text-slate-700 mb-2">Foto</div>
 											{profile.Photo ? (
@@ -799,9 +801,9 @@ export default function StudentReviewProfileView() {
 					</DialogHeader>
 
 					<div className="mt-4">
-						<Label htmlFor="reject-comment">Comentario</Label>
+						<Label htmlFor={rejectCommentId}>Comentario</Label>
 						<Textarea
-							id="reject-comment"
+							id={rejectCommentId}
 							placeholder="Ejemplo: El certificado de notas está incompleto."
 							value={rejectComment}
 							onChange={e => setRejectComment(e.target.value)}

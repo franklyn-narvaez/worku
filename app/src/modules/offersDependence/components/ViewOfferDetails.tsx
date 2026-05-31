@@ -1,22 +1,12 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import type { Offer } from '@prisma/client';
+import { BookOpen, CalendarDays, Clock, FileCheck, GraduationCap, Mail, RefreshCcw, User2, Users } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
 import { API_BASE_URL, DEPENDENCE_APPLICANTS, DEPENDENCE_OFFERS } from '@/constants/path';
-import { toast } from 'react-toastify';
-import {
-	CalendarDays,
-	Clock,
-	RefreshCcw,
-	GraduationCap,
-	Users,
-	User2,
-	Mail,
-	BookOpen,
-	FileCheck,
-} from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 type OfferDetail = Offer & {
 	college: {
@@ -112,8 +102,12 @@ export default function ViewOfferDetails() {
 	}
 
 	return (
-		<div className="space-y-6 mt-6 pr-6">
-			<button type='button' onClick={handleBack} className="bg-button-create text-white px-2 py-1.5 rounded-md hover:bg-gray-800 transition">
+		<div className="space-y-6 mt-6 pr-6 pb-8">
+			<button
+				type="button"
+				onClick={handleBack}
+				className="bg-button-create text-white px-2 py-1.5 rounded-md hover:bg-gray-800 transition"
+			>
 				← Volver a ofertas
 			</button>
 
@@ -129,9 +123,13 @@ export default function ViewOfferDetails() {
 						</div>
 					</div>
 					{offer.status ? (
-						<Badge variant="success" className="text-xs px-3 py-1">Abierta</Badge>
+						<Badge variant="success" className="text-xs px-3 py-1">
+							Abierta
+						</Badge>
 					) : (
-						<Badge variant="destructive" className="text-xs px-3 py-1">Cerrada</Badge>
+						<Badge variant="destructive" className="text-xs px-3 py-1">
+							Cerrada
+						</Badge>
 					)}
 				</div>
 
@@ -149,9 +147,7 @@ export default function ViewOfferDetails() {
 						<h3 className="text-sm font-semibold text-gray-800 mb-1 flex items-center">
 							<FileCheck className="w-4 h-4 mr-2 text-gray-700" /> REQUISITOS
 						</h3>
-						<p className="text-gray-700 whitespace-pre-line">
-							{offer.requirements || 'Sin requisitos especificados.'}
-						</p>
+						<p className="text-gray-700 whitespace-pre-line">{offer.requirements || 'Sin requisitos especificados.'}</p>
 					</div>
 
 					<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-gray-100">
@@ -194,8 +190,7 @@ export default function ViewOfferDetails() {
 						{offer.Application.length > 0 ? (
 							<div className="space-y-3">
 								{offer.Application.map(app => {
-									const statusInfo =
-										STATUS_MAP[app.status] || { label: 'Desconocido', color: 'bg-gray-400' };
+									const statusInfo = STATUS_MAP[app.status] || { label: 'Desconocido', color: 'bg-gray-400' };
 
 									return (
 										<div
@@ -215,9 +210,7 @@ export default function ViewOfferDetails() {
 												<p className="flex items-center gap-1 text-gray-600 truncate">
 													<Mail className="w-4 h-4 text-gray-500" /> {app.user.email}
 												</p>
-												<Badge className={`${statusInfo.color} text-white justify-self-end`}>
-													{statusInfo.label}
-												</Badge>
+												<Badge className={`${statusInfo.color} text-white justify-self-end`}>{statusInfo.label}</Badge>
 											</div>
 										</div>
 									);

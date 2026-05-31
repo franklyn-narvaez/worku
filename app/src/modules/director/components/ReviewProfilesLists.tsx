@@ -58,25 +58,25 @@ const ReviewProfilesLists = () => {
 	return (
 		<div className="pt-8 pr-8">
 			<div className="bg-white shadow-md rounded-lg overflow-hidden">
-				<Table>
+				<Table className="table-auto">
 					<TableCaption>Lista de estudiantes con perfil en revisión</TableCaption>
 					<TableHeader className="bg-table-header">
 						<TableRow>
-							<TableHead>Foto</TableHead>
-							<TableHead>Nombre</TableHead>
-							<TableHead>Código</TableHead>
-							<TableHead>Programa</TableHead>
-							<TableHead>Correo</TableHead>
-							<TableHead>Fecha de envío</TableHead>
-							<TableHead>Estado</TableHead>
-							<TableHead>Acciones</TableHead>
+							<TableHead className="whitespace-normal text-center">Foto</TableHead>
+							<TableHead className="whitespace-normal text-center">Nombre</TableHead>
+							<TableHead className="whitespace-normal text-center">Código</TableHead>
+							<TableHead className="whitespace-normal text-center">Programa</TableHead>
+							<TableHead className="whitespace-normal text-center">Correo</TableHead>
+							<TableHead className="whitespace-normal text-center">Fecha de envío</TableHead>
+							<TableHead className="whitespace-normal text-center">Estado</TableHead>
+							<TableHead className="whitespace-normal text-center">Acciones</TableHead>
 						</TableRow>
 					</TableHeader>
 
 					<TableBody>
 						{profiles.map(profile => (
 							<TableRow key={profile.id} className="hover:bg-slate-50">
-								<TableCell>
+								<TableCell className="p-4 align-middle text-center">
 									{profile.Photo ? (
 										<img
 											src={profile.Photo}
@@ -88,11 +88,13 @@ const ReviewProfilesLists = () => {
 									)}
 								</TableCell>
 
-								<TableCell className="font-medium">{profile.fullName}</TableCell>
-								<TableCell>{profile.studentCode}</TableCell>
-								<TableCell>{profile.planName}</TableCell>
-								<TableCell>{profile.user.email}</TableCell>
-								<TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center font-medium">
+									{profile.fullName}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">{profile.studentCode}</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">{profile.planName}</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">{profile.user.email}</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
 									{profile.submittedAt
 										? new Date(profile.submittedAt).toLocaleDateString('es-CO', {
 												year: 'numeric',
@@ -102,7 +104,7 @@ const ReviewProfilesLists = () => {
 										: 'Sin fecha de envío'}
 								</TableCell>
 
-								<TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
 									<span
 										className={`px-2 py-1 rounded text-white text-xs font-medium ${
 											profile.status === 'SUBMITTED'
@@ -120,7 +122,7 @@ const ReviewProfilesLists = () => {
 									</span>
 								</TableCell>
 
-								<TableCell className="space-x-2">
+								<TableCell className="p-4 align-middle whitespace-nowrap text-center">
 									<Button
 										variant="outline"
 										size="sm"

@@ -253,7 +253,7 @@ export function ViewApplicants() {
 	}
 
 	return (
-		<div className="space-y-6 mt-6 pr-6">
+		<div className="space-y-6 mt-6 pr-6 pb-8">
 			<button
 				type="button"
 				onClick={handleBack}
@@ -261,7 +261,7 @@ export function ViewApplicants() {
 			>
 				← Volver
 			</button>
-			<Card className="border border-slate-200 shadow-sm">
+			<Card className="bg-white rounded-2xl shadow-md p-8 border border-slate-200">
 				<CardHeader>
 					<div className="flex justify-between items-center">
 						<CardTitle className="text-xl font-semibold">Aplicantes para: {data.offer.title}</CardTitle>
