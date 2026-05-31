@@ -1,8 +1,8 @@
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useAuth } from '@/hooks/useAuth';
-import { useEffect, useState } from 'react';
 import type { Application } from '@prisma/client';
+import { useEffect, useState } from 'react';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { API_BASE_URL } from '@/constants/path';
+import { useAuth } from '@/hooks/useAuth';
 
 type ExtendedApplication = Application & {
 	offer: {
@@ -87,44 +87,48 @@ const MyApplications = () => {
 	};
 
 	return (
-		<div className='pt-8 pr-8'>
+		<div className="pt-8 pr-8">
 			<div className="bg-white shadow-md rounded-lg overflow-hidden">
-				<Table>
+				<Table className="table-auto">
 					<TableCaption>Lista de aplicaciones realizadas</TableCaption>
 					<TableHeader className="bg-table-header">
 						<TableRow>
-							<TableHead>Título</TableHead>
-							<TableHead>Descripción</TableHead>
-							<TableHead>Fecha de aplicación</TableHead>
-							<TableHead>Fecha de cierre</TableHead>
-							<TableHead>Entrevista</TableHead>
-							<TableHead>Asistencia</TableHead>
-							<TableHead>Estado</TableHead>
+							<TableHead className="whitespace-normal text-center">Título</TableHead>
+							<TableHead className="whitespace-normal text-center">Descripción</TableHead>
+							<TableHead className="whitespace-normal text-center">Fecha de aplicación</TableHead>
+							<TableHead className="whitespace-normal text-center">Fecha de cierre</TableHead>
+							<TableHead className="whitespace-normal text-center">Entrevista</TableHead>
+							<TableHead className="whitespace-normal text-center">Asistencia</TableHead>
+							<TableHead className="whitespace-normal text-center">Estado</TableHead>
 						</TableRow>
 					</TableHeader>
 
 					<TableBody>
 						{applications.map(application => (
 							<TableRow key={application.id} className="bg-white border-b hover:bg-gray-100">
-								<TableCell className="p-4">{application.offer.title}</TableCell>
-								<TableCell className="p-4 line-clamp-2">
+								<TableCell className="p-4 align-middle whitespace-normal text-center break-words max-w-[220px]">
+									{application.offer.title}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center break-words max-w-[220px]">
 									{application.offer.description || 'Sin descripción'}
 								</TableCell>
-								<TableCell className="p-4">
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
 									{new Date(application.appliedAt).toLocaleDateString('es-CO')}
 								</TableCell>
-								<TableCell className="p-4">
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
 									{new Date(application.offer.closeDate).toLocaleDateString('es-CO')}
 								</TableCell>
-								<TableCell className="p-4">
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
 									{application.interviewDate ? (
 										<span>{formatInterviewDate(application.interviewDate)}</span>
 									) : (
 										'No programada'
 									)}
 								</TableCell>
-								<TableCell className="p-4">{formatAttendance(application.attendedInterview)}</TableCell>
-								<TableCell className="p-4">
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
+									{formatAttendance(application.attendedInterview)}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
 									<span
 										className={`px-2 py-1 rounded text-white text-xs font-medium ${getStatusColor(application.status)}`}
 									>

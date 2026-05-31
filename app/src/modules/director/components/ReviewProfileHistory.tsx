@@ -59,43 +59,32 @@ const ReviewProfileHistory = () => {
 	return (
 		<div className="pt-8 pr-8">
 			<div className="bg-white shadow-md rounded-lg overflow-hidden">
-				<Table>
+				<Table className="table-auto">
 					<TableCaption>Historial de perfiles revisados</TableCaption>
 					<TableHeader className="bg-table-header">
 						<TableRow>
-							<TableHead>Foto</TableHead>
-							<TableHead>Nombre</TableHead>
-							<TableHead>Código</TableHead>
-							<TableHead>Programa</TableHead>
-							<TableHead>Correo</TableHead>
-							<TableHead>Fecha envío</TableHead>
-							<TableHead>Estado</TableHead>
-							<TableHead>Fecha revisión</TableHead>
-							<TableHead>Acciones</TableHead>
+							<TableHead className="whitespace-normal text-center">Nombre</TableHead>
+							<TableHead className="whitespace-normal text-center">Código</TableHead>
+							<TableHead className="whitespace-normal text-center">Programa</TableHead>
+							<TableHead className="whitespace-normal text-center">Correo</TableHead>
+							<TableHead className="min-w-[140px] whitespace-nowrap text-center">Fecha envío</TableHead>
+							<TableHead className="whitespace-normal text-center">Estado</TableHead>
+							<TableHead className="min-w-[140px] whitespace-nowrap text-center">Fecha revisión</TableHead>
+							<TableHead className="whitespace-normal text-center">Acciones</TableHead>
 						</TableRow>
 					</TableHeader>
 
 					<TableBody>
 						{profiles.map(profile => (
 							<TableRow key={profile.id} className="hover:bg-slate-50">
-								<TableCell>
-									{profile.Photo ? (
-										<img
-											src={profile.Photo}
-											alt="Foto estudiante"
-											className="w-12 h-12 object-cover rounded-full border"
-										/>
-									) : (
-										<div className="w-12 h-12 bg-gray-200 rounded-full" />
-									)}
+								<TableCell className="p-4 align-middle whitespace-normal text-center font-medium">
+									{profile.fullName}
 								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">{profile.studentCode}</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">{profile.planName}</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">{profile.user.email}</TableCell>
 
-								<TableCell className="font-medium">{profile.fullName}</TableCell>
-								<TableCell>{profile.studentCode}</TableCell>
-								<TableCell>{profile.planName}</TableCell>
-								<TableCell>{profile.user.email}</TableCell>
-
-								<TableCell>
+								<TableCell className="p-4 align-middle whitespace-nowrap text-center">
 									{profile.submittedAt
 										? new Date(profile.submittedAt).toLocaleDateString('es-CO', {
 												year: 'numeric',
@@ -105,7 +94,7 @@ const ReviewProfileHistory = () => {
 										: 'Sin fecha de envío'}
 								</TableCell>
 
-								<TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
 									<span
 										className={`px-2 py-1 rounded text-white text-xs font-medium ${
 											profile.status === 'APPROVED' ? 'bg-green-500' : 'bg-red-500'
@@ -115,7 +104,7 @@ const ReviewProfileHistory = () => {
 									</span>
 								</TableCell>
 
-								<TableCell>
+								<TableCell className="p-4 align-middle whitespace-nowrap text-center">
 									{profile.reviewedAt
 										? new Date(profile.reviewedAt).toLocaleDateString('es-CO', {
 												year: 'numeric',
@@ -125,7 +114,7 @@ const ReviewProfileHistory = () => {
 										: 'Sin fecha de revisión'}
 								</TableCell>
 
-								<TableCell>
+								<TableCell className="p-4 align-middle whitespace-nowrap text-center">
 									<Button
 										variant="outline"
 										size="sm"

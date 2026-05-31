@@ -32,17 +32,17 @@ const OfferTable = (props: { offers: ExtendedOffer[] }) => {
 
 	return (
 		<>
-			<Table>
+			<Table className="table-auto">
 				<TableHeader className="bg-header-table">
 					<TableRow>
-						<TableHead>Titulo</TableHead>
-						<TableHead>Escuela</TableHead>
-						<TableHead>Fecha de creacion</TableHead>
-						<TableHead>Fecha de actualizacion</TableHead>
-						<TableHead>Fecha de cierre</TableHead>
-						<TableHead>Aplicantes</TableHead>
-						<TableHead>Estado</TableHead>
-						<TableHead className="text-right">Acciones</TableHead>
+						<TableHead className="whitespace-normal text-center">Titulo</TableHead>
+						<TableHead className="whitespace-normal text-center">Escuela</TableHead>
+						<TableHead className="whitespace-normal text-center">Fecha de creacion</TableHead>
+						<TableHead className="whitespace-normal text-center">Fecha de actualizacion</TableHead>
+						<TableHead className="whitespace-normal text-center">Fecha de cierre</TableHead>
+						<TableHead className="whitespace-normal text-center">Aplicantes</TableHead>
+						<TableHead className="whitespace-normal text-center">Estado</TableHead>
+						<TableHead className="whitespace-normal text-center">Acciones</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -55,13 +55,25 @@ const OfferTable = (props: { offers: ExtendedOffer[] }) => {
 					) : (
 						currentOffers.map(offer => (
 							<TableRow key={offer.id} className="bg-white border-b hover:bg-gray-300">
-								<TableCell className="p-4">{offer.title}</TableCell>
-								<TableCell className="p-4">{offer.college?.name ?? 'Sin escuela'}</TableCell>
-								<TableCell className="p-4">{new Date(offer.createdAt).toLocaleDateString()}</TableCell>
-								<TableCell className="p-4">{new Date(offer.updatedAt).toLocaleDateString()}</TableCell>
-								<TableCell className="p-4">{new Date(offer.closeDate).toLocaleDateString()}</TableCell>
-								<TableCell className="p-4">{offer._count.Application ?? 0}</TableCell>
-								<TableCell className="p-4">
+								<TableCell className="p-4 align-middle whitespace-normal text-center break-words max-w-[220px]">
+									{offer.title}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center break-words max-w-[220px]">
+									{offer.college?.name ?? 'Sin escuela'}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
+									{new Date(offer.createdAt).toLocaleDateString()}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
+									{new Date(offer.updatedAt).toLocaleDateString()}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
+									{new Date(offer.closeDate).toLocaleDateString()}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
+									{offer._count.Application ?? 0}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
 									{offer.status ? (
 										<Badge variant="success">Activa</Badge>
 									) : (
@@ -69,14 +81,14 @@ const OfferTable = (props: { offers: ExtendedOffer[] }) => {
 									)}
 								</TableCell>
 
-								<TableCell className="text-right">
+								<TableCell className="whitespace-nowrap p-4 align-middle text-center">
 									<Popover>
 										<PopoverTrigger asChild>
 											<Button variant="ghost" size="icon" className="hover:bg-slate-100">
 												<MoreHorizontal className="h-5 w-5" />
 											</Button>
 										</PopoverTrigger>
-										<PopoverContent className="w-40">
+										<PopoverContent align="end" sideOffset={8} className="w-40">
 											<div className="flex flex-col space-y-2">
 												<Button
 													variant="ghost"

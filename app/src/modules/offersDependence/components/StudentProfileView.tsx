@@ -91,6 +91,8 @@ type StudentProfile = {
 	availabilities?: Availability[];
 };
 
+type ProfileTab = 'overview' | 'education' | 'trainings' | 'languages' | 'systems' | 'experience' | 'availability';
+
 function formatDate(date?: string | null) {
 	if (!date) return 'No registrado';
 	try {
@@ -135,13 +137,13 @@ const languageLevels: Record<string, string> = {
 
 /** Badge pequeño para secciones vacías */
 type EmptyHintProps = {
-	value?: any;
+	value?: React.ReactNode;
 };
 
 export function EmptyHint({ value }: EmptyHintProps) {
 	const isEmpty = value === null || value === undefined || (typeof value === 'string' && value.trim() === '');
 
-	return <>{isEmpty ? <span className="text-gray-400 italic">Sin información</span> : <>{value}</>}</>;
+	return isEmpty ? <span className="text-gray-400 italic">Sin información</span> : value;
 }
 
 export default function StudentProfileView() {
@@ -152,9 +154,7 @@ export default function StudentProfileView() {
 
 	const [profile, setProfile] = useState<StudentProfile | null>(null);
 	const [loading, setLoading] = useState(true);
-	const [activeTab, setActiveTab] = useState<
-		'overview' | 'education' | 'trainings' | 'languages' | 'systems' | 'experience' | 'availability'
-	>('overview');
+	const [activeTab, setActiveTab] = useState<ProfileTab>('overview');
 
 	const fetchProfile = useCallback(async () => {
 		setLoading(true);
@@ -211,6 +211,16 @@ export default function StudentProfileView() {
 		};
 	}, [profile]);
 
+	const tabs: { key: ProfileTab; label: string }[] = [
+		{ key: 'overview', label: 'Resumen' },
+		{ key: 'education', label: `Formación (${sectionCounts.educations})` },
+		{ key: 'trainings', label: `Capacitaciones (${sectionCounts.trainings})` },
+		{ key: 'languages', label: `Idiomas (${sectionCounts.languages})` },
+		{ key: 'systems', label: `Sistemas (${sectionCounts.systems})` },
+		{ key: 'experience', label: `Experiencia (${sectionCounts.experience})` },
+		{ key: 'availability', label: `Disponibilidad (${sectionCounts.availability})` },
+	];
+
 	if (loading) {
 		return (
 			<div className="mt-8 text-center">
@@ -233,11 +243,11 @@ export default function StudentProfileView() {
 	}
 
 	return (
-		<div className="space-y-6 mt-6 pr-6">
+		<div className="space-y-6 mt-6 pr-6 pb-6">
 			{/* Header: foto + título + acciones */}
 			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 				<div className="flex items-center gap-4">
-					<div className="w-20 h-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-xl">
+					<div className="w-20 h-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-md">
 						{profile.Photo ? (
 							<img src={profile.Photo} alt={profile.fullName} className="w-full h-full object-cover" />
 						) : (
@@ -307,20 +317,13 @@ export default function StudentProfileView() {
 			</div>
 
 			{/* Tabs */}
-			<div className="bg-white border border-slate-200 rounded-lg p-3 shadow-xl">
-				<nav className="flex gap-2 overflow-x-auto pb-2">
-					{[
-						{ key: 'overview', label: 'Resumen' },
-						{ key: 'education', label: `Formación (${sectionCounts.educations})` },
-						{ key: 'trainings', label: `Capacitaciones (${sectionCounts.trainings})` },
-						{ key: 'languages', label: `Idiomas (${sectionCounts.languages})` },
-						{ key: 'systems', label: `Sistemas (${sectionCounts.systems})` },
-						{ key: 'experience', label: `Experiencia (${sectionCounts.experience})` },
-						{ key: 'availability', label: `Disponibilidad (${sectionCounts.availability})` },
-					].map(t => (
+			<div className="bg-white border border-slate-200 rounded-lg p-3 shadow-2xl">
+				<nav className="flex gap-2 overflow-x-auto pb-2 pl-3">
+					{tabs.map(t => (
 						<button
 							key={t.key}
-							onClick={() => setActiveTab(t.key as any)}
+							type="button"
+							onClick={() => setActiveTab(t.key)}
 							className={`px-3 py-2 rounded-md text-md ${activeTab === t.key ? 'bg-slate-100 text-slate-900 font-medium' : 'text-slate-600'}`}
 						>
 							{t.label}
@@ -328,7 +331,7 @@ export default function StudentProfileView() {
 					))}
 				</nav>
 
-				<div className="pt-4">
+				<div className="pt-4 pb-4 pr-3 pl-3">
 					{/* OVERVIEW */}
 					{activeTab === 'overview' && (
 						<div className="space-y-4 shadow-sm">

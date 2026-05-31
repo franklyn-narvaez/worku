@@ -32,17 +32,17 @@ const UserTable = (props: { users: ExtendedUser[] }) => {
 
 	return (
 		<>
-			<Table>
+			<Table className="table-auto">
 				<TableHeader className="bg-header-table">
 					<TableRow>
-						<TableHead>Nombre</TableHead>
-						<TableHead>Apellido</TableHead>
-						<TableHead>Correo</TableHead>
-						<TableHead>Rol</TableHead>
-						<TableHead>Escuela</TableHead>
-						<TableHead>Fecha de creacion</TableHead>
-						<TableHead>Estado</TableHead>
-						<TableHead>Acciones</TableHead>
+						<TableHead className="whitespace-normal text-center">Nombre</TableHead>
+						<TableHead className="whitespace-normal text-center">Apellido</TableHead>
+						<TableHead className="whitespace-normal text-center">Correo</TableHead>
+						<TableHead className="whitespace-normal text-center">Rol</TableHead>
+						<TableHead className="whitespace-normal text-center">Escuela</TableHead>
+						<TableHead className="whitespace-normal text-center">Fecha de creacion</TableHead>
+						<TableHead className="whitespace-normal text-center">Estado</TableHead>
+						<TableHead className="whitespace-normal text-center">Acciones</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -55,18 +55,24 @@ const UserTable = (props: { users: ExtendedUser[] }) => {
 					) : (
 						currentUsers.map(user => (
 							<TableRow key={user.id} className="bg-white border-b hover:bg-gray-300">
-								<TableCell className="p-4">{user.name}</TableCell>
-								<TableCell className="p-4">{user.lastName}</TableCell>
-								<TableCell className="p-4">{user.email}</TableCell>
-								<TableCell className="p-4">{user.role?.name ?? 'Sin rol'}</TableCell>
-								<TableCell className="p-4">{user.college?.name ?? 'Sin escuela'}</TableCell>
-								<TableCell className="p-4">{new Date(user.createdDate).toLocaleDateString()}</TableCell>
-								<TableCell className="p-4">
+								<TableCell className="p-4 align-middle whitespace-normal text-center">{user.name}</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">{user.lastName}</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">{user.email}</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
+									{user.role?.name ?? 'Sin rol'}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
+									{user.college?.name ?? 'Sin escuela'}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
+									{new Date(user.createdDate).toLocaleDateString()}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
 									<Badge variant={user.status === 'ACTIVE' ? 'success' : 'destructive'}>
 										{statusLabels[user.status]}
 									</Badge>
 								</TableCell>
-								<TableCell className="p-4 text-right flex  space-x-2">
+								<TableCell className="p-4 whitespace-nowrap text-center flex justify-center space-x-2">
 									<Button
 										variant="outline"
 										size="sm"

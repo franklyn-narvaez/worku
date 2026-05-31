@@ -22,8 +22,6 @@ router.get('/profiles/review', authenticate, authorize(['review_profiles']), asy
 			},
 		});
 
-		console.log(profiles);
-
 		if (profiles.length === 0) {
 			return res.status(404).json({ message: 'No hay perfiles para revisión.' });
 		}

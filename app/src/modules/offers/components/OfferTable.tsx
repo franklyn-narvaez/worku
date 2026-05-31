@@ -29,16 +29,16 @@ const OfferTable = ({ offers }: { offers: ExtendedOffer[] }) => {
 
 	return (
 		<>
-			<Table className="table-auto w-full">
+			<Table className="table-auto">
 				<TableHeader className="bg-header-table">
 					<TableRow>
-						<TableHead>Título</TableHead>
-						<TableHead>Escuela</TableHead>
-						<TableHead>Fecha de creación</TableHead>
-						<TableHead>Fecha de actualización</TableHead>
-						<TableHead>Fecha de cierre</TableHead>
-						<TableHead>Estado</TableHead>
-						<TableHead>Acciones</TableHead>
+						<TableHead className="whitespace-normal text-center">Título</TableHead>
+						<TableHead className="whitespace-normal text-center">Escuela</TableHead>
+						<TableHead className="whitespace-normal text-center">Fecha de creación</TableHead>
+						<TableHead className="whitespace-normal text-center">Fecha de actualización</TableHead>
+						<TableHead className="whitespace-normal text-center">Fecha de cierre</TableHead>
+						<TableHead className="whitespace-normal text-center">Estado</TableHead>
+						<TableHead className="whitespace-normal text-center">Acciones</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -51,19 +51,29 @@ const OfferTable = ({ offers }: { offers: ExtendedOffer[] }) => {
 					) : (
 						currentOffers.map(offer => (
 							<TableRow key={offer.id} className="bg-white border-b hover:bg-gray-300">
-								<TableCell className="p-4 max-w-[200px] truncate">{offer.title}</TableCell>
-								<TableCell className="p-4">{offer.college?.name ?? 'Sin escuela'}</TableCell>
-								<TableCell className="p-4">{new Date(offer.createdAt).toLocaleDateString()}</TableCell>
-								<TableCell className="p-4">{new Date(offer.updatedAt).toLocaleDateString()}</TableCell>
-								<TableCell className="p-4">{new Date(offer.closeDate).toLocaleDateString()}</TableCell>
-								<TableCell className="p-4">
+								<TableCell className="p-4 align-middle whitespace-normal text-center break-words max-w-[220px]">
+									{offer.title}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center break-words max-w-[220px]">
+									{offer.college?.name ?? 'Sin escuela'}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
+									{new Date(offer.createdAt).toLocaleDateString()}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
+									{new Date(offer.updatedAt).toLocaleDateString()}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
+									{new Date(offer.closeDate).toLocaleDateString()}
+								</TableCell>
+								<TableCell className="p-4 align-middle whitespace-normal text-center">
 									{offer.status ? (
 										<Badge variant="success">Activa</Badge>
 									) : (
 										<Badge variant="destructive">Inactiva</Badge>
 									)}
 								</TableCell>
-								<TableCell className="text-right flex space-x-2 p-4">
+								<TableCell className="whitespace-nowrap p-4 align-middle text-center flex space-x-2">
 									<Button
 										variant="outline"
 										size="sm"

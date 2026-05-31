@@ -1,12 +1,12 @@
 'use client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DIRECTOR_REVIEW_PROFILE_HISTORY, REVIEW_PROFILE } from '@/constants/path';
-import { toast } from 'react-toastify';
+import { useAuth } from '@/hooks/useAuth';
 
 type Education = {
 	id: string;
@@ -135,7 +135,7 @@ const languageLevels: Record<string, string> = {
 };
 
 type EmptyHintProps = {
-	value?: any;
+	value?: React.ReactNode;
 };
 
 export function EmptyHint({ value }: EmptyHintProps) {
@@ -226,11 +226,11 @@ export default function StudentReviewProfileHistory() {
 	}
 
 	return (
-		<div className="space-y-6 mt-6 pr-6">
+		<div className="space-y-6 mt-6 pr-6 pb-6">
 			{/* Header: foto + título + acciones */}
 			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 				<div className="flex items-center gap-4">
-					<div className="w-20 h-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
+					<div className="w-20 h-20 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-xl">
 						{profile.Photo ? (
 							<img src={profile.Photo} alt={profile.fullName} className="w-full h-full object-cover" />
 						) : (
@@ -259,10 +259,10 @@ export default function StudentReviewProfileHistory() {
 												: 'Desconocido'}
 								</Badge>
 							)}
-							<Badge variant="secondary" className="text-md">
+							<Badge variant="secondary" className="text-md shadow-sm">
 								{profile.planName ?? 'Programa no registrado'} -- {profile.planCode ?? 'Código no registrado'}
 							</Badge>
-							<Badge variant="secondary" className="text-md">
+							<Badge variant="secondary" className="text-md shadow-sm">
 								Semestre: {profile.semester ?? 'Semestre no registrado'}
 							</Badge>
 						</div>
@@ -317,8 +317,8 @@ export default function StudentReviewProfileHistory() {
 			</div>
 
 			{/* Tabs */}
-			<div className="bg-white border border-slate-200 rounded-lg p-3">
-				<nav className="flex gap-2 overflow-x-auto pb-2">
+			<div className="bg-white border border-slate-200 rounded-lg p-3 shadow-2xl">
+				<nav className="flex gap-2 overflow-x-auto pb-2 pl-3">
 					{[
 						{ key: 'overview', label: 'Resumen' },
 						{ key: 'education', label: `Formación (${sectionCounts.educations})` },
@@ -329,8 +329,9 @@ export default function StudentReviewProfileHistory() {
 						{ key: 'availability', label: `Disponibilidad (${sectionCounts.availability})` },
 					].map(t => (
 						<button
+							type="button"
 							key={t.key}
-							onClick={() => setActiveTab(t.key as any)}
+							onClick={() => setActiveTab(t.key as typeof activeTab)}
 							className={`px-3 py-2 rounded-md text-md ${activeTab === t.key ? 'bg-slate-100 text-slate-900 font-medium' : 'text-slate-600'}`}
 						>
 							{t.label}
@@ -338,11 +339,11 @@ export default function StudentReviewProfileHistory() {
 					))}
 				</nav>
 
-				<div className="pt-4">
+				<div className="pt-4 pb-4 pr-3 pl-3">
 					{/* OVERVIEW */}
 					{activeTab === 'overview' && (
 						<div className="space-y-4">
-							<Card>
+							<Card className="shadow-sm">
 								<CardHeader>
 									<CardTitle>Información personal</CardTitle>
 								</CardHeader>
@@ -406,13 +407,13 @@ export default function StudentReviewProfileHistory() {
 								</CardContent>
 							</Card>
 
-							<Card>
+							<Card className="shadow-sm">
 								<CardHeader>
 									<CardTitle>Documentos</CardTitle>
 								</CardHeader>
 
 								<CardContent>
-									<div className="flex justify-left gap-10">
+									<div className="flex justify-start gap-10">
 										<div className="flex flex-col items-center text-center">
 											<div className="text-md font-medium text-slate-700 mb-2">Foto</div>
 											{profile.Photo ? (
